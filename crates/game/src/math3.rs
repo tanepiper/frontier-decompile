@@ -12,11 +12,14 @@
 //! notably shift counts in `CL` masked to 5 bits. Parity against the original running on the
 //! reference runtime: `crates/hooks/tests/math3_parity.rs`.
 
+mod geometry;
+pub use geometry::*;
+
 /// Main data segment offset of the divide-overflow resume address (docs/MATH3.md).
 pub const DIVIDE_RESUME: u16 = 0x09dc;
 
 /// The 386 state a port sees and leaves: general registers in encoding order (`EAX`, `ECX`,
-/// `EDX`, `EBX`, `ESP`, `EBP`, `ESI`, `EDI`), segments, `CS:IP` (the routine's entry on the
+/// `EDX`, `EBX`, `ESP`, `EBP`, `ESI`, `EDI`), the data segments, `CS:IP` (the routine's entry on the
 /// way in, the caller's return address on the way out) and flags (read only: `DF`).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Cpu {
@@ -26,6 +29,8 @@ pub struct Cpu {
     pub ds: u16,
     pub es: u16,
     pub ss: u16,
+    pub fs: u16,
+    pub gs: u16,
     pub flags: u32,
 }
 
@@ -51,6 +56,24 @@ impl Cpu {
         self.r[i] = (self.r[i] & 0xFFFF_0000) | v as u32;
     }
 
+    /// Low byte of register `i` (`AL`, `CL`, `DL`, `BL`).
+    pub fn l(&self, i: usize) -> u8 {
+        self.r[i] as u8
+    }
+
+    pub fn set_l(&mut self, i: usize, v: u8) {
+        self.r[i] = (self.r[i] & !0xFF) | v as u32;
+    }
+
+    /// High byte of register `i` (`AH`, `CH`, `DH`, `BH`).
+    pub fn h(&self, i: usize) -> u8 {
+        (self.r[i] >> 8) as u8
+    }
+
+    pub fn set_h(&mut self, i: usize, v: u8) {
+        self.r[i] = (self.r[i] & !0xFF00) | (v as u32) << 8;
+    }
+
     fn sp(&self) -> u16 {
         self.x(ESP)
     }
@@ -71,6 +94,11 @@ impl Cpu {
 /// Real-mode linear address of `seg:off`, wrapped at 1 MB as on the reference runtime.
 pub fn lin(seg: u16, off: u16) -> u32 {
     (((seg as u32) << 4) + off as u32) & 0xF_FFFF
+}
+
+/// Linear address of a 32-bit effective address (`67h` prefix): not wrapped at 64 KB.
+pub fn lin32(seg: u16, off: u32) -> u32 {
+    ((seg as u32) << 4).wrapping_add(off) & 0xF_FFFF
 }
 
 /// Memory as the routines see it, by linear address. Multi-byte accesses are little-endian over
@@ -97,6 +125,11 @@ pub trait Bus {
         self.write16(a + 2, (v >> 16) as u16);
     }
 }
+
+/// Instruction count a port returns when it does not handle this input (a path not ported yet,
+/// or one where the original never returns). Nothing it did counts: the hook discards the staged
+/// state and runs the original instead.
+pub const DECLINE: u64 = u64::MAX;
 
 /// A port of a whole routine, entry to `RETF`: updates the CPU and memory as the original
 /// would and returns the original's instruction count for these inputs (see [`Exit::steps`]).
@@ -137,6 +170,9 @@ impl Regs {
 fn with_regs(c: &mut Cpu, bus: &mut dyn Bus, f: fn(&mut Regs) -> Exit) -> u64 {
     let mut r = Regs::load(c);
     let e = f(&mut r);
+    if e.steps == DECLINE {
+        return DECLINE;
+    }
     r.store(c);
     if let Some(v) = e.resume {
         bus.write16(lin(c.ds, DIVIDE_RESUME), v);
@@ -616,10 +652,14 @@ pub fn to_fixed64(r: &mut Regs) -> Exit {
 }
 
 /// Port of `EL2MATH3:1e80` (slot `DS:02a8`): normalise an unsigned 16-bit mantissa `AX` so bit 14
-/// is the top set bit, adjusting the exponent `DX`.
+/// is the top set bit, adjusting the exponent `DX`. The original never returns for `AX` = 8000h.
 pub fn norm_unsigned(r: &mut Regs) -> Exit {
     if r.ax == 0 {
         return Exit::steps(3);
+    }
+    if r.ax == 0x8000 {
+        // The first shift clears AX, and the loop never ends.
+        return Exit::steps(DECLINE);
     }
     let mut steps = 2;
     loop {
@@ -998,4 +1038,9 @@ pub const PORTS: &[(u16, u16, &str, Port)] = &[
     (0x0bcf, 0x0274, "frame_5598", frame_5598),
     (0x09e9, 0x02e0, "rotation_02e0", rotation_02e0),
     (0x0ac9, 0x02dc, "rotation_02dc", rotation_02dc),
+    (0x19c2, 0x0314, "project", project),
+    (0x1ba7, 0x030c, "init_list", init_list),
+    (0x0d2b, 0x0300, "transform_vertex", transform_vertex),
+    (0x0ccc, 0x02fc, "project_vertex", project_vertex),
+    (0x0c35, 0x0304, "vertex_position", vertex_position),
 ];

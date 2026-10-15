@@ -66,6 +66,11 @@ the ports do not move interrupts ([RUNTIME.md](RUNTIME.md)).
 | `0274` | `EL2MATH3:0bcf` | `frame_5598` | Gives the caller a 5598h-byte stack frame, clearing 21 × (8 words 80h apart + 16 bytes), `[BP]` = `00A8`, `[BP+2]` = `FFFF` |
 | `02e0` | `EL2MATH3:09e9` | `rotation_02e0` | 3×3 Q15 rotation matrix at `ES:SI` from the angles at `DS:1f35` and `DS:1f37`, using the sine table at `DS:5bff` |
 | `02dc` | `EL2MATH3:0ac9` | `rotation_02dc` | The same products in another layout |
+| `0314` | `EL2MATH3:19c2` | `project` | Perspective projection of (`EAX`, `EBX`, `ECX`), see below |
+| `030c` | `EL2MATH3:1ba7` | `init_list` | Starts the list at `SS:[DS:1f3b]`: a dword from `[BP-62h]`, then `ES:[SI+8]`/2 − 2 words of `8080h` |
+| `0300` | `EL2MATH3:0d2b` | `transform_vertex` | Transforms a model vertex into its record (partly ported, see below) |
+| `02fc` | `EL2MATH3:0ccc` | `project_vertex` | Transforms if needed, then projects a vertex record |
+| `0304` | `EL2MATH3:0c35` | `vertex_position` | World position of a vertex, transforming it first if needed |
 
 The two tables are static data in the main program's data segment. `DS:6dff`: 2048 words,
 entry *k* = 2048·√(*k*/2) (0, 1448, 2048, 2508, 2896, …). `DS:5bff`: 2048 words for a half turn
@@ -73,8 +78,54 @@ of sine (0, 50, 100, 150, 201, …); bit 15 of the angle selects the negative ha
 4000h gives the cosine. The two square roots of floats reach `sqrt32` through `CALLF [031c]`;
 the ports assume the slot holds `EL2MATH3:0967`, as it does once the overlay is loaded.
 
-Not ported yet: `v0300`, `v0304`, `v0308`, `v030c`, `v0310`, `v0314`, `v0318`, `v0324`, `v0328`,
-`v02d8`, `v02e4`, `v02e8`, `v02ec`, `v02f0`, `v02f4`, `v02f8`, `v02fc`, `v0270`.
+Not ported yet: `v0308`, `v0310`, `v0318`, `v0324`, `v0328`, `v02d8`, `v02e4`, `v02e8`, `v02ec`,
+`v02f0`, `v02f4`, `v02f8`, `v0270`, and the vertex types above 10 in `v0300`.
+
+A port may also *decline* an input (`math3::DECLINE`): a path not ported yet, or one where the
+original never returns. The hook then discards what the port staged and runs the original, so
+a routine can be ported a path at a time.
+
+## The 3D routines
+
+These work for a caller that has taken a 5598h-byte frame from `frame_5598` (`BP`). Fields of
+that frame, as offsets from `BP` (names *inferred* from use):
+
+| Offset | Use |
+|---|---|
+| −DCh | Far pointer to the model's vertex definitions (`LFS`) |
+| −D4h | Scale: coordinates are shifted right by 17h minus this |
+| −9Ah | Byte: the mark a vertex projected in this frame gets |
+| −44h | Words: records that negative vertex numbers copy from |
+| −24h … −14h | 3×3 matrix of words (m0 … m8) |
+| −10h, −0Ch, −8 | Translation dwords |
+
+Vertex records are 20h bytes in the stack segment, record 0 at `SS:[DS:1f39]`. A vertex `AX` is
+`index × 20h`; odd records are the mirror partners of even ones and share their definition (two
+words per pair at `FS:[SI + index×2]`: type byte `BH`, then parameters). Record fields: `+0`
+screen x, y; `+4/+8/+C` world position (dwords); `+12h` state word (0 = not done, FFFFh =
+transformed, the frame mark in the low byte once projected); `+14h/+18h/+1Ch` rotated position.
+
+`transform_vertex` dispatches on the signed type byte:
+
+| Type | Address | Vertex |
+|---|---|---|
+| ≤ 2 | `0d58` | Definition bytes (x, y, z)×100h rotated by the matrix and scaled; the partner is the same with x negated |
+| 3–4 | `0eca` | Screen midpoint of two projected vertices, depth the nearer (each partner from the definition word's two bytes, then those xor 1) |
+| 5–6 | `0fd7` | The negation of another pair |
+| 7–8 | `1072` | Another pair plus a random offset per axis from the RNG at `DS:1fd9`, `SAR` by the definition's low byte |
+| 9–10 | `1158` | As ≤ 2, but the partner subtracts the x column once instead of twice |
+| > 10 | `123b` | More combinations (averages, sums, a scaled interpolation, a call into `v0328`): not ported yet |
+| negative `AX` | `0c72` | Copy a record named by the frame's table at `BP-44h` |
+
+Then the record's world position is the rotated one plus the translation. `project_vertex` also
+projects it: depth below 40h gives the screen position `8002h, 8002h`, otherwise `project` and
+an offset to the screen centre (x + A0h, 54h − y), and the frame mark.
+
+`project` brings x and y within ±z by `SAR`-ing all three (two loops, chosen by unsigned compares
+against z and −z), then picks a reciprocal from the 1024-word table at `EL2MATH3` offset `0122`
+at one of four depth scales and multiplies. At the two nearest scales x and y are halved together
+until both are within ±1F00h. A negative depth that stays at or above 8000h makes the original
+loop for ever (the port declines it).
 
 ### Port interface
 
@@ -94,7 +145,8 @@ allocators clear downwards over their own return address when `DF` is set).
    `DS:1f35`/`1f37`, `DF` set one time in eight, the real DS, and scratch segments for the stack
    and `ES`. The original runs first with the runtime's memory write log on; its writes are then
    undone and the port runs on the same state. All registers, segments, the return address,
-   every byte either wrote and the instruction count are compared. All 29 match. Inputs where
+   every byte either wrote and the instruction count are compared. All 34 match. (With random
+   registers the 3D routines run on garbage frames; that is still a valid comparison.) Inputs where
    the original never returns are skipped: 38 of 4,000 for `norm_unsigned` (`AX` bit 15 set),
    about 1 in 8 for `frame_e76` (`DF` set: it clears its own return address).
 2. **Shadow verification in play** (`cargo run --release -p frontier-hooks --example native_boot

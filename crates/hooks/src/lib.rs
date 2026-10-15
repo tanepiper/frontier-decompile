@@ -6,7 +6,7 @@ use std::cell::RefCell;
 use std::collections::{BTreeMap, HashMap};
 use std::rc::Rc;
 
-use frontier_dos::cpu::{Cpu, CS, DS, ES, ESP, SS};
+use frontier_dos::cpu::{Cpu, CS, DS, ES, FS, GS, SS};
 use frontier_dos::mem::Memory;
 use frontier_dos::Machine;
 use frontier_game::math3::{self, Port};
@@ -25,7 +25,7 @@ pub fn regs_to(cpu: &mut Cpu, r: &Regs) {
 
 /// The runtime CPU as a port sees it.
 pub fn state(cpu: &Cpu) -> math3::Cpu {
-    math3::Cpu { r: cpu.r, cs: cpu.s[CS], ip: cpu.ip as u16, ds: cpu.s[DS], es: cpu.s[ES], ss: cpu.s[SS], flags: cpu.flags }
+    math3::Cpu { r: cpu.r, cs: cpu.s[CS], ip: cpu.ip as u16, ds: cpu.s[DS], es: cpu.s[ES], ss: cpu.s[SS], fs: cpu.s[FS], gs: cpu.s[GS], flags: cpu.flags }
 }
 
 fn apply(cpu: &mut Cpu, s: &math3::Cpu) {
@@ -35,6 +35,8 @@ fn apply(cpu: &mut Cpu, s: &math3::Cpu) {
     cpu.s[DS] = s.ds;
     cpu.s[ES] = s.es;
     cpu.s[SS] = s.ss;
+    cpu.s[FS] = s.fs;
+    cpu.s[GS] = s.gs;
 }
 
 /// Runtime memory seen through a port: reads go to memory, writes are held back until
@@ -146,7 +148,7 @@ pub fn install_math3(m: &mut Machine) {
             offset,
             Box::new(move |cpu: &mut Cpu, limit: u64| {
                 let out = run_port(cpu, port);
-                if cpu.icount + out.steps > limit {
+                if cpu.icount.saturating_add(out.steps) > limit {
                     return false;
                 }
                 apply(cpu, &out.cpu);
@@ -166,6 +168,8 @@ pub struct VerifyStats {
     pub calls: u64,
     /// Calls left to the runtime because an interrupt or the slice end fell inside them.
     pub declined: u64,
+    /// Calls left to the runtime because the port does not handle that input yet.
+    pub unported: BTreeMap<&'static str, u64>,
     pub mismatches: u64,
     /// Verified calls per routine name.
     pub per_routine: BTreeMap<&'static str, u64>,
@@ -185,17 +189,32 @@ impl frontier_dos::cpu::Io for NoIo {
     }
 }
 
-/// Run the original routine at the CPU's current position until it returns to its caller (the
-/// return address on the stack at entry; the frame allocators return with a lower `SP`).
-/// Breakpoints of other hooked entries it reaches are passed.
-/// Returns the instruction count, or `None` if it did I/O, faulted or ran away.
+/// The far-call effect of the instruction at `CS:IP`: +1 for `CALLF`, −1 for `RETF`, else 0.
+fn far_call_depth(cpu: &Cpu) -> i32 {
+    let mut a = frontier_dos::mem::lin(cpu.s[CS], cpu.ip);
+    let mut op = cpu.mem.rb(a);
+    while matches!(op, 0x26 | 0x2E | 0x36 | 0x3E | 0x64 | 0x65 | 0x66 | 0x67) {
+        a += 1;
+        op = cpu.mem.rb(a);
+    }
+    match op {
+        0x9A => 1,
+        0xFF if (cpu.mem.rb(a + 1) >> 3) & 7 == 3 => 1,
+        0xCA | 0xCB => -1,
+        _ => 0,
+    }
+}
+
+/// Run the original routine at the CPU's current position until the `RETF` that leaves it
+/// (counting the far calls it makes). Breakpoints of other hooked entries it reaches are passed.
+/// Returns the instruction count, or `None` if it did I/O, faulted or ran past `budget`.
 pub fn run_original(cpu: &mut Cpu, budget: u64) -> Option<u64> {
-    let (ss, sp) = (cpu.s[SS], cpu.r[ESP] as u16);
-    let ret = (cpu.mem.rw(frontier_dos::mem::lin(ss, sp as u32)), cpu.mem.rw(frontier_dos::mem::lin(ss, sp as u32 + 2)));
     let start = cpu.icount;
+    let mut depth = 0;
     cpu.skip_breakpoint = true;
     let mut io = NoIo(false);
     loop {
+        let d = far_call_depth(cpu);
         match cpu.step(&mut io) {
             Ok(()) => {}
             Err(frontier_dos::cpu::Event::Breakpoint(_)) => {
@@ -212,7 +231,8 @@ pub fn run_original(cpu: &mut Cpu, budget: u64) -> Option<u64> {
         if cpu.icount - start > budget || io.0 {
             return None;
         }
-        if (cpu.ip as u16, cpu.s[CS]) == ret {
+        depth += d;
+        if depth < 0 {
             return Some(cpu.icount - start);
         }
     }
@@ -233,6 +253,10 @@ pub fn verify_math3(m: &mut Machine) -> Rc<RefCell<VerifyStats>> {
             Box::new(move |cpu: &mut Cpu, limit: u64| {
                 let input = regs_from(cpu);
                 let out = run_port(cpu, port);
+                if out.steps == math3::DECLINE {
+                    *stats.borrow_mut().unported.entry(name).or_default() += 1;
+                    return false;
+                }
                 if cpu.icount + out.steps > limit {
                     stats.borrow_mut().declined += 1;
                     return false;

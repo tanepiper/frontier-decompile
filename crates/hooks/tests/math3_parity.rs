@@ -5,10 +5,10 @@
 
 use std::path::Path;
 
-use frontier_dos::cpu::{DS, ES, ESP, SS};
+use frontier_dos::cpu::{DS, ECX, ES, ESP, SS};
 use frontier_dos::mem::lin;
 use frontier_dos::{Machine, Vfs};
-use frontier_game::math3::{ANGLE_A, ANGLE_B, PORTS};
+use frontier_game::math3::{ANGLE_A, ANGLE_B, DECLINE, PORTS};
 use frontier_hooks::{compare, record_original, regs_from, run_port, state, DIVIDE_RESUME};
 
 fn booted() -> Option<Machine> {
@@ -68,7 +68,7 @@ fn math3_ports_match_original() {
     let mut failures = Vec::new();
     for &(off, slot, name, port) in PORTS {
         let mut mismatches = 0;
-        let mut hangs = 0;
+        let mut declined = 0;
         let cases = 4000;
         for _ in 0..cases {
             for r in 0..8 {
@@ -82,30 +82,34 @@ fn math3_ports_match_original() {
             m.cpu.mem.ww(lin(ds, DIVIDE_RESUME as u32), 0x5A5A);
             m.cpu.mem.ww(lin(ds, ANGLE_A as u32), rng.word());
             m.cpu.mem.ww(lin(ds, ANGLE_B as u32), rng.word());
+            if name == "project" && rng.next() % 4 != 0 {
+                // Mostly points in front of the eye, at every depth scale.
+                let shift = rng.next() % 24;
+                m.cpu.r[ECX] = (rng.dword() & 0x7FFF_FFFF) >> shift;
+            }
             m.enter(seg, off);
             let input = regs_from(&m.cpu);
-            let entry = (m.cpu.r, m.cpu.s, m.cpu.ip, m.cpu.flags);
-            let Some(orig) = record_original(&mut m.cpu, 200_000) else {
-                // The original never returns for this input (e.g. EL2MATH3:1e80 with AX bit 15
-                // set loops forever); outside the routine's domain, so not compared.
-                hangs += 1;
-                continue;
-            };
-            // Back to the state before the call, then the port.
-            for (&a, &(old, _)) in &orig.writes {
-                m.cpu.mem.wb(a, old);
-            }
-            (m.cpu.r, m.cpu.s, m.cpu.ip, m.cpu.flags) = entry;
             let out = run_port(&m.cpu, port);
-            if let Some(d) = compare(&out, &orig, &m.cpu.mem) {
+            if out.steps == DECLINE {
+                // Not handled by the port (a path not ported yet, or an input where the original
+                // never returns, e.g. EL2MATH3:1e80 with AX = 8000h).
+                declined += 1;
+                continue;
+            }
+            let entry = state(&m.cpu);
+            let diff = match record_original(&mut m.cpu, 1_000_000) {
+                Some(orig) => compare(&out, &orig, &m.cpu.mem),
+                None => Some(format!("the original never returns; the port claims {} steps", out.steps)),
+            };
+            if let Some(d) = diff {
                 if mismatches == 0 {
-                    failures.push(format!("{name} (EL2MATH3:{off:04x}, slot {slot:04x}): input {input:x?} {:x?}\n  {d}", state(&m.cpu)));
+                    failures.push(format!("{name} (EL2MATH3:{off:04x}, slot {slot:04x}): input {input:x?} {entry:x?}\n  {d}"));
                 }
                 mismatches += 1;
             }
         }
-        if hangs > 0 {
-            eprintln!("{name}: {hangs}/{cases} inputs never return in the original (skipped)");
+        if declined > 0 {
+            eprintln!("{name}: {declined}/{cases} inputs declined by the port");
         }
         if mismatches > 0 {
             failures.push(format!("  {name}: {mismatches}/{cases} mismatches"));

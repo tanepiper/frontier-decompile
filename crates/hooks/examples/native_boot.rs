@@ -83,6 +83,7 @@ fn main() {
         let st = st.borrow();
         println!("shadow verify: {} calls, {} mismatches, {} declined (interrupt due inside)", st.calls, st.mismatches, st.declined);
         println!("  verified calls per routine: {:?}", st.per_routine);
+        println!("  left to the original (path not ported): {:?}", st.unported);
         for e in &st.examples {
             println!("  {e:x?}");
         }
