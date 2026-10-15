@@ -67,6 +67,7 @@ fn math3_ports_match_original() {
             m.cpu.mem.ww(lin(ds, DIVIDE_RESUME), 0x5A5A);
             regs_to(&mut m.cpu, &input);
             m.cpu.s[DS] = ds;
+            let start = m.cpu.icount;
             match m.call(seg, off, 200_000) {
                 Ok(()) => {}
                 // The original never returns for this input (e.g. EL2MATH3:1e80 with AX bit 15
@@ -80,11 +81,14 @@ fn math3_ports_match_original() {
             }
             let want = regs_from(&m.cpu);
             let want_resume = m.cpu.mem.rw(lin(ds, DIVIDE_RESUME));
+            // Instructions of the routine: all executed ones but the host return stub's.
+            let want_steps = m.cpu.icount - start - 1;
             let mut got = input;
-            let resume = port(&mut got).unwrap_or(0x5A5A);
-            if got != want || resume != want_resume {
+            let exit = port(&mut got);
+            let resume = exit.resume.unwrap_or(0x5A5A);
+            if got != want || resume != want_resume || exit.steps != want_steps {
                 if mismatches == 0 {
-                    failures.push(format!("{name} (EL2MATH3:{off:04x}, slot {slot:04x}): input {input:x?}\n  original {want:x?} [09dc]={want_resume:04x}\n  port     {got:x?} [09dc]={resume:04x}"));
+                    failures.push(format!("{name} (EL2MATH3:{off:04x}, slot {slot:04x}): input {input:x?}\n  original {want:x?} [09dc]={want_resume:04x} steps {want_steps}\n  port     {got:x?} [09dc]={resume:04x} steps {}", exit.steps));
                 }
                 mismatches += 1;
             }

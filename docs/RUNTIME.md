@@ -36,7 +36,7 @@ time (`game-data/` natively, the file picker in the browser).
 | EMS `67h` | LIM 4.0 core: `40h`–`4Eh`, `50h`, `51h`, `58h`. The driver's segment carries `EMMXXXX0` at offset `0Ah` | `machine.rs` |
 | Mouse `33h` | Reset, position, ranges, buttons, mickeys. The event handler (`0Ch`) is recorded but not yet called | `machine.rs` |
 | Hardware | 8259 PIC (mask, EOI), 8253 PIT (reload, latch, modes) driving IRQ 0, keyboard controller (port `60h`/`64h`, IRQ 1, set-1 scan codes), VGA DAC (`3C7h`–`3C9h`), sequencer, CRTC and graphics registers (stored), `3DAh` retrace at 70 Hz | `devices.rs` |
-| Time | Virtual: 25 M instructions = 1 s. The app runs `ips × frame time` instructions per host frame | `devices.rs` |
+| Time | Virtual: 25 M instructions = 1 s. Devices are checked and interrupts delivered before every instruction, so a run depends only on the instruction count, never on how the host slices it. The app runs `ips × frame time` instructions per host frame | `devices.rs`, `machine.rs` |
 
 ### Static facts behind the design
 
@@ -94,7 +94,15 @@ tools/dev-web.sh        # http://127.0.0.1:8743/?data=/game-data/
 other code. Hooks follow their module as it is loaded, evicted and reloaded at a new segment.
 Breakpoints were chosen over patching code bytes because entries can be two bytes apart
 (`EL2MATH3:1d41` falls through into `1d43`). `Machine::call(seg, off)` runs one original routine
-to its return with interrupts held off. Parity tests use it as the oracle. `crates/hooks` installs
+to its return with interrupts held off. Parity tests use it as the oracle.
+
+A hook is told the instruction count it may run up to: the next timer tick or the end of the run
+slice, whichever is first, or no room at all if a request is pending that an `STI` inside the
+routine would take. A port reports how many instructions the original executes for its inputs.
+If that fits, the hook applies the result and adds the count to the clock, so every later
+interrupt lands exactly where it would without the port. If not, it declines and the original
+runs. With all 21 `EL2MATH3` ports active, 60 s of play gives frames identical to the original
+run; 24 of 49,764 calls are declined. `crates/hooks` installs
 every proven port (`install_all`); the app does this by default (`--original` natively, `?original`
 in the browser, to run original code only). Status: [MATH3.md](MATH3.md).
 

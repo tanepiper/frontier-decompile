@@ -41,15 +41,20 @@ pub fn install_math3(m: &mut Machine) {
         m.hook(
             "EL2MATH3.OVL",
             offset,
-            Box::new(move |cpu: &mut Cpu| {
+            Box::new(move |cpu: &mut Cpu, limit: u64| {
                 let mut r = regs_from(cpu);
-                let resume = port(&mut r);
+                let exit = port(&mut r);
+                if cpu.icount + exit.steps > limit {
+                    return false;
+                }
                 regs_to(cpu, &r);
-                if let Some(v) = resume {
+                if let Some(v) = exit.resume {
                     let a = lin(cpu.s[DS], DIVIDE_RESUME);
                     cpu.mem.ww(a, v);
                 }
                 cpu.retf();
+                cpu.icount += exit.steps;
+                true
             }),
         );
     }
@@ -59,6 +64,8 @@ pub fn install_math3(m: &mut Machine) {
 #[derive(Default, Debug)]
 pub struct VerifyStats {
     pub calls: u64,
+    /// Calls left to the runtime because an interrupt or the slice end fell inside them.
+    pub declined: u64,
     pub mismatches: u64,
     /// The first few mismatches: (routine, input, original, port).
     pub examples: Vec<(String, Regs, Regs, Regs)>,
@@ -77,8 +84,9 @@ impl frontier_dos::cpu::Io for NoIo {
 }
 
 /// Shadow verification: at each call of a ported `EL2MATH3` routine, compute the port's result,
-/// then run the original to its return and compare registers and `DS:09dc`. The original's
-/// results are kept, so the game (and its timing) is exactly the unported game's.
+/// then run the original to its return and compare registers, `DS:09dc` and the instruction
+/// count. The original's results are kept, so the game is exactly the unported game. Calls the
+/// port would decline (an interrupt due inside) are left to the runtime, as in [`install_math3`].
 pub fn verify_math3(m: &mut Machine) -> Rc<RefCell<VerifyStats>> {
     let stats = Rc::new(RefCell::new(VerifyStats::default()));
     for &(offset, _slot, name, port) in math3::PORTS {
@@ -86,10 +94,15 @@ pub fn verify_math3(m: &mut Machine) -> Rc<RefCell<VerifyStats>> {
         m.hook(
             "EL2MATH3.OVL",
             offset,
-            Box::new(move |cpu: &mut Cpu| {
+            Box::new(move |cpu: &mut Cpu, limit: u64| {
                 let input = regs_from(cpu);
                 let mut port_out = input;
-                let resume = port(&mut port_out);
+                let exit = port(&mut port_out);
+                if cpu.icount + exit.steps > limit {
+                    stats.borrow_mut().declined += 1;
+                    return false;
+                }
+                let start = cpu.icount;
                 // Run the original until it returns to the caller (SP above the return address).
                 let (ss, sp) = (cpu.s[SS], cpu.r[ESP] as u16);
                 let ret = (cpu.mem.rw(lin(ss, sp as u32)), cpu.mem.rw(lin(ss, sp as u32 + 2)));
@@ -118,13 +131,15 @@ pub fn verify_math3(m: &mut Machine) -> Rc<RefCell<VerifyStats>> {
                 let orig_resume = cpu.mem.rw(lin(cpu.s[DS], DIVIDE_RESUME));
                 let mut st = stats.borrow_mut();
                 st.calls += 1;
-                let resume_ok = resume.map_or(true, |v| v == orig_resume);
-                if orig != port_out || !resume_ok || io.0 {
+                let resume_ok = exit.resume.map_or(true, |v| v == orig_resume);
+                let steps_ok = cpu.icount - start == exit.steps;
+                if orig != port_out || !resume_ok || !steps_ok || io.0 {
                     st.mismatches += 1;
                     if st.examples.len() < 8 {
-                        st.examples.push((name.to_string(), input, orig, port_out));
+                        st.examples.push((format!("{name} steps {} port {}", cpu.icount - start, exit.steps), input, orig, port_out));
                     }
                 }
+                true
             }),
         );
     }

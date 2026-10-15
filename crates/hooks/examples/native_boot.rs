@@ -81,7 +81,7 @@ fn main() {
     println!("{:.1} virtual s in {:.1} host s; ported routines ran {} times", native.now(), t0.elapsed().as_secs_f64(), native.hook_calls);
     if let Some(st) = stats {
         let st = st.borrow();
-        println!("shadow verify: {} calls, {} mismatches", st.calls, st.mismatches);
+        println!("shadow verify: {} calls, {} mismatches, {} declined (interrupt due inside)", st.calls, st.mismatches, st.declined);
         for e in &st.examples {
             println!("  {e:x?}");
         }

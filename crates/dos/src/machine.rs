@@ -28,8 +28,13 @@ const HLE_CALL_RETURN: u8 = 0xF9;
 const CALL_RETURN_OFF: u16 = 0x0F00;
 
 /// A native routine standing in for original code at a hooked address. It receives the CPU at
-/// the routine's first instruction and must leave it as the original's return would.
-pub type HookFn = Box<dyn FnMut(&mut Cpu)>;
+/// the routine's first instruction and `limit`, the instruction count the routine may run up to
+/// without an interrupt or the end of the run slice falling inside it. If the original would
+/// finish within it (`cpu.icount + steps <= limit`), the hook leaves the CPU as the original's
+/// return would, adds the original's instruction count to `cpu.icount` and returns `true`; the
+/// run is then indistinguishable from running the original. Otherwise it returns `false` and
+/// leaves the CPU untouched, and the original runs.
+pub type HookFn = Box<dyn FnMut(&mut Cpu, u64) -> bool>;
 
 struct Hook {
     module: String,
@@ -128,8 +133,10 @@ pub struct Machine {
     images: Vec<Image>,
     hooks: Vec<Hook>,
     call_returned: bool,
-    /// Instructions skipped by native hooks are not counted; this counts hook invocations.
+    /// Calls handled natively by hooks (declined calls, which run the original, are not counted).
     pub hook_calls: u64,
+    /// `(next_tick bits, icount)`: cache of the first instruction count at which IRQ 0 is due.
+    tick_cache: (u64, u64),
     find: Option<FindState>,
     pub psp: u16,
     dta: (u16, u16),
@@ -165,6 +172,7 @@ impl Machine {
             hooks: Vec::new(),
             call_returned: false,
             hook_calls: 0,
+            tick_cache: (u64::MAX, 0),
             find: None,
             psp: 0,
             dta: (0, 0x80),
@@ -317,12 +325,13 @@ impl Machine {
         }
     }
 
-    fn run_hook(&mut self, l: u32) -> bool {
+    /// Run the hook armed at linear address `l`; `false` if there is none or it declined.
+    fn run_hook(&mut self, l: u32, limit: u64) -> bool {
         match self.hooks.iter_mut().find(|h| h.armed == Some(l)) {
             Some(h) => {
-                (h.f)(&mut self.cpu);
-                self.hook_calls += 1;
-                true
+                let handled = (h.f)(&mut self.cpu, limit);
+                self.hook_calls += handled as u64;
+                handled
             }
             None => false,
         }
@@ -352,7 +361,9 @@ impl Machine {
                     }
                 }
                 Err(Event::Breakpoint(l)) => {
-                    self.run_hook(l);
+                    if !self.run_hook(l, u64::MAX) {
+                        self.cpu.skip_breakpoint = true;
+                    }
                 }
                 Err(e) => break Err(Stop::Fault(e)),
             }
@@ -466,7 +477,27 @@ impl Machine {
         self.cpu.icount as f64 / self.dev.ips
     }
 
-    /// Run up to `budget` instructions.
+    /// The first instruction count at which IRQ 0 is due (`now() >= dev.next_tick`).
+    fn tick_icount(&mut self) -> u64 {
+        let bits = self.dev.next_tick.to_bits();
+        if self.tick_cache.0 != bits {
+            let ips = self.dev.ips;
+            let due = |i: u64| i as f64 / ips >= self.dev.next_tick;
+            let mut i = (self.dev.next_tick * ips).max(0.0).ceil() as u64;
+            while i > 0 && due(i - 1) {
+                i -= 1;
+            }
+            while !due(i) {
+                i += 1;
+            }
+            self.tick_cache = (bits, i);
+        }
+        self.tick_cache.1
+    }
+
+    /// Run up to `budget` instructions. Devices are checked and interrupts delivered before
+    /// every instruction, so a run depends only on the instruction count, never on how the
+    /// host slices it or on native hooks (which charge the original's instruction count).
     pub fn run(&mut self, budget: u64) -> Stop {
         if let Some(c) = self.exit_code {
             return Stop::Exited(c);
@@ -474,7 +505,7 @@ impl Machine {
         let end = self.cpu.icount + budget;
         while self.cpu.icount < end {
             self.dev.now = self.now();
-            if self.dev.now >= self.dev.next_tick {
+            if self.cpu.icount >= self.tick_icount() {
                 self.dev.raise_irq(0);
                 self.dev.next_tick += self.dev.pit.period();
                 if self.dev.next_tick < self.dev.now {
@@ -493,32 +524,30 @@ impl Machine {
                     return Stop::Hung;
                 }
                 // Skip ahead to the next timer tick.
-                let target = (self.dev.next_tick * self.dev.ips) as u64 + 1;
+                let target = self.tick_icount();
                 self.cpu.icount = target.max(self.cpu.icount + 1).min(end);
                 continue;
             }
-            // Run a short burst between device checks.
-            for _ in 0..64 {
-                match self.cpu.step(&mut self.dev) {
-                    Ok(()) => {}
-                    Err(Event::Hle(n)) => {
-                        self.hle(n);
-                        if let Some(c) = self.exit_code {
-                            return Stop::Exited(c);
-                        }
-                        break;
+            match self.cpu.step(&mut self.dev) {
+                Ok(()) => {}
+                Err(Event::Hle(n)) => {
+                    self.hle(n);
+                    if let Some(c) = self.exit_code {
+                        return Stop::Exited(c);
                     }
-                    Err(Event::Halt) => break,
-                    Err(Event::Breakpoint(l)) => {
-                        if !self.run_hook(l) {
-                            self.cpu.skip_breakpoint = true;
-                        }
+                }
+                Err(Event::Halt) => {}
+                Err(Event::Breakpoint(l)) => {
+                    // A hook may run natively only if no device check before one of the
+                    // original's later instructions could change anything: no tick due and no
+                    // slice end inside it, and no request pending that an `STI` inside (the
+                    // divide-overflow handler) would take.
+                    let limit = if self.dev.pic.next().is_some() { self.cpu.icount } else { self.tick_icount().min(end) };
+                    if !self.run_hook(l, limit) {
+                        self.cpu.skip_breakpoint = true;
                     }
-                    Err(e) => return Stop::Fault(e),
                 }
-                if self.cpu.inhibit_irq {
-                    continue;
-                }
+                Err(e) => return Stop::Fault(e),
             }
         }
         Stop::Budget

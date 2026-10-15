@@ -31,7 +31,10 @@ this mechanism: ten `mov word [09dc], imm` sites in `FRONTIER.EXE`, for example 
 ## Ported routines
 
 All are in `crates/game/src/math3.rs`, register-exact: every register the original writes,
-including scratch values, plus the `DS:09dc` store.
+including scratch values, plus the `DS:09dc` store. Each port also returns the number of
+instructions the original executes for those inputs, through its `RETF`, including the 9
+instructions of the `int 0` handler after a divide overflow. The runtime charges that count, so
+the ports do not move interrupts ([RUNTIME.md](RUNTIME.md)).
 
 | Slot | Address | Port | What it does |
 |---|---|---|---|
@@ -65,24 +68,39 @@ routines.
 1. **Fuzzing against the original** (`crates/hooks/tests/math3_parity.rs`). The game is booted on
    the runtime until `EL2MATH3` is resident and the `int 0` handler is installed. Each routine is
    then called 4,000 times through `Machine::call` with random and edge-value registers and the
-   real DS, and every register plus `DS:09dc` is compared. All 21 match. Inputs where the original
-   never returns are skipped: 40 of 4,000 for `norm_unsigned`.
-2. **Shadow verification in play** (`cargo run -p frontier-hooks --example native_boot -- …
-   60 --verify`). Every call of a ported routine during 60 virtual seconds (intro, menu, start at
-   Ross 154, cockpit) computes the port's result, runs the original and compares. Result:
-   **49,760 calls, 0 mismatches.**
+   real DS. Every register, `DS:09dc` and the instruction count are compared. All 21 match. Inputs
+   where the original never returns are skipped: 40 of 4,000 for `norm_unsigned`.
+2. **Shadow verification in play** (`cargo run --release -p frontier-hooks --example native_boot
+   -- game-data/original 60 --verify`). Every call of a ported routine during 60 virtual seconds
+   (intro, menu, start at Ross 154, cockpit) computes the port's result, runs the original and
+   compares registers, `DS:09dc` and the instruction count. Result: **49,740 calls, 0
+   mismatches**. Another 24 calls had a timer tick due inside them and were left to the original.
+3. **Identical frames.** The same run without `--verify`, with the ports replacing the original,
+   gives frames identical to a run with no ports at every 10 ms slice for 60 s.
 
-Flags are not modelled. A caller that tests flags after one of these calls would see different
-flags from a hooked routine. The shadow run keeps the original's flags, so it cannot detect such
-a caller. A static scan of the call sites is still to do (open question below).
+## Flags
+
+The ports do not model flags. A static scan shows that no caller needs them. Every `lcall [slot]`
+to the 21 ported slots and to `02c8`/`02cc` in `FRONTIER.EXE` and all overlays was found by byte
+pattern, which also finds code that Ghidra did not put in a function (36 of the sites, in `EL2M00`,
+`EL2M02`, `EL2M03` and `EL2M05`). Each site was disassembled forward, following jumps and near
+calls, until every flag was overwritten:
+
+| Outcome | Sites |
+|---|---|
+| All flags overwritten before any flag read | 46 |
+| The next flag-relevant instruction is another `lcall` into `EL2MATH3`, whose routines all start by writing the flags (`OR`, `CMP`, `IMUL`, `NEG`, `SHL`, `ADD` after two `NOT`s) | 47 |
+| `RETF` straight after the call: `v02cc` ends with `lcall [02a8]; retf`, and its own 3 call sites are covered by the rows above | 1 |
+
+Far calls through a computed address (`CALLF [BP+n]`, about 25 in the listing) are not covered,
+since their targets are not known statically. The 60 s run with identical frames (above) agrees
+with the scan.
 
 ## Open questions
 
-- Do any callers consume flags (`jo`, `jz`, `adc`, …) right after a call into these slots?
-- Are the frames identical with the ports active? Not yet tested, because instruction-count
-  timing changes whenever native code skips instructions. In `--verify` mode the game still
-  diverges after about 30 s. IRQs are delivered between 64-instruction bursts, and a hooked
-  call counts as one burst step, so the timer interrupt lands a few instructions later. Making
-  IRQ delivery exact per instruction is the next runtime fix.
+- Stack contents below `SP`: the originals of `to_fixed32_raw`, `to_fixed64` and the
+  divide-overflow path write words below the caller's stack pointer (a `PUSH`, the interrupt
+  frame). The ports do not. No difference has been seen, but a caller reading stale stack would
+  notice.
 - Roles of the routines in the game (which callers do 3D, orbits, trade). These come from
   tracing the callers.
