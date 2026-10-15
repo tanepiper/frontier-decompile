@@ -326,6 +326,12 @@ impl V<'_> {
     fn set_ss32(&mut self, off: u16, v: u32) {
         self.bus.write32(lin(self.c.ss, off), v)
     }
+    /// `LFS r,SS:[off]`: (offset word, segment word). The runtime reads the segment word at
+    /// linear address + 2 without wrapping the offset at 64 KB.
+    fn far_ptr(&mut self, off: u16) -> (u16, u16) {
+        let a = lin(self.c.ss, off);
+        (self.bus.read16(a), self.bus.read16(a + 2))
+    }
     /// `[BP+off]` (stack segment).
     fn bp(&self, off: u16) -> u16 {
         self.c.x(EBP).wrapping_add(off)
@@ -522,9 +528,7 @@ fn transform(v: &mut V) -> u64 {
         return add(4, copy_vertex(v));
     }
     // 0d3a: the definition: two words (type and parameters) per mirror pair.
-    let defs = v.bp(frame::DEFINITIONS);
-    let mut si = v.ss16(defs);
-    let fs = v.ss16(defs.wrapping_add(2));
+    let (mut si, fs) = v.far_ptr(v.bp(frame::DEFINITIONS));
     let di = v.record(ax);
     v.c.set_x(EDI, di);
     let ax = ax >> 4;
@@ -557,7 +561,7 @@ fn transform(v: &mut V) -> u64 {
     if kind <= 10 {
         return add(n, plain(v, false));
     }
-    DECLINE
+    add(n, combined(v))
 }
 
 /// `EL2MATH3:0c72`: a negative vertex number: copy the record named by the frame's table at
@@ -913,4 +917,627 @@ fn random(v: &mut V) -> u32 {
     v.set_ds32(vars::RNG + 4, r);
     v.c.r[EDX] = b;
     r
+}
+
+// ---- vertex types above 10 ----------------------------------------------------------------
+
+/// `EL2MATH3:123b` (types above 10): vertices built from others. The definition word `DX`
+/// names them by byte; if the caller asked for the mirror partner (its `DI`, still on the stack,
+/// is not the computed record) the bytes are flipped (xor 101h) and the two records swapped, so
+/// `DI` is the record asked for and `BX` the other.
+fn combined(v: &mut V) -> u64 {
+    let (bx_def, dx_def) = (v.c.x(EBX), v.c.x(EDX));
+    v.c.set_x(ECX, bx_def);
+    v.set_ds16(0x1f6d, bx_def);
+    v.set_ds16(0x1f6b, dx_def);
+    let caller_di = v.ss16(v.c.x(ESP).wrapping_add(2));
+    v.c.set_x(EBX, caller_di);
+    let mut n: u64 = 7;
+    let di = v.c.x(EDI);
+    let swapped = caller_di != di;
+    if swapped {
+        let w = v.ds16(0x1f6b) ^ 0x0101;
+        v.set_ds16(0x1f6b, w);
+        v.c.set_x(EBX, di);
+        v.c.set_x(EDI, caller_di);
+        n += 2;
+    }
+    let di = v.c.x(EDI);
+    let mark = v.ds16(vars::MARK);
+    v.set_ss16(di.wrapping_add(0x12), mark);
+    let ax = v.ds16(0x1f6b);
+    v.c.set_x(EAX, ax);
+    n += 5;
+    let kind = v.c.h(ECX) as i8;
+    if kind <= 0x0c {
+        return add(n, average(v));
+    }
+    n += 2;
+    if kind <= 0x0e {
+        return add(n, average_projected(v));
+    }
+    n += 2;
+    if kind <= 0x10 {
+        return add(n, parallelogram(v));
+    }
+    n += 2;
+    if kind <= 0x12 {
+        return add(n, sum(v));
+    }
+    n += 2;
+    if kind <= 0x14 {
+        return add(n, interpolate(v));
+    }
+    add(n, along(v))
+}
+
+/// `MOV SI,SP; MOV SI,SS:[SI+2]`: the caller's `DI`, pushed at `EL2MATH3:0d31` (2 instructions).
+fn caller_record(v: &mut V) -> u16 {
+    let si = v.ss16(v.c.x(ESP).wrapping_add(2));
+    v.c.set_x(ESI, si);
+    si
+}
+
+/// `PUSH AX; MOV AL,AH; …; OR DX,DX; JNZ; (CALLF [0300]); POP AX; PUSH DI; CBW; …; JNZ;
+/// (CALLF [0300]); POP BX`: transform the vertices `AH` (then in `BX`) and `AL` (then in `DI`).
+/// `high_first` = false takes `AL` first (`EL2MATH3:1428`). Returns the instructions.
+fn two_transformed(v: &mut V, high_first: bool, rets: [u16; 2]) -> u64 {
+    let ax = v.c.x(EAX);
+    v.push16(ax);
+    let mut n: u64 = if high_first { 9 } else { 8 };
+    reference(v, if high_first { (ax >> 8) as u8 } else { ax as u8 });
+    n = add(n, ensure_transformed(v, rets[0]));
+    if n == DECLINE {
+        return DECLINE;
+    }
+    let ax = v.pop16();
+    v.c.set_x(EAX, ax);
+    let di = v.c.x(EDI);
+    v.push16(di);
+    reference(v, if high_first { ax as u8 } else { (ax >> 8) as u8 });
+    n = add(n, if high_first { 9 } else { 10 });
+    n = add(n, ensure_transformed(v, rets[1]));
+    if n == DECLINE {
+        return DECLINE;
+    }
+    let bx = v.pop16();
+    v.c.set_x(EBX, bx);
+    n + 1
+}
+
+/// `POP SI; POP DI; JMP 0e50`.
+fn pop_and_finish(v: &mut V, n: u64) -> u64 {
+    let si = v.pop16();
+    v.c.set_x(ESI, si);
+    let di = v.pop16();
+    v.c.set_x(EDI, di);
+    add(n + 3, finish(v))
+}
+
+/// `EL2MATH3:1266` (types 11–12): the rotated position is the average of two vertices'.
+fn average(v: &mut V) -> u64 {
+    let n = two_transformed(v, true, [0x127f, 0x1297]);
+    if n == DECLINE {
+        return DECLINE;
+    }
+    let si = caller_record(v);
+    let (di, bx) = (v.c.x(EDI), v.c.x(EBX));
+    for k in [0x14u16, 0x18, 0x1c] {
+        let a = v.ss32(di.wrapping_add(k)).wrapping_add(v.ss32(bx.wrapping_add(k)));
+        let m = ((a as i32) >> 1) as u32;
+        v.c.r[EAX] = m;
+        v.set_ss32(si.wrapping_add(k), m);
+    }
+    pop_and_finish(v, n + 2 + 12)
+}
+
+/// `EL2MATH3:12e0` (types 13–14): screen position the midpoint of two projected vertices, depth
+/// the nearer, world position the first one's (`DI`); marked as projected. No transform tail.
+fn average_projected(v: &mut V) -> u64 {
+    let ax = v.c.x(EAX);
+    v.push16(ax);
+    reference(v, (ax >> 8) as u8);
+    let mut n = add(9, ensure_projected(v, 0x12fb));
+    if n == DECLINE {
+        return DECLINE;
+    }
+    let ax = v.pop16();
+    v.c.set_x(EAX, ax);
+    let di = v.c.x(EDI);
+    v.push16(di);
+    reference(v, ax as u8);
+    n = add(n, add(9, ensure_projected(v, 0x1315)));
+    if n == DECLINE {
+        return DECLINE;
+    }
+    let bx = v.pop16();
+    v.c.set_x(EBX, bx);
+    let si = caller_record(v);
+    n += 3;
+    let di = v.c.x(EDI);
+    for k in [0u16, 2] {
+        let a = sx16(v.ss16(bx.wrapping_add(k)));
+        let b = sx16(v.ss16(di.wrapping_add(k)));
+        v.c.r[EDX] = b;
+        let m = ((a.wrapping_add(b) as i32) >> 1) as u32;
+        v.c.r[EAX] = m;
+        v.set_ss16(si.wrapping_add(k), m as u16);
+    }
+    n += 13 + 1;
+    let mut depth = v.ss32(di.wrapping_add(0xc));
+    let other = v.ss32(bx.wrapping_add(0xc));
+    if (depth as i32) >= (other as i32) {
+        depth = other;
+        n += 1;
+    }
+    v.set_ss32(si.wrapping_add(0xc), depth);
+    let mut eax = 0;
+    for k in [4u16, 8] {
+        eax = v.ss32(di.wrapping_add(k));
+        v.set_ss32(si.wrapping_add(k), eax);
+    }
+    let mark = v.ss8(v.bp(frame::FRAME_MARK));
+    v.c.r[EAX] = (eax & !0xFF) | mark as u32;
+    v.set_ss8(si.wrapping_add(0x12), mark);
+    let si = v.pop16();
+    v.c.set_x(ESI, si);
+    let di = v.pop16();
+    v.c.set_x(EDI, di);
+    v.retf();
+    n + 4 + 5
+}
+
+/// `EL2MATH3:1381` (types 15–16): rotated position = c − b + a for the three vertices the
+/// definition's bytes name (`DL`, `DH`, then the low parameter byte).
+fn parallelogram(v: &mut V) -> u64 {
+    let mut n: u64 = 2;
+    if v.c.x(EBX) != v.c.x(EDI) {
+        let b = v.bus.read8(lin(v.c.ds, 0x1f6d)) ^ 1;
+        v.bus.write8(lin(v.c.ds, 0x1f6d), b);
+        n += 1;
+    }
+    let lo = v.bus.read8(lin(v.c.ds, 0x1f6c));
+    let hi = v.bus.read8(lin(v.c.ds, 0x1f6d));
+    let bx = (hi as u16) << 8 | lo as u16;
+    v.c.set_x(EBX, bx);
+    v.push16(bx);
+    n += 3;
+    let ax = v.c.x(EAX);
+    reference(v, ax as u8);
+    n = add(n, add(7, ensure_transformed(v, 0x13a9)));
+    for (high, ret) in [(false, 0x13c2u16), (true, 0x13dc)] {
+        if n == DECLINE {
+            return DECLINE;
+        }
+        let ax = v.pop16();
+        v.c.set_x(EAX, ax);
+        let di = v.c.x(EDI);
+        v.push16(di);
+        if !high {
+            v.push16(ax);
+        }
+        reference(v, if high { (ax >> 8) as u8 } else { ax as u8 });
+        n = add(n, add(10, ensure_transformed(v, ret)));
+    }
+    if n == DECLINE {
+        return DECLINE;
+    }
+    let si = v.pop16();
+    v.c.set_x(ESI, si);
+    let bx = v.pop16();
+    v.c.set_x(EBX, bx);
+    let bp = v.c.x(EBP);
+    v.push16(bp);
+    let out = v.ss16(v.c.x(ESP).wrapping_add(4));
+    v.c.set_x(EBP, out);
+    let di = v.c.x(EDI);
+    for k in [0x14u16, 0x18, 0x1c] {
+        let e = v.ss32(si.wrapping_add(k)).wrapping_sub(v.ss32(bx.wrapping_add(k))).wrapping_add(v.ss32(di.wrapping_add(k)));
+        v.c.r[EAX] = e;
+        v.set_ss32(out.wrapping_add(k), e);
+    }
+    let bp = v.pop16();
+    v.c.set_x(EBP, bp);
+    pop_and_finish(v, n + 2 + 3 + 12 + 1)
+}
+
+/// `EL2MATH3:1428` (types 17–18): rotated position = the sum of two vertices'.
+fn sum(v: &mut V) -> u64 {
+    let n = two_transformed(v, false, [0x143f, 0x1459]);
+    if n == DECLINE {
+        return DECLINE;
+    }
+    let si = caller_record(v);
+    let (di, bx) = (v.c.x(EDI), v.c.x(EBX));
+    for k in [0x14u16, 0x18, 0x1c] {
+        let e = v.ss32(bx.wrapping_add(k)).wrapping_add(v.ss32(di.wrapping_add(k)));
+        v.c.r[EAX] = e;
+        v.set_ss32(si.wrapping_add(k), e);
+    }
+    pop_and_finish(v, n + 2 + 9)
+}
+
+/// `NOT DX; NOT AX; ADD AX,1; ADC DX,0` when `DX` is negative: |`DX:AX`| (2 or 6 with the
+/// `MOV`s… counted by the caller: returns the extra 4 when negated).
+fn abs32(dx: &mut u16, ax: &mut u16) -> u64 {
+    if (*dx as i16) >= 0 {
+        return 0;
+    }
+    let v = ((*dx as u32) << 16 | *ax as u32).wrapping_neg();
+    *ax = v as u16;
+    *dx = (v >> 16) as u16;
+    4
+}
+
+/// `INC BX; SHR DX,1; RCR AX,1; JNZ …; CMP AH,3Fh; JNC …` entered at the `OR DX,DX; JNZ` /
+/// `CMP AH,3Fh; JC` test: shift `DX:AX` right until it is below 3F00h, counting in `BX`.
+fn shrink(dx: &mut u16, ax: &mut u16, bx: &mut u16, test_first: u64) -> u64 {
+    let mut n = test_first; // the JNZ (after OR DX,DX or the flags of ADC/OR)
+    let mut in_loop = *dx != 0;
+    if !in_loop {
+        n += 2; // CMP AH,3Fh; JC
+        in_loop = (*ax >> 8) as u8 >= 0x3f;
+    }
+    while in_loop {
+        *bx = bx.wrapping_add(1);
+        let v = ((*dx as u32) << 16 | *ax as u32) >> 1;
+        *dx = (v >> 16) as u16;
+        *ax = v as u16;
+        n += 4;
+        if *dx == 0 {
+            n += 2;
+            in_loop = (*ax >> 8) as u8 >= 0x3f;
+        }
+    }
+    n
+}
+
+/// `EL2MATH3:1499` (types 19–20): rotated position = b + (a − b)·t, with a, b two projected
+/// vertices (`DH`, `DL`) and t from the low parameter byte: a constant (0–3Fh, or that ×400h),
+/// a word of the model's table at `[BP-D8h]:72h+`, or a word of the frame at `BP-40h+`; halved.
+/// The difference is shifted down until each component is below 3F00h, multiplied by t (16 ×
+/// 16 bits) and shifted back by (shifts − 15).
+fn interpolate(v: &mut V) -> u64 {
+    let w = v.ds16(0x1f6d);
+    v.push16(w);
+    let ax = v.c.x(EAX);
+    v.push16(ax);
+    reference(v, (ax >> 8) as u8);
+    let mut n = add(10, ensure_projected(v, 0x14b8));
+    if n == DECLINE {
+        return DECLINE;
+    }
+    let ax = v.pop16();
+    v.c.set_x(EAX, ax);
+    let di = v.c.x(EDI);
+    v.push16(di);
+    reference(v, ax as u8);
+    n = add(n, add(9, ensure_projected(v, 0x14d2)));
+    if n == DECLINE {
+        return DECLINE;
+    }
+    let bx = v.pop16();
+    v.c.set_x(EBX, bx);
+    let mut si = v.pop16() << 1;
+    n += 5;
+    let t = if si & 0x100 == 0 {
+        n += 6;
+        if si & 0x80 == 0 {
+            (si >> 1) & 0x3f
+        } else {
+            si.rotate_right(7) & 0xfc00
+        }
+    } else if si & 0x80 == 0 {
+        n += 9;
+        si = (si & 0x7e).wrapping_add(v.ss16(v.bp(0xff28)));
+        let es = v.ss16(v.bp(0xff2a));
+        let es_saved = v.c.es;
+        v.push16(es_saved);
+        let t = v.bus.read16(lin(es, si.wrapping_add(0x72)));
+        v.pop16();
+        t
+    } else {
+        n += 4;
+        si &= 0x7e;
+        v.ss16(v.bp(si).wrapping_sub(0x40))
+    };
+    v.c.set_x(ESI, si);
+    let t = t >> 1;
+    n += 1;
+    let (bp, bx) = (v.c.x(EBP), v.c.x(EBX));
+    v.push16(bp);
+    v.push16(bx);
+    v.push16(t);
+    let di = v.c.x(EDI);
+    let mut d = [0u32; 3];
+    for (i, k) in [0x14u16, 0x18, 0x1c].into_iter().enumerate() {
+        d[i] = v.ss32(di.wrapping_add(k)).wrapping_sub(v.ss32(bx.wrapping_add(k)));
+    }
+    v.set_ds32(0x1f5f, d[0]);
+    v.set_ds32(0x1f63, d[1]);
+    v.set_ds32(0x1f67, d[2]);
+    // Only 16-bit halves of these change from here on.
+    v.c.r[EAX] = d[0];
+    v.c.r[ECX] = d[1];
+    v.c.r[EDX] = d[2];
+    n += 12;
+    // How far to shift so every component's magnitude is below 3F00h.
+    let mut count: u16 = 0;
+    n += 1; // XOR BX,BX
+    for (i, k) in [2usize, 0, 1].into_iter().enumerate() {
+        let (mut ax, mut dx) = (d[k] as u16, (d[k] >> 16) as u16);
+        n += 4 + abs32(&mut dx, &mut ax); // MOV AX; MOV DX; OR DX,DX; JNS (+ negate)
+        if i > 0 {
+            n += 2; // MOV CX,BX; JCXZ
+            for _ in 0..count {
+                let v = ((dx as u32) << 16 | ax as u32) >> 1;
+                dx = (v >> 16) as u16;
+                ax = v as u16;
+            }
+            n += 3 * count as u64;
+            n += 1; // OR DX,DX (before the JNZ)
+        }
+        n += shrink(&mut dx, &mut ax, &mut count, 1);
+        v.c.set_x(EAX, ax);
+        v.c.set_x(EDX, dx);
+    }
+    // 15d5: shift the three differences by the count and multiply by t.
+    let cx = count;
+    let (mut x, mut y, mut z) = (d[0], d[1], d[2]);
+    n += 1 + 3 + 1; // MOV CX,BX; three MOVs; JCXZ
+    if cx != 0 {
+        n += 4 + 7 * cx as u64 + 1;
+        for _ in 0..cx {
+            x = ((x as i32) >> 1) as u32;
+            y = ((y as i32) >> 1) as u32;
+            z = ((z as i32) >> 1) as u32;
+        }
+        v.push16(cx);
+        v.pop16();
+        v.c.set_x(EDX, (x >> 16) as u16);
+        v.c.set_x(EDI, (y >> 16) as u16);
+        v.c.set_x(ESI, (z >> 16) as u16);
+    }
+    // XCHG BP,CX; POP [1f5f]; IMUL [1f5f]; MOV SI,DX; MOV DI,AX; MOV AX,[1f5f]; IMUL BX;
+    // XCHG DX,CX; MOV BX,AX; MOV AX,[1f5f]; IMUL DX
+    let t = v.pop16();
+    v.set_ds16(0x1f5f, t);
+    let p = |a: u16| (a as i16 as i32 * t as i16 as i32) as u32;
+    let (mut px, mut py, mut pz) = (p(x as u16), p(y as u16), p(z as u16));
+    n += 11;
+    // SUB BP,0Fh; JS; JZ: scale back by (count − 15).
+    let mut e = cx.wrapping_sub(0xf) as i16;
+    n += 3;
+    if e > 0 {
+        while e != 0 {
+            px <<= 1;
+            py <<= 1;
+            pz <<= 1;
+            e -= 1;
+            n += 8;
+        }
+        n += 1; // JMP 1643
+    } else if e < 0 {
+        n -= 1; // the JZ is not reached
+        while e != 0 {
+            px = ((px as i32) >> 1) as u32;
+            py = ((py as i32) >> 1) as u32;
+            pz = ((pz as i32) >> 1) as u32;
+            e += 1;
+            n += 8;
+        }
+    }
+    let b = v.pop16();
+    let rel = |v: &mut V, k: u16, p: u32| p.wrapping_add(v.ss32(b.wrapping_add(k)));
+    let (rx, ry, rz) = (rel(v, 0x14, px), rel(v, 0x18, py), rel(v, 0x1c, pz));
+    let out = v.ss16(v.c.x(ESP).wrapping_add(4));
+    for (k, r) in [(0x14u16, rx), (0x18, ry), (0x1c, rz)] {
+        v.set_ss32(out.wrapping_add(k), r);
+    }
+    v.c.set_x(EDI, rx as u16);
+    v.c.set_x(ESI, (rx >> 16) as u16);
+    v.c.set_x(EBX, ry as u16);
+    v.c.set_x(ECX, (ry >> 16) as u16);
+    v.c.set_x(EAX, rz as u16);
+    v.c.set_x(EDX, (rz >> 16) as u16);
+    v.c.set_x(EBP, out);
+    let bp = v.pop16();
+    v.c.set_x(EBP, bp);
+    n += 1 + 6 + 2 + 6 + 1;
+    pop_and_finish(v, n)
+}
+
+/// `EL2MATH3:1673` (types above 20): rotate the definition bytes like a plain vertex, then
+/// [`normalise`] the result to the length `[FS:DI+16h]`·7F00h (shifted like the coordinates,
+/// with `FS:DI` from `[BP-4]`); the partner is its negation.
+fn along(v: &mut V) -> u64 {
+    let mut n: u64 = 2;
+    if v.c.x(EDX) != v.ds16(0x1f6b) {
+        let (bx, di) = (v.c.x(EBX), v.c.x(EDI));
+        v.c.set_x(EBX, di);
+        v.c.set_x(EDI, bx);
+        n += 1;
+    }
+    let mark = v.ds16(vars::MARK);
+    v.c.set_x(EBX, mark);
+    let di = v.c.x(EDI);
+    v.set_ss16(di.wrapping_add(0x32), mark);
+    let (cl, dh, dl) = (v.c.l(ECX), v.c.h(EDX), v.c.l(EDX));
+    v.c.set_x(EAX, (cl as u16) << 8);
+    v.c.set_x(EBX, (dh as u16) << 8);
+    v.c.set_x(ECX, (dl as u16) << 8);
+    let bp = v.c.x(EBP);
+    v.push16(bp);
+    v.push16(di);
+    n += 2 + 6 + 2;
+    let p = [sx16(v.c.x(EAX)), sx16(v.c.x(EBX)), sx16(v.c.x(ECX))];
+    let r = rotate(v, p);
+    n += 30;
+    let cl = 0x17u16.wrapping_sub(v.ss16(v.bp(frame::SCALE)));
+    v.c.r[ECX] = (r.edx & 0xFFFF_0000) | cl as u32;
+    let sh = (cl & 31) as u32;
+    let sar = |x: u32| ((x as i32) >> sh) as u32;
+    let (eax, ebx, edx) = (sar(r.eax), sar(r.ebx), sar(r.edx));
+    n += 6;
+    let (pdi, fs) = v.far_ptr(v.bp(0xfffc));
+    v.c.fs = fs;
+    let len = v.bus.read16(lin(fs, pdi.wrapping_add(0x16))) as u32;
+    let edi = len.wrapping_mul(0x7f00) >> sh;
+    n += 5;
+    v.c.r[EAX] = eax;
+    v.c.r[EBX] = ebx;
+    v.c.r[ECX] = edx;
+    v.c.r[EDX] = edx;
+    v.c.r[EDI] = edi;
+    // CALL 2263 (near)
+    v.push16(0x173b);
+    let m = normalise(v);
+    if m == DECLINE {
+        return DECLINE;
+    }
+    v.pop16();
+    n += 1 + m;
+    let rec = v.pop16();
+    v.c.set_x(EBP, rec);
+    let mut w = [v.c.r[EAX], v.c.r[EBX], v.c.r[ECX]];
+    for (k, x) in [0x14u16, 0x18, 0x1c].into_iter().zip(w) {
+        v.set_ss32(rec.wrapping_add(k), x);
+    }
+    for x in w.iter_mut() {
+        *x = x.wrapping_neg();
+    }
+    for (k, x) in [0x34u16, 0x38, 0x3c].into_iter().zip(w) {
+        v.set_ss32(rec.wrapping_add(k), x);
+    }
+    v.c.r[EAX] = w[0];
+    v.c.r[EBX] = w[1];
+    v.c.r[ECX] = w[2];
+    let bp = v.pop16();
+    v.c.set_x(EBP, bp);
+    n += 1 + 9 + 1;
+    pop_and_finish(v, n)
+}
+
+/// `SHL v,1; SUB v,d; JNC; ADD v,d; RCL q,1; JNC` from `q` = 1 until the marker bit leaves `q`
+/// (32 rounds), then `NOT q; SHR q,1`: a restoring division of `v`·2^31 by `d`. Returns
+/// (quotient, the instructions without the set-up).
+fn divide31(mut x: u32, d: u32) -> (u32, u64) {
+    let mut q: u32 = 1;
+    let mut n = 0;
+    loop {
+        x <<= 1;
+        let (r, borrow) = x.overflowing_sub(d);
+        x = r;
+        n += 3;
+        if borrow {
+            x = x.wrapping_add(d);
+            n += 1;
+        }
+        let out = q >> 31;
+        q = q << 1 | borrow as u32;
+        n += 2;
+        if out == 1 {
+            break;
+        }
+    }
+    (!q >> 1, n + 2)
+}
+
+/// `(hi·lo·2) >> 16` + hi² of |v| (`EL2MATH3:2269`…): v²/2^32, roughly. 11 or 13 instructions.
+fn square_hi(v: u32) -> (u32, u64) {
+    let (a, n) = if (v as i32) < 0 { (v.wrapping_neg(), 13) } else { (v, 11) };
+    let hi = a >> 16;
+    let lo = a & 0xffff;
+    let cross = (lo.wrapping_mul(hi) << 1) >> 16;
+    (hi.wrapping_mul(hi).wrapping_add(cross), n)
+}
+
+/// `(|v| · EDI) >> 15` by 16-bit halves (`EL2MATH3:23eb`…), with v's sign. 23 or 25.
+fn scale_by(v: &mut V, x: u32) -> (u32, u64) {
+    let edi = v.c.r[EDI];
+    let (a, mut n) = if (x as i32) < 0 { (x.wrapping_neg(), 24) } else { (x, 23) };
+    let hi = a >> 16;
+    let ebp = hi.wrapping_mul(edi & 0xffff);
+    let eh = edi >> 16;
+    let mut r = (a & 0xffff).wrapping_mul(eh).wrapping_add(ebp) >> 16;
+    let edx = hi.wrapping_mul(eh);
+    r = r.wrapping_add(edx) << 1;
+    v.c.r[EDX] = edx;
+    v.c.r[EBP] = ebp;
+    v.c.r[ESI] = x;
+    if (x as i32) < 0 {
+        r = r.wrapping_neg();
+        n += 1;
+    }
+    (r, n)
+}
+
+/// Near routine `EL2MATH3:2263`: scale (`EAX`, `EBX`, `ECX`) to length `EDI`. The length is a
+/// square root by Newton's method (`EBP` from s/2 + 40000000h, halving towards s/`EBP` until
+/// they agree within 8000h), each component is divided by it bit by bit and multiplied by
+/// `EDI`. `EBP` and `EDI` are preserved. Returns the instructions including the `RET`.
+fn normalise(v: &mut V) -> u64 {
+    let (eax, ebx, ecx) = (v.c.r[EAX], v.c.r[EBX], v.c.r[ECX]);
+    let mut n: u64 = 3;
+    let (sa, na) = square_hi(eax);
+    let (sb, nb) = square_hi(ebx);
+    let (sc, nc) = square_hi(ecx);
+    n += na + nb + nc;
+    let s = sa.wrapping_add(sb).wrapping_add(sc);
+    n += 3 + 3 + 1 + 1 + 1 + 3;
+    let s2 = s << 1;
+    let ebp_saved = v.c.r[EBP];
+    let mut ebp = (s2 >> 1).wrapping_add(0x4000_0000);
+    let mut rounds = 0;
+    let mut esi;
+    loop {
+        let (q, m) = divide31(s2, ebp);
+        n += 2 + m;
+        esi = q;
+        ebp = ebp.wrapping_add(esi) >> 1;
+        esi = esi.wrapping_sub(ebp);
+        n += 2 + 3;
+        if (esi as i32) >= -0x8000 {
+            break;
+        }
+        rounds += 1;
+        if rounds > 1000 {
+            return DECLINE;
+        }
+    }
+    n += 1; // POP EAX
+    let mut out = [0u32; 3];
+    for (i, x) in [eax, ebx, ecx].into_iter().enumerate() {
+        let a = if (x as i32) < 0 { x.wrapping_neg() } else { x };
+        let (q, m) = divide31(a, ebp);
+        n += 3 + ((x as i32) < 0) as u64 + 1 + m + 2 + 1;
+        let q = if (x as i32) < 0 {
+            n += 1;
+            q.wrapping_neg()
+        } else {
+            q
+        };
+        out[i] = q;
+        if i == 2 {
+            v.c.r[ESI] = x;
+        }
+    }
+    v.c.r[EBP] = ebp;
+    let mut res = [0u32; 3];
+    for i in 0..3 {
+        let (r, m) = scale_by(v, out[i]);
+        res[i] = r;
+        n += m;
+    }
+    v.c.r[EAX] = res[0];
+    v.c.r[EBX] = res[1];
+    v.c.r[ECX] = res[2];
+    v.c.r[EBP] = ebp_saved;
+    // What the pushes leave below the stack pointer: ECX from the first three, then EBP, and
+    // the PUSH EAX slot reused by the PUSH EDI pairs.
+    let e = v.c.x(ESP);
+    v.set_ss32(e.wrapping_sub(12), ecx);
+    v.set_ss32(e.wrapping_sub(8), v.c.r[EDI]);
+    v.set_ss32(e.wrapping_sub(4), ebp_saved);
+    n + 2
 }

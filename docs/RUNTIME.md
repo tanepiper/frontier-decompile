@@ -102,8 +102,8 @@ slice, whichever is first, or no room at all if a request is pending that an `ST
 routine would take. A port reports how many instructions the original executes for its inputs.
 If that fits, the hook applies the result and adds the count to the clock, so every later
 interrupt lands exactly where it would without the port. If not, it declines and the original
-runs. With all 29 `EL2MATH3` ports active, 60 s of play gives frames identical to the original
-run; 104 of 332,702 calls are declined. Ports read and write memory through a bus that stages
+runs. With all 34 `EL2MATH3` ports active, 60 s of play gives frames identical to the original
+run; 3,838 of 2,245,371 calls are declined. Ports read and write memory through a bus that stages
 writes until the hook commits, so a declined call leaves no trace. `Memory::write_log` records
 every byte the original writes, for parity tests and shadow verification. `crates/hooks` installs
 every proven port (`install_all`); the app does this by default (`--original` natively, `?original`

@@ -68,7 +68,7 @@ the ports do not move interrupts ([RUNTIME.md](RUNTIME.md)).
 | `02dc` | `EL2MATH3:0ac9` | `rotation_02dc` | The same products in another layout |
 | `0314` | `EL2MATH3:19c2` | `project` | Perspective projection of (`EAX`, `EBX`, `ECX`), see below |
 | `030c` | `EL2MATH3:1ba7` | `init_list` | Starts the list at `SS:[DS:1f3b]`: a dword from `[BP-62h]`, then `ES:[SI+8]`/2 − 2 words of `8080h` |
-| `0300` | `EL2MATH3:0d2b` | `transform_vertex` | Transforms a model vertex into its record (partly ported, see below) |
+| `0300` | `EL2MATH3:0d2b` | `transform_vertex` | Transforms a model vertex into its record, by vertex type (see below) |
 | `02fc` | `EL2MATH3:0ccc` | `project_vertex` | Transforms if needed, then projects a vertex record |
 | `0304` | `EL2MATH3:0c35` | `vertex_position` | World position of a vertex, transforming it first if needed |
 
@@ -79,7 +79,7 @@ of sine (0, 50, 100, 150, 201, …); bit 15 of the angle selects the negative ha
 the ports assume the slot holds `EL2MATH3:0967`, as it does once the overlay is loaded.
 
 Not ported yet: `v0308`, `v0310`, `v0318`, `v0324`, `v0328`, `v02d8`, `v02e4`, `v02e8`, `v02ec`,
-`v02f0`, `v02f4`, `v02f8`, `v0270`, and the vertex types above 10 in `v0300`.
+`v02f0`, `v02f4`, `v02f8`, `v0270`.
 
 A port may also *decline* an input (`math3::DECLINE`): a path not ported yet, or one where the
 original never returns. The hook then discards what the port staged and runs the original, so
@@ -114,7 +114,18 @@ transformed, the frame mark in the low byte once projected); `+14h/+18h/+1Ch` ro
 | 5–6 | `0fd7` | The negation of another pair |
 | 7–8 | `1072` | Another pair plus a random offset per axis from the RNG at `DS:1fd9`, `SAR` by the definition's low byte |
 | 9–10 | `1158` | As ≤ 2, but the partner subtracts the x column once instead of twice |
-| > 10 | `123b` | More combinations (averages, sums, a scaled interpolation, a call into `v0328`): not ported yet |
+| 11–12 | `1266` | Average of two vertices' rotated positions |
+| 13–14 | `12e0` | Screen midpoint of two projected vertices, the nearer depth, the first one's world position; marked projected |
+| 15–16 | `1381` | a − b + c of three vertices (a parallelogram's fourth corner) |
+| 17–18 | `1428` | Sum of two vertices |
+| 19–20 | `1499` | b + (a − b)·t: t from the parameter byte (a constant 0–3Fh or that ×400h, a word of the model's table at `[BP-D8h]:72h+`, or of the frame at `BP-40h+`), halved; the difference is scaled below 3F00h first and back after |
+| > 20 | `1673` | Definition bytes rotated like type ≤ 2, then scaled to the length `[FS:[BP-4]+16h]`·7F00h by the near routine `2263`; the partner is the negation |
+
+For types above 10 the definition bytes name other vertices; if the caller asked for the mirror
+partner, the bytes are flipped (xor 101h) so the partner is built from the partners. `2263`
+normalises a vector: an approximate squared length (from 16-bit halves), a Newton square root
+whose divisions are 32-step restoring divisions, a division of each component by the length,
+then a 16 × 16-bit multiplication by the target length.
 | negative `AX` | `0c72` | Copy a record named by the frame's table at `BP-44h` |
 
 Then the record's world position is the rotated one plus the translation. `project_vertex` also
@@ -146,15 +157,20 @@ allocators clear downwards over their own return address when `DF` is set).
    and `ES`. The original runs first with the runtime's memory write log on; its writes are then
    undone and the port runs on the same state. All registers, segments, the return address,
    every byte either wrote and the instruction count are compared. All 34 match. (With random
-   registers the 3D routines run on garbage frames; that is still a valid comparison.) Inputs where
+   registers the 3D routines run on garbage frames; that is still a valid comparison.) A second
+   test builds consistent synthetic models (a frame above the stack, definitions of every vertex
+   type naming valid vertices, records in every state) and compares 6,000 calls of each vertex
+   routine; all 22 vertex types are reached. Inputs where
    the original never returns are skipped: 38 of 4,000 for `norm_unsigned` (`AX` bit 15 set),
    about 1 in 8 for `frame_e76` (`DF` set: it clears its own return address).
 2. **Shadow verification in play** (`cargo run --release -p frontier-hooks --example native_boot
    -- game-data/original 60 --verify`). Every call of a ported routine during 60 virtual seconds
    (intro, menu, start at Ross 154, cockpit) computes the port's result, runs the original and
-   compares the same things. Result: **332,598 calls, 0 mismatches**; 104 more had a timer tick
-   due inside them and were left to the original. The most frequent are `length3` (187,791),
-   `frame_e76` (85,156), `mul` (10,593), `div_norm` and `to_int16` (about 7,300 each).
+   compares the same things. Result: **2,241,533 calls, 0 mismatches**; 3,838 more had a timer
+   tick due inside them and were left to the original. (Before the 3D routines were ported:
+   332,598 calls, 104 left.) The most frequent are `project_vertex` (1,569,558,
+   with the transforms and projections it makes inside counted as one call), `vertex_position`
+   (249,211), `length3` (187,791), `init_list` (88,722) and `frame_e76` (85,156).
 3. **Identical frames.** The same run without `--verify`, with the ports replacing the original,
    gives frames identical to a run with no ports at every 10 ms slice for 60 s.
 
