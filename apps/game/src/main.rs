@@ -95,6 +95,11 @@ struct App {
     save_dir: Option<std::path::PathBuf>,
     last_frame: Option<Instant>,
     cursor: Option<(f64, f64)>,
+    /// The pointer is captured: the game is driven by relative motion and the host cursor
+    /// cannot leave the window. Click to capture; Esc (browser) or F12 (native) releases.
+    captured: bool,
+    /// Sub-unit remainder of relative motion, so slow movement is not lost.
+    motion_frac: (f64, f64),
 }
 
 impl App {
@@ -109,6 +114,8 @@ impl App {
             save_dir: None,
             last_frame: None,
             cursor: None,
+            captured: false,
+            motion_frac: (0.0, 0.0),
         }
     }
 
@@ -136,6 +143,34 @@ impl App {
             }
             game.machine.key(if pressed { make } else { make | 0x80 });
         }
+    }
+
+    fn set_capture(&mut self, on: bool) {
+        let Some(w) = &self.window else { return };
+        if on {
+            use winit::window::CursorGrabMode;
+            let ok = w.set_cursor_grab(CursorGrabMode::Locked).or_else(|_| w.set_cursor_grab(CursorGrabMode::Confined)).is_ok();
+            self.captured = ok;
+            if !ok {
+                log::warn!("pointer capture unavailable");
+            }
+        } else {
+            let _ = w.set_cursor_grab(winit::window::CursorGrabMode::None);
+            self.captured = false;
+        }
+    }
+
+    /// Relative host motion (physical pixels) → driver units, scaled so crossing the 4:3 frame
+    /// once crosses the driver's whole range once.
+    fn relative_motion(&mut self, dx: f64, dy: f64) {
+        let (Some(r), Some(game)) = (&self.renderer, &mut self.game) else { return };
+        let (_, _, vw, vh) = r.viewport();
+        let m = &mut game.machine;
+        let fx = self.motion_frac.0 + dx * (m.mouse.max_x - m.mouse.min_x + 1) as f64 / vw as f64;
+        let fy = self.motion_frac.1 + dy * (m.mouse.max_y - m.mouse.min_y + 1) as f64 / vh as f64;
+        let (ix, iy) = (fx.trunc(), fy.trunc());
+        self.motion_frac = (fx - ix, fy - iy);
+        m.mouse_move(ix as i32, iy as i32);
     }
 
     fn mouse_to_game(&self, x: f64, y: f64) -> Option<(i32, i32)> {
@@ -217,12 +252,22 @@ impl ApplicationHandler<UserEvent> for App {
                     r.resize(s.width, s.height);
                 }
             }
+            WindowEvent::Focused(false) => self.set_capture(false),
             WindowEvent::KeyboardInput { event, .. } => {
+                if event.physical_key == PhysicalKey::Code(winit::keyboard::KeyCode::F12) {
+                    if event.state == ElementState::Pressed {
+                        self.set_capture(false);
+                    }
+                    return;
+                }
                 if !event.repeat || event.state == ElementState::Pressed {
                     self.send_key(event.physical_key, event.state == ElementState::Pressed);
                 }
             }
             WindowEvent::CursorMoved { position, .. } => {
+                if self.captured {
+                    return;
+                }
                 let target = self.mouse_to_game(position.x, position.y);
                 self.cursor = Some((position.x, position.y));
                 if let (Some(game), Some((gx, gy))) = (&mut self.game, target) {
@@ -232,6 +277,11 @@ impl ApplicationHandler<UserEvent> for App {
                 }
             }
             WindowEvent::MouseInput { state, button, .. } => {
+                if !self.captured && state == ElementState::Pressed && self.game.is_some() {
+                    // The capturing click is not passed to the game.
+                    self.set_capture(true);
+                    return;
+                }
                 if let Some(game) = &mut self.game {
                     let bit = match button {
                         MouseButton::Left => 1,
@@ -258,7 +308,20 @@ impl ApplicationHandler<UserEvent> for App {
         }
     }
 
+    fn device_event(&mut self, _event_loop: &ActiveEventLoop, _id: winit::event::DeviceId, event: winit::event::DeviceEvent) {
+        if let winit::event::DeviceEvent::MouseMotion { delta } = event {
+            if self.captured {
+                self.relative_motion(delta.0, delta.1);
+            }
+        }
+    }
+
     fn about_to_wait(&mut self, _event_loop: &ActiveEventLoop) {
+        // The browser grants and releases (Esc) pointer lock on its own schedule.
+        #[cfg(target_arch = "wasm32")]
+        {
+            self.captured = web::pointer_locked();
+        }
         if let (Some(w), Some(_)) = (&self.window, &self.game) {
             w.request_redraw();
         }

@@ -87,6 +87,15 @@ cargo run --release -p frontier-app
 tools/dev-web.sh        # http://127.0.0.1:8743/?data=/game-data/
 ```
 
+## Mouse capture
+
+Clicking the game captures the pointer: pointer lock in the browser, a locked (or confined)
+cursor natively. The capturing click is not passed to the game. While captured, host motion is
+relative: crossing the 4:3 frame once moves across the driver's whole `int 33h` range once, and
+sub-unit remainders are kept. Esc releases the lock in the browser (and also reaches the game);
+F12 releases it natively, as do focus loss and the window losing focus. Uncaptured, the cursor
+maps to driver coordinates by absolute position over the frame.
+
 ## Open questions
 
 - The mouse event handler (`int 33h AX=000Ch`): does the game install one? Not seen in the logs

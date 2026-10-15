@@ -21,6 +21,11 @@ fn document() -> web_sys::Document {
     web_sys::window().unwrap().document().unwrap()
 }
 
+/// Whether the canvas currently holds the browser's pointer lock.
+pub fn pointer_locked() -> bool {
+    document().pointer_lock_element().is_some()
+}
+
 pub fn canvas() -> web_sys::HtmlCanvasElement {
     document().get_element_by_id("game").unwrap().dyn_into().unwrap()
 }
