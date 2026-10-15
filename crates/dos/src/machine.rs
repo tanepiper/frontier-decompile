@@ -23,6 +23,31 @@ const FIRST_PARA: u16 = 0x0200;
 const TOP_PARA: u16 = 0xA000;
 /// Private host services (beyond the 256 vectors, reached by patched code, not the IVT).
 pub const HLE_SETUP_SKIP: u8 = 0xF8;
+/// Return address of host-initiated calls ([`Machine::call`]).
+const HLE_CALL_RETURN: u8 = 0xF9;
+const CALL_RETURN_OFF: u16 = 0x0F00;
+
+/// A native routine standing in for original code at a hooked address. It receives the CPU at
+/// the routine's first instruction and must leave it as the original's return would.
+pub type HookFn = Box<dyn FnMut(&mut Cpu)>;
+
+struct Hook {
+    module: String,
+    offset: u16,
+    /// Linear address it is armed at while the module is loaded.
+    armed: Option<u32>,
+    f: HookFn,
+}
+
+/// A program image loaded by EXEC and still resident (the main program or an overlay).
+#[derive(Debug, Clone)]
+pub struct Image {
+    /// File name, upper case (`EL2MATH3.OVL`).
+    pub name: String,
+    pub psp: u16,
+    /// Load segment (PSP + 10h): Ghidra's segment `1000` in that file's analysis.
+    pub seg: u16,
+}
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Stop {
@@ -100,6 +125,11 @@ pub struct Machine {
     blocks: Vec<Block>,
     files: Vec<Option<OpenFile>>,
     exec_stack: Vec<ExecFrame>,
+    images: Vec<Image>,
+    hooks: Vec<Hook>,
+    call_returned: bool,
+    /// Instructions skipped by native hooks are not counted; this counts hook invocations.
+    pub hook_calls: u64,
     find: Option<FindState>,
     pub psp: u16,
     dta: (u16, u16),
@@ -131,6 +161,10 @@ impl Machine {
             blocks: Vec::new(),
             files: Vec::new(),
             exec_stack: Vec::new(),
+            images: Vec::new(),
+            hooks: Vec::new(),
+            call_returned: false,
+            hook_calls: 0,
             find: None,
             psp: 0,
             dta: (0, 0x80),
@@ -191,6 +225,7 @@ impl Machine {
         mem.wb(0x484, 24);
         // A plausible model byte.
         mem.wb(lin(0xF000, 0xFFFE), 0xFC);
+        mem.write_bytes(lin(BIOS_SEG, CALL_RETURN_OFF as u32), &[0x0F, 0xFF, HLE_CALL_RETURN]);
     }
 
     // ---- DOS memory -----------------------------------------------------------------------
@@ -233,10 +268,97 @@ impl Machine {
         match self.blocks.iter().position(|b| b.seg == seg) {
             Some(i) => {
                 self.blocks.remove(i);
+                if self.images.iter().any(|im| im.psp == seg) {
+                    self.images.retain(|im| im.psp != seg);
+                    self.arm_hooks();
+                }
                 true
             }
             None => false,
         }
+    }
+
+    // ---- images, hooks and host calls ------------------------------------------------------
+
+    /// Resident program images (main program first).
+    pub fn images(&self) -> &[Image] {
+        &self.images
+    }
+
+    /// Load segment of a resident image by file name (`FRONTIER.EXE`, `EL2MATH3.OVL`).
+    pub fn image_segment(&self, name: &str) -> Option<u16> {
+        self.images.iter().find(|im| im.name == name).map(|im| im.seg)
+    }
+
+    /// Replace the original routine at `module:offset` (Ghidra `1000:offset` in that file) with
+    /// `f` whenever the module is resident.
+    pub fn hook(&mut self, module: &str, offset: u16, f: HookFn) {
+        self.hooks.push(Hook { module: module.to_string(), offset, armed: None, f });
+        self.arm_hooks();
+    }
+
+    pub fn hook_count(&self) -> usize {
+        self.hooks.len()
+    }
+
+    /// Set CPU breakpoints for every hook whose module is resident, clear stale ones.
+    fn arm_hooks(&mut self) {
+        for h in self.hooks.iter_mut() {
+            let want = self.images.iter().find(|im| im.name == h.module).map(|im| lin(im.seg, h.offset as u32) & 0xF_FFFF);
+            if h.armed != want {
+                if let Some(old) = h.armed {
+                    self.cpu.set_breakpoint(old, false);
+                }
+                if let Some(new) = want {
+                    self.cpu.set_breakpoint(new, true);
+                }
+                h.armed = want;
+            }
+        }
+    }
+
+    fn run_hook(&mut self, l: u32) -> bool {
+        match self.hooks.iter_mut().find(|h| h.armed == Some(l)) {
+            Some(h) => {
+                (h.f)(&mut self.cpu);
+                self.hook_calls += 1;
+                true
+            }
+            None => false,
+        }
+    }
+
+    /// Run the original routine at `seg:off` as a far call with the current registers until it
+    /// returns, with interrupts held off. Hooks are bypassed for the called routine's entry, so
+    /// this always runs original code there. For parity tests and tracing.
+    pub fn call(&mut self, seg: u16, off: u16, budget: u64) -> Result<(), Stop> {
+        let saved_if = self.cpu.flags & crate::cpu::IF;
+        self.cpu.flags &= !crate::cpu::IF;
+        self.cpu.far_call(seg, off, BIOS_SEG, CALL_RETURN_OFF);
+        self.cpu.skip_breakpoint = true;
+        self.call_returned = false;
+        let mut left = budget;
+        let r = loop {
+            if left == 0 {
+                break Err(Stop::Budget);
+            }
+            left -= 1;
+            match self.cpu.step(&mut self.dev) {
+                Ok(()) => {}
+                Err(Event::Hle(n)) => {
+                    self.hle(n);
+                    if self.call_returned {
+                        break Ok(());
+                    }
+                }
+                Err(Event::Breakpoint(l)) => {
+                    self.run_hook(l);
+                }
+                Err(e) => break Err(Stop::Fault(e)),
+            }
+        };
+        self.cpu.flags |= saved_if;
+        r
     }
 
     fn resize(&mut self, seg: u16, paras: u16) -> Result<(), u16> {
@@ -326,6 +448,9 @@ impl Machine {
         let (psp, cs, ip, ss, sp) = self.load_mz(&key, b"", 0).map_err(|e| format!("cannot load {program}: DOS error {e}"))?;
         self.psp = psp;
         self.dta = (psp, 0x80);
+        let name = key.rsplit('\\').next().unwrap_or(&key).to_string();
+        self.images.push(Image { name, psp, seg: psp + 0x10 });
+        self.arm_hooks();
         let c = &mut self.cpu;
         c.s = [psp, cs, ss, psp, 0, 0];
         c.ip = ip as u32;
@@ -384,6 +509,11 @@ impl Machine {
                         break;
                     }
                     Err(Event::Halt) => break,
+                    Err(Event::Breakpoint(l)) => {
+                        if !self.run_hook(l) {
+                            self.cpu.skip_breakpoint = true;
+                        }
+                    }
                     Err(e) => return Stop::Fault(e),
                 }
                 if self.cpu.inhibit_irq {
@@ -451,6 +581,7 @@ impl Machine {
             0x33 => self.int33(),
             0x67 => self.int67(),
             HLE_SETUP_SKIP => self.setup_skip(),
+            HLE_CALL_RETURN => self.call_returned = true,
             _ => self.warn(format!("unhandled interrupt {n:02x} AX={:04x}", self.cpu.ax())),
         }
     }
@@ -1038,6 +1169,10 @@ impl Machine {
             }
             Ok((psp, cs, ip, ss, sp)) => {
                 self.log.push(format!("exec {key} at PSP {psp:04x}"));
+                let name = key.rsplit('\\').next().unwrap_or(&key).to_string();
+                self.images.retain(|im| im.psp != psp);
+                self.images.push(Image { name, psp, seg: psp + 0x10 });
+                self.arm_hooks();
                 // Return frame: pop the INT's IP/CS/FLAGS so the parent resumes after `int 21h`.
                 let ret_ip = self.cpu.pop16();
                 let ret_cs = self.cpu.pop16();

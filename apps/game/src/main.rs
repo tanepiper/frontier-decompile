@@ -43,6 +43,12 @@ impl Game {
         }
         let mut machine = Machine::new(vfs);
         machine.boot("FRONTIER.EXE")?;
+        // Native ports replace the original routines they cover (crates/hooks). `?original` in
+        // the browser or `--original` natively runs the original code only.
+        if !original_only() {
+            frontier_hooks::install_all(&mut machine);
+            log::info!("{} original routines replaced by native ports", machine.hook_count());
+        }
         Ok(Game {
             machine,
             stopped: None,
@@ -184,6 +190,13 @@ impl App {
         let gy = m.min_y + (fy * (m.max_y - m.min_y + 1) as f32) as i32;
         Some((gx.min(m.max_x), gy.min(m.max_y)))
     }
+}
+
+fn original_only() -> bool {
+    #[cfg(not(target_arch = "wasm32"))]
+    return std::env::args().any(|a| a == "--original");
+    #[cfg(target_arch = "wasm32")]
+    return web::query_flag("original");
 }
 
 fn set_status(text: &str, loaded: bool) {
@@ -345,7 +358,7 @@ fn read_dir_files(root: &std::path::Path, rel: &str, out: &mut Vec<(String, Vec<
 #[cfg(not(target_arch = "wasm32"))]
 fn main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
-    let arg = std::env::args().nth(1);
+    let arg = std::env::args().skip(1).find(|a| !a.starts_with("--"));
     // Default: the writable DOSBox copy (saves land there), else the read-only original.
     let dir = arg.map(std::path::PathBuf::from).unwrap_or_else(|| {
         let run = std::path::PathBuf::from("game-data/run");

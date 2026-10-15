@@ -87,6 +87,17 @@ cargo run --release -p frontier-app
 tools/dev-web.sh        # http://127.0.0.1:8743/?data=/game-data/
 ```
 
+## Native ports in the running game
+
+`Machine::hook(module, offset, f)` replaces an original routine with native code. The CPU keeps a
+1 Mbit breakpoint bitmap that is checked before each instruction, so a hook costs nothing for
+other code. Hooks follow their module as it is loaded, evicted and reloaded at a new segment.
+Breakpoints were chosen over patching code bytes because entries can be two bytes apart
+(`EL2MATH3:1d41` falls through into `1d43`). `Machine::call(seg, off)` runs one original routine
+to its return with interrupts held off. Parity tests use it as the oracle. `crates/hooks` installs
+every proven port (`install_all`); the app does this by default (`--original` natively, `?original`
+in the browser, to run original code only). Status: [MATH3.md](MATH3.md).
+
 ## Mouse capture
 
 Clicking the game captures the pointer: pointer lock in the browser, a locked (or confined)

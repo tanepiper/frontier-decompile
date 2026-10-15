@@ -49,6 +49,7 @@ tools/dev-web.sh                 # http://127.0.0.1:8743/?data=/game-data/
 | Crate | Purpose |
 |---|---|
 | `crates/formats` | Dependency-free readers for the shipped files (MZ images so far) |
+| `crates/hooks` | Installs native ports at the original routines' addresses; parity tests and shadow verification ([docs/MATH3.md](docs/MATH3.md)) |
 | `crates/dos` | Reference runtime: 386 real-mode CPU + DOS/BIOS/EMS/VGA services that run the original as oracle and scaffold ([docs/RUNTIME.md](docs/RUNTIME.md)) |
 | `crates/game` | Deterministic game logic, ported 1:1 and proven bit-exact against the original |
 | `apps/game` | `frontier`: the game, native and browser |
@@ -65,7 +66,8 @@ See [docs/FINDINGS.md](docs/FINDINGS.md) for what is known about the binaries an
   (loader and seeding done, see [docs/OVERLAYS.md](docs/OVERLAYS.md); indirect calls and names remain)
 - [ ] M2: data formats (`.GRF` graphics, music, ship and planet models, saved commanders)
 - [ ] M3: boot flow and intro rendered by the reimplementation
-- [ ] M4: maths core (fixed point, RNG) and galaxy/system generation, bit-exact
+- [ ] M4: maths core (fixed point, RNG) and galaxy/system generation, bit-exact. 21 `EL2MATH3`
+  float routines ported and verified, running natively in the game ([docs/MATH3.md](docs/MATH3.md))
 - [ ] M5: flight, orbits and combat
 - [ ] M6: stations, trade, missions, save/load
 

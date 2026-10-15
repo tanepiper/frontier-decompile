@@ -575,6 +575,7 @@ dependencies = [
  "frontier-dos",
  "frontier-formats",
  "frontier-game",
+ "frontier-hooks",
  "js-sys",
  "log",
  "pollster",
@@ -602,6 +603,14 @@ name = "frontier-game"
 version = "0.1.0"
 dependencies = [
  "frontier-formats",
+]
+
+[[package]]
+name = "frontier-hooks"
+version = "0.1.0"
+dependencies = [
+ "frontier-dos",
+ "frontier-game",
 ]
 
 [[package]]

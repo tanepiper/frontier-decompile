@@ -49,6 +49,14 @@ fn data_base() -> Option<String> {
     web_sys::UrlSearchParams::new_with_str(&search).ok()?.get("data")
 }
 
+/// Whether `?name` (with any value) is in the page URL.
+pub fn query_flag(name: &str) -> bool {
+    web_sys::window()
+        .and_then(|w| w.location().search().ok())
+        .and_then(|s| web_sys::UrlSearchParams::new_with_str(&s).ok())
+        .is_some_and(|p| p.has(name))
+}
+
 pub fn load_from_query(proxy: EventLoopProxy<UserEvent>) {
     let Some(base) = data_base() else {
         set_status("Select your game files to start.", false);

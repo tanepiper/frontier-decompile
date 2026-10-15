@@ -1,0 +1,11 @@
+[package]
+name = "frontier-hooks"
+version = "0.1.0"
+description = "Wires native ports (frontier-game) into the reference runtime (frontier-dos) at the original routines' addresses"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+frontier-dos = { path = "../dos" }
+frontier-game = { path = "../game" }

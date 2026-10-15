@@ -14,6 +14,7 @@ path = "src/main.rs"
 frontier-formats = { path = "../../crates/formats" }
 frontier-dos = { path = "../../crates/dos" }
 frontier-game = { path = "../../crates/game" }
+frontier-hooks = { path = "../../crates/hooks" }
 wgpu = { version = "30", features = ["webgl"] }
 winit = "0.30"
 web-time = "1"

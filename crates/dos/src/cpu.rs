@@ -60,6 +60,9 @@ pub enum Event {
     Halt,
     /// An opcode this interpreter does not implement, at `cs:ip`.
     Unimplemented { cs: u16, ip: u16, op: u16 },
+    /// About to execute the instruction at this linear address, which has a breakpoint (a
+    /// native port hooked in at an original routine's entry). Nothing was executed.
+    Breakpoint(u32),
 }
 
 #[derive(Clone, Copy)]
@@ -86,6 +89,12 @@ pub struct Cpu {
     /// Interrupts are inhibited for one instruction after `mov ss`/`pop ss`/`sti`.
     pub inhibit_irq: bool,
     pub halted: bool,
+    /// One bit per linear address: stop with [`Event::Breakpoint`] before executing there.
+    breakpoints: Vec<u64>,
+    /// Number of set breakpoints (the check is skipped while 0).
+    breakpoint_count: usize,
+    /// Skip the breakpoint check once (to execute the original at a hooked address).
+    pub skip_breakpoint: bool,
     /// Last few `cs:ip` values executed (debugging aid).
     pub trace: [(u16, u16); 64],
     trace_pos: usize,
@@ -139,6 +148,9 @@ impl Cpu {
             start_ip: 0,
             inhibit_irq: false,
             halted: false,
+            breakpoints: vec![0; 0x10_0000 / 64],
+            breakpoint_count: 0,
+            skip_breakpoint: false,
             trace: [(0, 0); 64],
             trace_pos: 0,
         }
@@ -892,6 +904,14 @@ impl Cpu {
 
     /// Execute one instruction (with its prefixes).
     pub fn step<I: Io>(&mut self, io: &mut I) -> Result<(), Event> {
+        if self.breakpoint_count != 0 {
+            let l = lin(self.s[CS], self.ip) & 0xF_FFFF;
+            if self.breakpoints[(l >> 6) as usize] & (1 << (l & 63)) != 0 {
+                if !std::mem::take(&mut self.skip_breakpoint) {
+                    return Err(Event::Breakpoint(l));
+                }
+            }
+        }
         self.seg_ovr = None;
         self.os32 = false;
         self.as32 = false;
@@ -1630,6 +1650,26 @@ impl Cpu {
             _ => return,
         };
         self.wr_ea(&ea2, osz, nv);
+    }
+
+    /// Set or clear the breakpoint at linear address `l`.
+    pub fn set_breakpoint(&mut self, l: u32, on: bool) {
+        let l = l & 0xF_FFFF;
+        let (w, b) = ((l >> 6) as usize, 1u64 << (l & 63));
+        let was = self.breakpoints[w] & b != 0;
+        if on && !was {
+            self.breakpoints[w] |= b;
+            self.breakpoint_count += 1;
+        } else if !on && was {
+            self.breakpoints[w] &= !b;
+            self.breakpoint_count -= 1;
+        }
+    }
+
+    /// Return from a far call made by the original code (`RETF`).
+    pub fn retf(&mut self) {
+        self.ip = self.pop16() as u32;
+        self.s[CS] = self.pop16();
     }
 
     /// The most recent `cs:ip` values, oldest first.
