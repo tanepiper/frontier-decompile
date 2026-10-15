@@ -115,8 +115,10 @@ different synthesiser, not a conversion of the same files.
 
 Per [DEVIATIONS.md](DEVIATIONS.md) the game has **one audio output** and no driver choice. The
 reference is the AdLib driver, the only one whose music and effects come entirely from the
-original files. The runtime runs `EL2ADLIB` unchanged against an OPL2 model. The sound selection
-`DS:8920` = 2 is supplied by `setup_skip`.
+original files. The driver is **ported natively** (`crates/game/src/adlib.rs`, §6) and drives an
+OPL2 model. The sound selection `DS:8920` = 2 is supplied by `setup_skip`, so `EL2ADLIB` is
+still loaded: its data (songs, instruments, tables) is read from the user's file, and the port
+keeps its state in the overlay's memory.
 
 ### OPL2 model (`crates/opl`)
 
@@ -160,6 +162,78 @@ With the 27 KB driver resident, the module loader now runs out of conventional m
 module earlier: `EL2M17` first fails with DOS error 8 and loads after an eviction. The original's
 loader is built for this ([OVERLAYS.md](OVERLAYS.md) §4).
 
+## 6. The native driver (`crates/game/src/adlib.rs`)
+
+A 1:1 port of all 11 exports and every routine they reach. It keeps every variable where the
+original keeps it (the driver's segment and the `DS` words of §1), models the registers that
+carry values between routines, charges the original's instruction count on every path, and
+reports each OPL `OUT` with the instruction count at which the original executes it. So the port
+and the original can take turns on the same memory, and the game's timing does not change.
+`crates/hooks/src/adlib.rs` installs it at the exports (part of `install_all`, so the app runs
+it by default; `--original` / `?original` run the original driver). Its OPL writes go to the
+chip through a queue stamped with those instruction counts (`crates/dos/src/audio.rs`), so they
+land on the same samples.
+
+### Byte code
+
+Streams are pairs of bytes read with `LODSW` at `EL2ADLIB:09f8`. A first byte below 80h is a
+note: pitch (octave in the high nibble, semitone in the low), then the duration in sequencer
+steps; if level scaling is set (op `49h`) a third byte gives the scaling input. Otherwise the
+low 7 bits select a handler from the table at `EL2ADLIB:17dd` (74 entries; codes above 70h and
+unused entries end the stream), with the second byte as its argument.
+
+| Op | Handler | Meaning | In the shipped data |
+|---|---|---|---|
+| `00` / `01` | `0a78` / `0a7f` | Set loop counter / count down and jump (3 bytes) while non-zero | yes |
+| `02` | `0a89` | Start another command (if its voice's priority allows) | yes |
+| `03` | `0ae2` | Second key-off point within the note | yes |
+| `04` | `0ae9` | Jump (3 bytes) | yes |
+| `05` / `06` | `0af6` / `0b12` | Call (3 bytes) / return; return stack in the voice record | yes |
+| `07` / `0C` | `0b28` / `0bac` | Octave / semitone transpose | yes / no |
+| `08` | `0b2f` | End of stream. When voice 2 ends the song is over: `DS:53a3` = −1, and in jukebox mode (`DS:463f`) a random song follows | yes |
+| `09` / `20` / `21` | `0b66` / `0ce1` / `0cf6` | Rest with key off / wait with key on / key on again, for a duration | yes / yes / no |
+| `0A` | `0b86` | Write any OPL register | no |
+| `0B` | `0b8e` | Legato note (pitch, then duration byte, no key-on) | no |
+| `0D` / `27` | `0bb3` / `0d20` | Register LFO (rate, period, register, table) / off | no |
+| `0E` / `33` | `0bda` / `0dd7` | Stop a voice / stop and mute it | no / yes |
+| `10` | `0c04` | Load instrument n (11 bytes from the table at `CS:[1873]`) | yes |
+| `11` / `12` | `0c1c` / `0c38` | Pitch slide (rate, signed step) / off | yes |
+| `13` | `0c48` | Detune (added to the F-number) | yes |
+| `15` / `36` | `0c4f` / `0e7d` | Vibrato (rate, depth, half period, delay) / off | yes / no |
+| `1A` | `0c78` | Priority | no |
+| `1C` / `1D` | `0c7f` / `0ca0` | Bar length / wait for a bar boundary | no |
+| `1E` / `30` / `2B` | `0cd7` / `0dc9` / `0d31` | Volume / add to volume / second volume | yes / no / yes |
+| `24` / `3C` | `0d0e` / `0f65` | Staccato (key-off at duration/8 × n) / random duration mask | no |
+| `26` / `29` / `3A` / `3D` / `48` | … | Global tempo / voice tempo / voice tempo from global / change voice tempo / follow global tempo | `29` only |
+| `2C` / `2D` | `0d38` / `0d5f` | Set / add base volume of another voice | yes |
+| `2E` / `2F` | `0d89` / `0da9` | Tremolo / vibrato depth bit of `BDh` | no |
+| `35` | `0e45` | Random pitch offset within a mask | yes |
+| `39` | `0e87` | Pitch-table offset, re-pitch the last note | no |
+| `3B` | `0f61` | No operation | yes |
+| `3F`–`41`, `42`–`46` | `0f8d`, `1095`–`1250` | Rhythm mode: drum instruments and pitches, hits, levels | no |
+| `49` | `12f7` | Level scaling shifts | no |
+
+"In the shipped data" is from following every command stream from the table at `CS:[1871]`,
+plus the ops seen executing in the parity run (§ Verification).
+The AdLib music never uses rhythm mode, tempo changes or bar sync, which matches the chip writes
+observed in §5.
+
+**Voice record** (`43h` bytes, 10 of them from `EL2ADLIB:05ac`): `+00` base volume, `+03` stream
+pointer, `+05` step count-down, `+06` loop counter, `+07` octave transpose, `+08` priority, `+09`
+call depth with return stack at `+0A`, `+12` semitone transpose, `+13`–`+16` slide, `+17`–`+1F`
+vibrato, `+20` volume, `+21` key-off point, `+24` detune, `+25`/`+26` tempo increment and
+accumulator (a voice steps when the 8-bit accumulator carries), `+27`/`+28` the voice's
+`A0h`/`B0h` values, `+29`/`+2B` per-step callbacks (`169c` none, `169d` vibrato, `173c` slide,
+`1708` register LFO), `+2D` staccato, `+2E`/`+2F` modulator/carrier `40h` bytes, `+30` second
+volume, `+31` additive connection, `+32`–`+34` level scaling, `+35` second key-off, `+36` random
+duration mask, `+39`–`+3F` register LFO, `+40` follow global tempo, `+41` last note, `+42` pitch
+table offset.
+
+Two quirks of the original are kept, because they change what is written: silencing a voice
+(`164e`) ends with a key-on at F-number 0 (`B0h` = 20h), and a level scaling shift leaves `CL`
+changed, so the instrument loader (`15d3`) writes the registers after it to the wrong operator
+when scaling is set.
+
 ## Verification
 
 - `crates/opl` unit tests: ROM end points, sine pitch and peak, release to silence, timer status,
@@ -167,6 +241,19 @@ loader is built for this ([OVERLAYS.md](OVERLAYS.md) §4).
 - `crates/dos/tests/audio.rs` (skips without `game-data/`): the driver loads, its reset sequence
   is the first thing written, more than 50 key-ons in the first 8 s, non-silent output, and two
   runs give identical register logs and sample hashes.
+- `crates/hooks/tests/adlib_parity.rs` (skips without `game-data/`): the native driver against
+  the original in the booted game. Every song plays for 30 s, every effect runs through each export,
+  plus the timed effects, the engine sound, jukebox mode, a disabled song, shutdown and init. A
+  synthetic stream covers ops `12h` and `1Eh`. 132,445 calls and 215,172 OPL writes:
+  registers, every byte written, every port write with its instruction count, and the total
+  instruction count all identical. Covered ops: every op the shipped data uses (`00`–`09`,
+  `10`, `11`, `12`, `13`, `15`, `1E`, `20`, `29`, `2B`–`2D`, `33`, `35`, `3B`). The others are
+  ported but unverified.
+- `cargo run --release -p frontier-hooks --example adlib_boot -- game-data/original 60`: boot,
+  intro and into a game with the native driver against the original. **Frames identical and
+  audio identical sample for sample** over 60 virtual seconds (2,982,954 samples, 13,063 driver
+  calls). With `--verify` (the original runs and is compared at every call): 0 mismatches.
+  `native_boot` with every port (maths and audio): frames identical over 60 s.
 - **DOSBox comparison: not done yet.** DOSBox Staging records its mixer output with a hotkey only,
   and that could not be automated here. To capture a reference: start `tools/dosbox/run.sh`, answer
   **2**, and toggle audio recording around the intro with the *Record audio* hotkey (WAV lands in
@@ -186,7 +273,9 @@ loader is built for this ([OVERLAYS.md](OVERLAYS.md) §4).
 
 - The meaning of `DS:4636`, `463a`, `463b`, `463f`, `4640`–`4646` (sound options) and of
   `DS:5709`.
-- The voice record layout (`43h` bytes) and the sequence byte code at `EL2ADLIB:0974`. These are
-  needed for a native port of the sequencer, with the original as the parity oracle (identical
-  register write logs).
+- The byte-code ops the shipped data never uses are ported but not checked against the
+  original.
+- The native driver still reads its data and keeps its state in the loaded overlay. Reading the
+  song data straight from `EL2ADLIB.OVL` without loading it is the next step towards dropping
+  the overlay.
 - Whether the intro's fade-in is in the song data or driven by the game (`032c`/`0348` volumes).

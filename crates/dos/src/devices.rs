@@ -151,7 +151,7 @@ impl Devices {
             kbd_full: false,
             port61: 0,
             unknown_ports: Default::default(),
-            adlib: Adlib::new(),
+            adlib: Adlib::new(ips),
         }
     }
 

@@ -2,6 +2,8 @@
 //! port (a parity test in `tests/`) is replaced, at its address, by the Rust implementation.
 //! As ports accumulate, less and less of the original runs (docs/RUNTIME.md).
 
+pub mod adlib;
+
 use std::cell::RefCell;
 use std::collections::{BTreeMap, HashMap};
 use std::rc::Rc;
@@ -284,4 +286,5 @@ pub fn verify_math3(m: &mut Machine) -> Rc<RefCell<VerifyStats>> {
 /// Every native port available.
 pub fn install_all(m: &mut Machine) {
     install_math3(m);
+    adlib::install(m);
 }

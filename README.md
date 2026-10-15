@@ -63,9 +63,10 @@ See [docs/FINDINGS.md](docs/FINDINGS.md) for what is known about the binaries an
 - [x] Playable: the original runs on the in-process runtime, native and WASM, from boot through the
   intro and start menu into the cockpit ([docs/RUNTIME.md](docs/RUNTIME.md)); native ports replace it
   routine by routine
-- [x] Audio: the original AdLib driver plays music and effects through an OPL2 model, one stereo
-  output natively (cpal) and in the browser (WebAudio) ([docs/AUDIO.md](docs/AUDIO.md)). Native
-  port of the driver's sequencer and a DOSBox audio comparison remain
+- [x] Audio: the AdLib driver is ported natively and plays the original music and effects
+  through an OPL2 model. Its audio is identical sample for sample to the original driver's. One
+  stereo output natively (cpal) and in the browser (WebAudio) ([docs/AUDIO.md](docs/AUDIO.md)).
+  A DOSBox audio comparison remains
 - [ ] M1: function discovery across `FRONTIER.EXE` and the overlays; overlay loader traced
   (loader and seeding done, see [docs/OVERLAYS.md](docs/OVERLAYS.md); indirect calls and names remain)
 - [ ] M2: data formats (`.GRF` graphics, music, ship and planet models, saved commanders)

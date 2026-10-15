@@ -107,7 +107,8 @@ run; 104 of 332,702 calls are declined. Ports read and write memory through a bu
 writes until the hook commits, so a declined call leaves no trace. `Memory::write_log` records
 every byte the original writes, for parity tests and shadow verification. `crates/hooks` installs
 every proven port (`install_all`); the app does this by default (`--original` natively, `?original`
-in the browser, to run original code only). Status: [MATH3.md](MATH3.md).
+in the browser, to run original code only). Status: [MATH3.md](MATH3.md) for the maths overlay,
+[AUDIO.md](AUDIO.md) §6 for the sound driver.
 
 ## Mouse capture
 
