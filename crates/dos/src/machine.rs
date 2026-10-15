@@ -36,12 +36,22 @@ const CALL_RETURN_OFF: u16 = 0x0F00;
 /// leaves the CPU untouched, and the original runs.
 pub type HookFn = Box<dyn FnMut(&mut Cpu, u64) -> bool>;
 
+/// A [`HookFn`] that also gets the devices, for routines that do port I/O (the video driver's
+/// DAC uploads and retrace waits). The same contract applies, including the devices: if it
+/// returns `false` it leaves them untouched.
+pub type HookDevFn = Box<dyn FnMut(&mut Cpu, &mut Devices, u64) -> bool>;
+
+enum HookKind {
+    Cpu(HookFn),
+    Dev(HookDevFn),
+}
+
 struct Hook {
     module: String,
     offset: u16,
     /// Linear address it is armed at while the module is loaded.
     armed: Option<u32>,
-    f: HookFn,
+    f: HookKind,
 }
 
 /// A program image loaded by EXEC and still resident (the main program or an overlay).
@@ -301,7 +311,13 @@ impl Machine {
     /// Replace the original routine at `module:offset` (Ghidra `1000:offset` in that file) with
     /// `f` whenever the module is resident.
     pub fn hook(&mut self, module: &str, offset: u16, f: HookFn) {
-        self.hooks.push(Hook { module: module.to_string(), offset, armed: None, f });
+        self.hooks.push(Hook { module: module.to_string(), offset, armed: None, f: HookKind::Cpu(f) });
+        self.arm_hooks();
+    }
+
+    /// [`Machine::hook`] for a routine that does port I/O ([`HookDevFn`]).
+    pub fn hook_dev(&mut self, module: &str, offset: u16, f: HookDevFn) {
+        self.hooks.push(Hook { module: module.to_string(), offset, armed: None, f: HookKind::Dev(f) });
         self.arm_hooks();
     }
 
@@ -329,7 +345,10 @@ impl Machine {
     fn run_hook(&mut self, l: u32, limit: u64) -> bool {
         match self.hooks.iter_mut().find(|h| h.armed == Some(l)) {
             Some(h) => {
-                let handled = (h.f)(&mut self.cpu, limit);
+                let handled = match &mut h.f {
+                    HookKind::Cpu(f) => f(&mut self.cpu, limit),
+                    HookKind::Dev(f) => f(&mut self.cpu, &mut self.dev, limit),
+                };
                 self.hook_calls += handled as u64;
                 handled
             }

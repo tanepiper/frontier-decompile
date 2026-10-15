@@ -19,5 +19,5 @@ pub mod mem;
 pub mod png;
 pub mod vfs;
 
-pub use machine::{HookFn, Image, Machine, Stop};
+pub use machine::{HookDevFn, HookFn, Image, Machine, Stop};
 pub use vfs::Vfs;

@@ -2,7 +2,8 @@
 //! ported routines ran and whether the frames match a run without ports.
 //!
 //! Usage: cargo run --release -p frontier-hooks --example native_boot -- [game-dir] [seconds] [--verify]
-//! `--verify` runs the original alongside each port and compares (timing identical to no ports).
+//! `--verify` runs the original alongside each `EL2MATH3` and `EL2MCGA3` port and compares
+//! (timing identical to no ports).
 //! Writes game-data/derived/captures/native-NN.png (with ports) every 5 virtual seconds.
 
 use std::path::Path;
@@ -44,7 +45,7 @@ fn main() {
     let mut plain = machine(&dir);
     let verify = args.iter().any(|a| a == "--verify");
     let mut native = machine(&dir);
-    let stats = if verify { Some(frontier_hooks::verify_math3(&mut native)) } else {
+    let stats = if verify { Some((frontier_hooks::verify_math3(&mut native), frontier_hooks::video::verify(&mut native))) } else {
         frontier_hooks::install_all(&mut native);
         None
     };
@@ -79,7 +80,14 @@ fn main() {
         }
     }
     println!("{:.1} virtual s in {:.1} host s; ported routines ran {} times", native.now(), t0.elapsed().as_secs_f64(), native.hook_calls);
-    if let Some(st) = stats {
+    if let Some((st, vst)) = stats {
+        let v = vst.borrow();
+        println!("video shadow verify: {} calls, {} mismatches, {} declined (interrupt due inside)", v.calls, v.mismatches, v.declined);
+        println!("  verified calls per export: {:?}", v.per_export);
+        println!("  left to the original (input not ported): {:?}", v.unported);
+        for e in &v.examples {
+            println!("  {e:x?}");
+        }
         let st = st.borrow();
         println!("shadow verify: {} calls, {} mismatches, {} declined (interrupt due inside)", st.calls, st.mismatches, st.declined);
         println!("  verified calls per routine: {:?}", st.per_routine);

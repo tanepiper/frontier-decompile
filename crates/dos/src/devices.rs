@@ -77,6 +77,7 @@ impl Pit {
     }
 }
 
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Vga {
     /// 6-bit DAC values, 256 × RGB.
     pub dac: [[u8; 3]; 256],
@@ -171,16 +172,83 @@ impl Devices {
         }
     }
 
-    /// Vertical retrace at 70 Hz (mode 13h timing); the last ~5 % of each frame is retrace.
-    fn in_retrace(&self) -> bool {
-        let frame = 1.0 / 70.086;
-        let phase = (self.now % frame) / frame;
-        phase > 0.955
-    }
 
     pub fn set_dac(&mut self, index: u8, rgb: [u8; 3]) {
         self.vga.dac[index as usize] = [rgb[0] & 63, rgb[1] & 63, rgb[2] & 63];
         self.vga.dac_version += 1;
+    }
+}
+
+impl Vga {
+    /// Vertical retrace at 70 Hz (mode 13h timing) at virtual time `now`; the last ~5 % of
+    /// each frame is retrace.
+    pub fn retrace(now: f64) -> bool {
+        let frame = 1.0 / 70.086;
+        let phase = (now % frame) / frame;
+        phase > 0.955
+    }
+
+    /// `IN` from a VGA port (3C0h–3DFh) at virtual time `now`.
+    pub fn inb(&mut self, port: u16, now: f64) -> u8 {
+        match port {
+            0x3C7 => self.dac_read,
+            0x3C8 => self.dac_write,
+            0x3C9 => {
+                let v = self.dac[self.dac_read as usize][self.dac_comp as usize];
+                self.dac_comp += 1;
+                if self.dac_comp == 3 {
+                    self.dac_comp = 0;
+                    self.dac_read = self.dac_read.wrapping_add(1);
+                }
+                v
+            }
+            0x3C4 => self.seq_index,
+            0x3C5 => self.seq[(self.seq_index & 7) as usize],
+            0x3CE => self.gc_index,
+            0x3CF => self.gc[(self.gc_index & 15) as usize],
+            0x3D4 => self.crtc_index,
+            0x3D5 => self.crtc[(self.crtc_index & 31) as usize],
+            0x3DA => {
+                self.attr_flip = false;
+                self.status_toggle = !self.status_toggle;
+                let vr = Vga::retrace(now);
+                (if vr { 0x08 | 0x01 } else { 0 }) | self.status_toggle as u8
+            }
+            _ => 0xFF,
+        }
+    }
+
+    /// `OUT` to a VGA port (3C0h–3DFh).
+    pub fn outb(&mut self, port: u16, v: u8) {
+        match port {
+            0x3C8 => {
+                self.dac_write = v;
+                self.dac_comp = 0;
+            }
+            0x3C7 => {
+                self.dac_read = v;
+                self.dac_comp = 0;
+            }
+            0x3C9 => {
+                let i = self.dac_write as usize;
+                self.dac[i][self.dac_comp as usize] = v & 63;
+                self.dac_version += 1;
+                self.dac_comp += 1;
+                if self.dac_comp == 3 {
+                    self.dac_comp = 0;
+                    self.dac_write = self.dac_write.wrapping_add(1);
+                }
+            }
+            0x3C6 => {}
+            0x3C4 => self.seq_index = v,
+            0x3C5 => self.seq[(self.seq_index & 7) as usize] = v,
+            0x3CE => self.gc_index = v,
+            0x3CF => self.gc[(self.gc_index & 15) as usize] = v,
+            0x3D4 => self.crtc_index = v,
+            0x3D5 => self.crtc[(self.crtc_index & 31) as usize] = v,
+            0x3C0 => self.attr_flip = !self.attr_flip,
+            _ => {}
+        }
     }
 }
 
@@ -224,29 +292,7 @@ impl Io for Devices {
                 (self.port61 & 0x0F) | (refresh << 4)
             }
             0x64 => 0x14 | self.kbd_full as u8,
-            0x3C7 => self.vga.dac_read,
-            0x3C8 => self.vga.dac_write,
-            0x3C9 => {
-                let v = self.vga.dac[self.vga.dac_read as usize][self.vga.dac_comp as usize];
-                self.vga.dac_comp += 1;
-                if self.vga.dac_comp == 3 {
-                    self.vga.dac_comp = 0;
-                    self.vga.dac_read = self.vga.dac_read.wrapping_add(1);
-                }
-                v
-            }
-            0x3C4 => self.vga.seq_index,
-            0x3C5 => self.vga.seq[(self.vga.seq_index & 7) as usize],
-            0x3CE => self.vga.gc_index,
-            0x3CF => self.vga.gc[(self.vga.gc_index & 15) as usize],
-            0x3D4 => self.vga.crtc_index,
-            0x3D5 => self.vga.crtc[(self.vga.crtc_index & 31) as usize],
-            0x3DA => {
-                self.vga.attr_flip = false;
-                self.vga.status_toggle = !self.vga.status_toggle;
-                let vr = self.in_retrace();
-                (if vr { 0x08 | 0x01 } else { 0 }) | self.vga.status_toggle as u8
-            }
+            0x3C0..=0x3DF => self.vga.inb(port, self.now),
             0x388 | 0x389 | 0x228 | 0x229 => self.adlib.read(port, self.now),
             0x201 => 0xFF,
             _ => {
@@ -306,32 +352,7 @@ impl Io for Devices {
                 }
             }
             0x61 => self.port61 = v,
-            0x3C8 => {
-                self.vga.dac_write = v;
-                self.vga.dac_comp = 0;
-            }
-            0x3C7 => {
-                self.vga.dac_read = v;
-                self.vga.dac_comp = 0;
-            }
-            0x3C9 => {
-                let i = self.vga.dac_write as usize;
-                self.vga.dac[i][self.vga.dac_comp as usize] = v & 63;
-                self.vga.dac_version += 1;
-                self.vga.dac_comp += 1;
-                if self.vga.dac_comp == 3 {
-                    self.vga.dac_comp = 0;
-                    self.vga.dac_write = self.vga.dac_write.wrapping_add(1);
-                }
-            }
-            0x3C6 => {}
-            0x3C4 => self.vga.seq_index = v,
-            0x3C5 => self.vga.seq[(self.vga.seq_index & 7) as usize] = v,
-            0x3CE => self.vga.gc_index = v,
-            0x3CF => self.vga.gc[(self.vga.gc_index & 15) as usize] = v,
-            0x3D4 => self.vga.crtc_index = v,
-            0x3D5 => self.vga.crtc[(self.vga.crtc_index & 31) as usize] = v,
-            0x3C0 => self.vga.attr_flip = !self.vga.attr_flip,
+            0x3C0..=0x3DF => self.vga.outb(port, v),
             0x388 | 0x389 | 0x228 | 0x229 => self.adlib.write(port, v, self.now),
             _ => {
                 self.unknown_ports.insert(port);

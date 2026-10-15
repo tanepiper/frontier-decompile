@@ -3,6 +3,7 @@
 //! As ports accumulate, less and less of the original runs (docs/RUNTIME.md).
 
 pub mod adlib;
+pub mod video;
 
 use std::cell::RefCell;
 use std::collections::{BTreeMap, HashMap};
@@ -30,7 +31,7 @@ pub fn state(cpu: &Cpu) -> math3::Cpu {
     math3::Cpu { r: cpu.r, cs: cpu.s[CS], ip: cpu.ip as u16, ds: cpu.s[DS], es: cpu.s[ES], ss: cpu.s[SS], fs: cpu.s[FS], gs: cpu.s[GS], flags: cpu.flags }
 }
 
-fn apply(cpu: &mut Cpu, s: &math3::Cpu) {
+pub(crate) fn apply(cpu: &mut Cpu, s: &math3::Cpu) {
     cpu.r = s.r;
     cpu.s[CS] = s.cs;
     cpu.ip = s.ip as u32;
@@ -193,7 +194,7 @@ impl frontier_dos::cpu::Io for NoIo {
 
 /// The far-call effect of the instruction at `CS:IP`: +1 for `CALLF` (and for a near `CALL`
 /// right after `PUSH CS`, the far-call idiom at `EL2MATH3:2a29`), −1 for `RETF`, else 0.
-fn far_call_depth(cpu: &Cpu) -> i32 {
+pub(crate) fn far_call_depth(cpu: &Cpu) -> i32 {
     let mut a = frontier_dos::mem::lin(cpu.s[CS], cpu.ip);
     let mut op = cpu.mem.rb(a);
     while matches!(op, 0x26 | 0x2E | 0x36 | 0x3E | 0x64 | 0x65 | 0x66 | 0x67) {
@@ -289,4 +290,5 @@ pub fn verify_math3(m: &mut Machine) -> Rc<RefCell<VerifyStats>> {
 pub fn install_all(m: &mut Machine) {
     install_math3(m);
     adlib::install(m);
+    video::install(m);
 }
