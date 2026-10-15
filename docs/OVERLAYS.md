@@ -99,7 +99,9 @@ Slot `DS:002c` (`1000:044c`) is the fatal-error exit, entered by `ljmp` with an 
 | 7 | `1000:ee5b` | `load_sound_driver` (§5). PSP → `DS:0838`, then calls sound entry `DS:0334` |
 | 8 | `1000:e4c2` | `load_video_driver`: `EL2MCGA3.OVL` (`1ea9:067a`). PSP → `DS:0834`, sets `DS:890e` = 4, calls `1000:d08d` and then video entry `DS:020c` |
 
-`entry` then calls `modules_init_all` (`1000:0c13`, §4) and goes on into the game.
+Steps 1–8 are DOS set-up that the reimplementation skips. `startup_init` returns to `1000:009c`,
+and `entry` then calls `modules_init_all` (`1000:0c13`, §4) at `1000:00a0`. That is where the game
+start begins; the hand-off and the state to assume are in [DEVIATIONS.md](DEVIATIONS.md).
 
 ## 4. `EL2M00`–`EL2M19`: demand-loaded modules
 
@@ -166,6 +168,9 @@ table at `00a3` (traffic control and bulletin messages). `EL2M06`, `EL2M08` and 
 have very little reachable code, so they are probably mostly data (models or graphics, unknown).
 
 ## 5. `EL2SETUP` and the sound prompt
+
+This is DOS set-up that the reimplementation **skips** ([DEVIATIONS.md](DEVIATIONS.md)). It is
+documented so that the state it leaves behind is known, not so that it can be ported.
 
 `EL2SETUP` exports one routine, `EL2SETUP:0496` → `DS:0358`. It runs five checks in order and stops
 at the first failure, printing a `$` message (`09h`) and returning carry:
