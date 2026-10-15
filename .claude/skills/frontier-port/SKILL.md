@@ -17,6 +17,9 @@ trace it.
 - Name things after what the original does, and put the source address on each ported routine:
   `/// Port of 1000:2f3a (fixed-point multiply).`
 - Keep constants with their source address; don't "tidy" magic numbers.
+- **No legacy hardware setup.** Skip anything that only configured the 1993 PC (sound card
+  prompt, driver overlay choice, memory checks): boot goes straight into the game. See
+  `docs/DEVIATIONS.md`; add a row there for any new deviation.
 - Mark deliberate differences with `// Deviation:` and a reason (e.g. 320×200 palette framebuffer
   scaled by the GPU instead of VGA hardware).
 - The original renders a 320×200 8-bit palettised frame. Reproduce that frame in software first,

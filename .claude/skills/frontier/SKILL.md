@@ -23,6 +23,9 @@ not "inspired by". Structure and rules mirror the Banished project (`banished-*`
 4. **Other sessions may edit this repo concurrently.** Stage only your own files; never
    `git add -A`. See `frontier-land`.
 5. **Downloads need user permission** (state filename, source, size).
+6. **Game, not hardware.** Legacy DOS setup (sound card selection, driver overlays, memory
+   checks) is not reproduced; the rewrite goes straight into the game. Deviations are listed
+   in `docs/DEVIATIONS.md`.
 
 ## Map of the repo
 
