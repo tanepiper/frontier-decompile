@@ -166,4 +166,7 @@ impl Ctx<'_> {
 pub const EXPORTS: &[(u16, u16, &str, Port)] = &[
     (0x1b62, 0x0264, "triangle", triangle),
     (0x1b3f, 0x0260, "triangle_clipped", triangle_clipped),
+    (0x1e74, 0x022c, "quad", quad),
+    (0x1e41, 0x0228, "quad_clipped", quad_clipped),
+    (0x28f9, 0x0210, "line", line),
 ];

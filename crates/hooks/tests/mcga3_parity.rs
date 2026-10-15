@@ -65,14 +65,17 @@ const STACK: u16 = 0x9000;
 fn setup(m: &mut Machine, rng: &mut Rng, name: &str, ds: u16) -> bool {
     let target = if rng.below(2) == 0 { 0xA000 } else { m.cpu.mem.rw(lin(ds, video::BACK_BUFFER as u32)) };
     match name {
-        "triangle" | "triangle_clipped" => {
-            let inside = name == "triangle";
+        "triangle" | "triangle_clipped" | "quad" | "quad_clipped" => {
+            let inside = name == "triangle" || name == "quad";
             let (w, h) = (video::WIDTH, video::VIEW_HEIGHT);
             let c = |r: &mut Rng, s: u16| if inside { r.below(s) } else { r.coord(s) };
             let v = [c(rng, w), c(rng, h), c(rng, w), c(rng, h), c(rng, w), c(rng, h)];
             for (r, val) in [EAX, EBX, ECX, EDX, ESI, EBP].into_iter().zip(v) {
                 m.cpu.r[r] = (rng.dword() & 0xFFFF_0000) | val as u32;
             }
+            let (x3, y3) = (c(rng, w), c(rng, h));
+            m.cpu.mem.ww(lin(ds, video::QUAD_X3 as u32), x3);
+            m.cpu.mem.ww(lin(ds, video::QUAD_Y3 as u32), y3);
             m.cpu.s[ES] = rng.next();
             m.cpu.mem.ww(lin(ds, video::TARGET as u32), target);
             m.cpu.mem.wb(lin(ds, video::COLOUR as u32), rng.next() as u8);
@@ -80,6 +83,24 @@ fn setup(m: &mut Machine, rng: &mut Rng, name: &str, ds: u16) -> bool {
             for a in [video::START_A, video::START_B] {
                 m.cpu.mem.wd(lin(ds, a as u32), rng.dword());
             }
+            true
+        }
+        "line" => {
+            // Rows are not clipped: keep them on the screen (or a little off it, which writes
+            // past the frame within the segment, as the original does).
+            let v = [rng.coord(video::WIDTH), rng.below(200), rng.coord(video::WIDTH), rng.below(200)];
+            for (r, val) in [EAX, EBX, ECX, EDX].into_iter().zip(v) {
+                m.cpu.r[r] = (rng.dword() & 0xFFFF_0000) | val as u32;
+            }
+            if rng.below(8) == 0 {
+                // Short and degenerate lines.
+                m.cpu.r[ECX] = (m.cpu.r[ECX] & 0xFFFF_0000) | (v[0].wrapping_add(rng.below(5)).wrapping_sub(2)) as u32;
+                m.cpu.r[EDX] = (m.cpu.r[EDX] & 0xFFFF_0000) | (v[1].wrapping_add(rng.below(5)).wrapping_sub(2)) as u32;
+            }
+            m.cpu.r[ESI] = rng.dword();
+            m.cpu.r[EBP] = rng.dword();
+            m.cpu.mem.ww(lin(ds, video::TARGET as u32), target);
+            m.cpu.mem.wb(lin(ds, video::COLOUR as u32), rng.next() as u8);
             true
         }
         _ => false,
