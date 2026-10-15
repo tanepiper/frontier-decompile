@@ -1541,3 +1541,350 @@ fn normalise(v: &mut V) -> u64 {
     v.set_ss32(e.wrapping_sub(4), ebp_saved);
     n + 2
 }
+
+// ---- projection on register pairs and face shading ------------------------------------------
+
+/// `CMP hi,hi; JA t; JC f; CMP lo,lo; JNC t`: (a ≥ b unsigned, instructions).
+fn ge32_a(a: u32, b: u32) -> (bool, u64) {
+    let (ah, bh) = (a >> 16, b >> 16);
+    if ah > bh {
+        (true, 2)
+    } else if ah < bh {
+        (false, 3)
+    } else {
+        ((a & 0xffff) >= (b & 0xffff), 5)
+    }
+}
+
+/// `CMP hi,hi; JC f; JA t; CMP lo,lo; JC f`: (a < b unsigned, instructions).
+fn lt32_b(a: u32, b: u32) -> (bool, u64) {
+    let (ah, bh) = (a >> 16, b >> 16);
+    if ah < bh {
+        (true, 2)
+    } else if ah > bh {
+        (false, 3)
+    } else {
+        ((a & 0xffff) < (b & 0xffff), 5)
+    }
+}
+
+/// The scaling loops of `EL2MATH3:18c4` (x, `DX:AX`) and `195a` (y, `CX:BX`): while the
+/// coordinate `k` is outside −8000h…7FFFh, shift all three right by 2. Returns instructions up
+/// to and including the jump back.
+fn scale_pairs(v: &mut [u32; 3], k: usize) -> u64 {
+    let hi = |v: &[u32; 3]| (v[k] >> 16) as u16;
+    let lo = |v: &[u32; 3]| v[k] as u16;
+    let mut n: u64 = 2; // OR hi,hi; JS
+    if (hi(v) as i16) >= 0 {
+        // JNZ loop; OR lo,lo; JNS done
+        if hi(v) == 0 {
+            n += 3;
+            if lo(v) & 0x8000 == 0 {
+                return n;
+            }
+        } else {
+            n += 1;
+        }
+        loop {
+            sar2(v);
+            n += 12 + 2;
+            if hi(v) != 0 {
+                continue;
+            }
+            n += 2;
+            if lo(v) & 0x8000 != 0 {
+                continue;
+            }
+            return n + 1;
+        }
+    }
+    // CMP hi,-1; JA; JC loop; CMP lo,8000h; JNC done
+    if hi(v) != 0xffff {
+        n += 3;
+    } else {
+        n += 5;
+        if lo(v) >= 0x8000 {
+            return n;
+        }
+    }
+    loop {
+        sar2(v);
+        n += 12 + 2;
+        if hi(v) != 0xffff {
+            continue;
+        }
+        n += 3;
+        if lo(v) < 0x8000 {
+            continue;
+        }
+        return n + 1;
+    }
+}
+
+/// Port of `EL2MATH3:1763` (slot `DS:0310`): [`project`] for a point held in 16-bit register
+/// pairs, x = `DX:AX`, y = `CX:BX`, z = `SI:DI`, with the same routing, scales, table and
+/// clamping; the reciprocal is left in `DI`.
+pub fn project_pairs(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    #[derive(Clone, Copy)]
+    enum At {
+        L1771,
+        L1789,
+        L17b5,
+        L17bf,
+        L18c4,
+        L192a,
+        L195a,
+    }
+    let pair = |h: usize, l: usize| (c.x(h) as u32) << 16 | c.x(l) as u32;
+    let mut v = [pair(EDX, EAX), pair(ECX, EBX), pair(ESI, EDI)];
+    let neg = |v: &mut [u32; 3]| v[2] = v[2].wrapping_neg();
+    let mut n: u64 = 0;
+    let (t, k) = ge32_a(v[2], v[0]);
+    n += k;
+    let mut at = if t { At::L192a } else { At::L1771 };
+    loop {
+        at = match at {
+            At::L1771 => {
+                neg(&mut v);
+                n += 4;
+                let (t, k) = ge32_a(v[2], v[0]);
+                n += k;
+                if t {
+                    At::L18c4
+                } else {
+                    At::L1789
+                }
+            }
+            At::L18c4 => {
+                n += scale_pairs(&mut v, 0);
+                At::L1789
+            }
+            At::L1789 => {
+                let (lt, k) = lt32_b(v[2], v[1]);
+                n += k;
+                if lt {
+                    At::L17b5
+                } else {
+                    neg(&mut v);
+                    n += 4;
+                    let (lt, k) = lt32_b(v[2], v[1]);
+                    n += k;
+                    if lt {
+                        At::L195a
+                    } else {
+                        neg(&mut v);
+                        n += 4;
+                        At::L17b5
+                    }
+                }
+            }
+            At::L17b5 => {
+                neg(&mut v);
+                n += 4;
+                At::L17bf
+            }
+            At::L192a => {
+                neg(&mut v);
+                n += 4;
+                let (lt, k) = lt32_b(v[2], v[1]);
+                n += k;
+                if lt {
+                    At::L17b5
+                } else {
+                    neg(&mut v);
+                    n += 4;
+                    let (ge, k) = ge32_a(v[2], v[1]);
+                    n += k;
+                    if ge {
+                        At::L17bf
+                    } else {
+                        At::L195a
+                    }
+                }
+            }
+            At::L195a => {
+                n += scale_pairs(&mut v, 1);
+                At::L17bf
+            }
+            At::L17bf => break,
+        }
+    }
+    // 17bf: OR SI,SI; JNZ; CMP DI,4000h; JNC; CMP DI,1000h; JNC; CMP DI,400h; JNC
+    let (si, di) = ((v[2] >> 16) as u16, v[2] as u16);
+    let (index, shift, near) = if si != 0 || di >= 0x4000 {
+        n += if si != 0 { 2 } else { 4 };
+        loop {
+            let (si, di) = ((v[2] >> 16) as u16, v[2] as u16);
+            if si != 0 {
+                if (si as i16) < 0 {
+                    return DECLINE; // SAR keeps SI at FFFFh: never returns
+                }
+                n += 2 + 6;
+            } else if di & 0x8000 != 0 {
+                n += 4 + 6;
+            } else {
+                n += 4;
+                break;
+            }
+            for x in v.iter_mut() {
+                *x = ((*x as i32) >> 1) as u32;
+            }
+        }
+        n += 12;
+        (((v[2] as u16) >> 6) << 1, 5, false)
+    } else if di >= 0x1000 {
+        n += 6 + 12;
+        ((di >> 4) << 1, 3, false)
+    } else if di >= 0x400 {
+        n += 8 + 11;
+        ((di >> 2) << 1, 1, true)
+    } else {
+        n += 8 + 12;
+        (di << 1, 0, true)
+    };
+    let k = bus.read16(lin(c.cs, index.wrapping_add(RECIPROCAL_TABLE as u16)));
+    let scale = |a: u16| {
+        let (hi, lo) = imul16(a, k);
+        if shift == 0 {
+            hi << 1 | lo >> 15
+        } else {
+            ((hi as i16) >> shift) as u16
+        }
+    };
+    let mut ax = scale(v[0] as u16);
+    let mut bx = scale(v[1] as u16);
+    let dx = bx;
+    bus.write16(lin(c.ss, c.x(ESP).wrapping_sub(2)), ax);
+    if near {
+        n += clamp(&mut ax, &mut bx);
+        n += 1;
+    }
+    c.set_x(EAX, ax);
+    c.set_x(EBX, bx);
+    c.set_x(ECX, (v[1] >> 16) as u16);
+    c.set_x(EDX, dx);
+    c.set_x(ESI, (v[2] >> 16) as u16);
+    c.set_x(EDI, k);
+    c.retf(bus);
+    n
+}
+
+/// Main data segment words where [`face_shade`] keeps the face normal (x, y, z).
+const NORMAL: u16 = 0x1f73;
+
+/// Port of `EL2MATH3:1bcd` (slot `DS:0308`): visibility and shade of a model face. `AX` picks
+/// the face's normal in the model data at `ES:[BP-E0h]+AX−4` (bit 1: the mirrored face, x
+/// negated): normal bytes (x, y, z)×100h go to `DS:1f73`. Its high bits pick a vertex of the
+/// definitions at `[BP-DCh]`/`[BP-DAh]` (x negated for the mirror partner), scaled by
+/// `[BP-D4h]` − `[BP-2Ch]` and taken relative to the eye at `BP-32h`. If the dot product with the
+/// normal is not negative the face is hidden: `SS:[DI]` = 8000h. Otherwise the dot product of
+/// the normal with the light at `BP-2Ah` picks the shade word `SS:[BP-68h + 2k]` (k from its
+/// bits 11–13), or 0 if that is not negative. Leaves `FS` as the definitions' segment.
+pub fn face_shade(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let mut v = V { c, bus, depth: 0 };
+    let si0 = v.c.x(ESI);
+    v.push16(si0);
+    let mut si = v.ss16(v.bp(0xff20));
+    let mut ax = v.c.x(EAX);
+    let mirrored = ax & 2 != 0;
+    let mut n: u64 = 4;
+    if mirrored {
+        ax &= 0xfffd;
+        n += 25;
+    } else {
+        n += 23;
+    }
+    si = si.wrapping_add(ax);
+    let w0 = v.bus.read16(lin(v.c.es, si.wrapping_sub(4)));
+    let w1 = v.bus.read16(lin(v.c.es, si.wrapping_sub(2)));
+    let mut nx = (w0 & 0xff) << 8;
+    if mirrored {
+        nx = nx.wrapping_neg();
+    }
+    let ny = w1 & 0xff00;
+    let nz = (w1 & 0xff) << 8;
+    let ax = ((w0 >> 7) & 0xff00) | ((w0 >> 7) & 0xfe);
+    v.set_ds16(NORMAL, nx);
+    v.set_ds16(NORMAL + 2, ny);
+    v.set_ds16(NORMAL + 4, nz);
+    let si = (ax & 0xfffd).wrapping_add(v.ss16(v.bp(0xff24)));
+    let fs = v.ss16(v.bp(0xff26));
+    v.c.fs = fs;
+    let bx = v.bus.read16(lin(fs, si));
+    let dx = v.bus.read16(lin(fs, si.wrapping_add(2)));
+    let odd = ax & 2 != 0;
+    let mut bl = bx as u8;
+    if mirrored != odd {
+        // Mirrored face and even vertex, or the other way round: NEG BL.
+        bl = bl.wrapping_neg();
+        n += if mirrored { 2 } else { 1 };
+    }
+    // XCHG AX,BX; CBW; XCHG AX,BX; MOV CX,DX; XCHG AX,DX; CBW; XCHG AX,DX; MOV AL,CH; CBW
+    let mut p = [bl as i8 as i16 as u16, (dx >> 8) as u8 as i8 as i16 as u16, dx as u8 as i8 as i16 as u16];
+    let shift = v.ss16(v.bp(0xff2c)).wrapping_sub(v.ss16(v.bp(0xffd4)));
+    n += 12;
+    let mut cl = shift as u8;
+    if (shift as i16) < 0 {
+        cl = cl.wrapping_neg();
+        for x in p.iter_mut() {
+            *x = sar_cl(*x, cl);
+        }
+        n += 5;
+    } else {
+        n += 1;
+        if shift != 0 {
+            for x in p.iter_mut() {
+                let s = (cl & 31) as u32;
+                *x = if s >= 16 { 0 } else { *x << s };
+            }
+            n += 3;
+        }
+    }
+    // Relative to the eye.
+    for (i, x) in p.iter_mut().enumerate() {
+        *x = x.wrapping_sub(v.ss16(v.bp(0xffce + 2 * i as u16)));
+    }
+    // CX:SI… the dot product with the normal: z·nz + y·ny + x·nx, in SI:CX.
+    let prod = |a: u16, b: u16| (a as i16 as i32 * b as i16 as i32) as u32;
+    let dot = prod(p[2], nz).wrapping_add(prod(p[1], ny)).wrapping_add(prod(p[0], nx));
+    let last = prod(p[0], nx);
+    n += 16;
+    let di = v.c.x(EDI);
+    v.c.set_x(ECX, dot as u16);
+    if (dot as i32) >= 0 {
+        v.set_ss16(di, 0x8000);
+        let si = v.pop16();
+        v.c.set_x(ESI, si);
+        v.c.set_x(EAX, last as u16);
+        v.c.set_x(EDX, (last >> 16) as u16);
+        v.c.set_x(EBX, p[0]);
+        v.retf();
+        return n + 3;
+    }
+    let lp = |v: &mut V, k: u16, nk: u16| prod(v.ss16(v.bp(0xffd6 + 2 * k)), nk);
+    let light = lp(&mut v, 0, nx).wrapping_add(lp(&mut v, 1, ny)).wrapping_add(lp(&mut v, 2, nz));
+    let last = lp(&mut v, 2, nz);
+    v.c.set_x(EAX, last as u16);
+    v.c.set_x(EDX, (last >> 16) as u16);
+    v.c.set_x(ECX, (light >> 16) as u16);
+    n += 13;
+    if (light as i32) >= 0 {
+        v.c.set_x(EBX, light as u16);
+        v.set_ss16(di, 0);
+        let si = v.pop16();
+        v.c.set_x(ESI, si);
+        v.retf();
+        return n + 3;
+    }
+    let bx = ((light >> 16) as u16 & 0xff00) | (light as u16 & 0x00ff);
+    let k = bx.rotate_left(6) & 0xe;
+    let bx = k.wrapping_add(v.c.x(EBP));
+    v.c.set_x(EBX, bx);
+    let shade = v.ss16(bx.wrapping_sub(0x68));
+    v.c.set_x(EAX, shade);
+    v.set_ss16(di, shade);
+    let si = v.pop16();
+    v.c.set_x(ESI, si);
+    v.retf();
+    n + 8
+}

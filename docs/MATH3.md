@@ -71,6 +71,8 @@ the ports do not move interrupts ([RUNTIME.md](RUNTIME.md)).
 | `0300` | `EL2MATH3:0d2b` | `transform_vertex` | Transforms a model vertex into its record, by vertex type (see below) |
 | `02fc` | `EL2MATH3:0ccc` | `project_vertex` | Transforms if needed, then projects a vertex record |
 | `0304` | `EL2MATH3:0c35` | `vertex_position` | World position of a vertex, transforming it first if needed |
+| `0310` | `EL2MATH3:1763` | `project_pairs` | `project` for a point in 16-bit register pairs (`DX:AX`, `CX:BX`, `SI:DI`) |
+| `0308` | `EL2MATH3:1bcd` | `face_shade` | Face visibility (8000h = facing away) and shade from the light |
 
 The two tables are static data in the main program's data segment. `DS:6dff`: 2048 words,
 entry *k* = 2048·√(*k*/2) (0, 1448, 2048, 2508, 2896, …). `DS:5bff`: 2048 words for a half turn
@@ -78,8 +80,8 @@ of sine (0, 50, 100, 150, 201, …); bit 15 of the angle selects the negative ha
 4000h gives the cosine. The two square roots of floats reach `sqrt32` through `CALLF [031c]`;
 the ports assume the slot holds `EL2MATH3:0967`, as it does once the overlay is loaded.
 
-Not ported yet: `v0308`, `v0310`, `v0318`, `v0324`, `v0328`, `v02d8`, `v02e4`, `v02e8`, `v02ec`,
-`v02f0`, `v02f4`, `v02f8`, `v0270`.
+Not ported yet: `v0318`, `v0324`, `v0328`, `v02d8`, `v02e4`, `v02e8`, `v02ec`, `v02f0`, `v02f4`,
+`v02f8`, `v0270`.
 
 A port may also *decline* an input (`math3::DECLINE`): a path not ported yet, or one where the
 original never returns. The hook then discards what the port staged and runs the original, so
@@ -131,6 +133,13 @@ then a 16 × 16-bit multiplication by the target length.
 Then the record's world position is the rotated one plus the translation. `project_vertex` also
 projects it: depth below 40h gives the screen position `8002h, 8002h`, otherwise `project` and
 an offset to the screen centre (x + A0h, 54h − y), and the frame mark.
+
+`face_shade` takes the face's normal from the model data at `ES:[BP-E0h]` (bytes ×100h, x negated
+for a mirrored face; kept at `DS:1f73`), one of the face's vertices from the definitions (shifted
+by `[BP-D4h]` − `[BP-2Ch]`, relative to the eye at `BP-32h`), and their dot product: not negative
+means the face points away (`SS:[DI]` = 8000h). Otherwise the normal's dot product with the light
+at `BP-2Ah` gives 0 if not negative, else a shade word from the frame at `BP-68h`, picked by bits
+11–13 of the product.
 
 `project` brings x and y within ±z by `SAR`-ing all three (two loops, chosen by unsigned compares
 against z and −z), then picks a reciprocal from the 1024-word table at `EL2MATH3` offset `0122`

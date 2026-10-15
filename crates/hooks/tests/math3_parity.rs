@@ -5,7 +5,7 @@
 
 use std::path::Path;
 
-use frontier_dos::cpu::{DS, EAX, EBP, ECX, EDI, EDX, ES, ESP, SS};
+use frontier_dos::cpu::{DS, EAX, EBP, ECX, EDI, EDX, ES, ESI, ESP, SS};
 use frontier_dos::mem::lin;
 use frontier_dos::{Machine, Vfs};
 use frontier_game::math3::{ANGLE_A, ANGLE_B, DECLINE, PORTS};
@@ -86,6 +86,12 @@ fn math3_ports_match_original() {
                 // Mostly points in front of the eye, at every depth scale.
                 let shift = rng.next() % 24;
                 m.cpu.r[ECX] = (rng.dword() & 0x7FFF_FFFF) >> shift;
+            }
+            if name == "project_pairs" && rng.next() % 4 != 0 {
+                // The same for SI:DI.
+                let z = (rng.dword() & 0x7FFF_FFFF) >> (rng.next() % 24);
+                m.cpu.r[ESI] = (m.cpu.r[ESI] & 0xFFFF_0000) | z >> 16;
+                m.cpu.r[EDI] = (m.cpu.r[EDI] & 0xFFFF_0000) | (z & 0xFFFF);
             }
             m.enter(seg, off);
             let input = regs_from(&m.cpu);

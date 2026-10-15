@@ -1043,4 +1043,6 @@ pub const PORTS: &[(u16, u16, &str, Port)] = &[
     (0x0d2b, 0x0300, "transform_vertex", transform_vertex),
     (0x0ccc, 0x02fc, "project_vertex", project_vertex),
     (0x0c35, 0x0304, "vertex_position", vertex_position),
+    (0x1763, 0x0310, "project_pairs", project_pairs),
+    (0x1bcd, 0x0308, "face_shade", face_shade),
 ];
