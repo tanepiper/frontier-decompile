@@ -1,0 +1,10 @@
+[package]
+name = "frontier-game"
+version = "0.1.0"
+description = "Deterministic Frontier: Elite II game logic, ported 1:1 from the original"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+frontier-formats = { path = "../formats" }

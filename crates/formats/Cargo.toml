@@ -1,0 +1,9 @@
+[package]
+name = "frontier-formats"
+version = "0.1.0"
+description = "Dependency-free readers for Frontier: Elite II (DOS) data files"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]

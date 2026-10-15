@@ -1,0 +1,15 @@
+[package]
+name = "frontier-app"
+version = "0.1.0"
+description = "Frontier: Elite II reimplementation (native and WASM)"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "frontier"
+path = "src/main.rs"
+
+[dependencies]
+frontier-formats = { path = "../../crates/formats" }
+frontier-game = { path = "../../crates/game" }
