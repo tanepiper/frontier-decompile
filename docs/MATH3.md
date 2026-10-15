@@ -100,9 +100,9 @@ allocators clear downwards over their own return address when `DF` is set).
 2. **Shadow verification in play** (`cargo run --release -p frontier-hooks --example native_boot
    -- game-data/original 60 --verify`). Every call of a ported routine during 60 virtual seconds
    (intro, menu, start at Ross 154, cockpit) computes the port's result, runs the original and
-   compares the same things. Result: **333,140 calls, 0 mismatches**; 121 more had a timer tick
-   due inside them and were left to the original. The most frequent are `length3` (188,072),
-   `frame_e76` (85,336), `mul` (10,606), `div_norm` and `to_int16` (about 7,300 each).
+   compares the same things. Result: **332,598 calls, 0 mismatches**; 104 more had a timer tick
+   due inside them and were left to the original. The most frequent are `length3` (187,791),
+   `frame_e76` (85,156), `mul` (10,593), `div_norm` and `to_int16` (about 7,300 each).
 3. **Identical frames.** The same run without `--verify`, with the ports replacing the original,
    gives frames identical to a run with no ports at every 10 ms slice for 60 s.
 
