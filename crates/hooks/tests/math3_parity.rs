@@ -1,14 +1,15 @@
 //! Parity: every `EL2MATH3` port in `frontier_game::math3` against the original routine, run on
-//! the reference runtime inside the booted game (real DS, real `int 0` handler). Skips when
-//! game-data/ is absent.
+//! the reference runtime inside the booted game (real DS and tables, real `int 0` handler).
+//! Registers, every byte written and the instruction count are compared. Skips when game-data/
+//! is absent.
 
 use std::path::Path;
 
-use frontier_dos::cpu::DS;
+use frontier_dos::cpu::{DS, ES, ESP, SS};
 use frontier_dos::mem::lin;
 use frontier_dos::{Machine, Vfs};
-use frontier_game::math3::{Regs, PORTS};
-use frontier_hooks::{regs_from, regs_to, DIVIDE_RESUME};
+use frontier_game::math3::{ANGLE_A, ANGLE_B, PORTS};
+use frontier_hooks::{compare, record_original, regs_from, run_port, state, DIVIDE_RESUME};
 
 fn booted() -> Option<Machine> {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../game-data/original");
@@ -48,14 +49,21 @@ impl Rng {
             _ => self.next(),
         }
     }
+    fn dword(&mut self) -> u32 {
+        (self.next() as u32) << 16 | self.word() as u32
+    }
 }
+
+/// Scratch segments for the stack and for output structures: video memory, which no routine
+/// reads. Separate, so a structure never overlaps the return address.
+const STACK: u16 = 0xA000;
+const OUTPUT: u16 = 0xB000;
 
 #[test]
 fn math3_ports_match_original() {
     let Some(mut m) = booted() else { return };
     let seg = m.image_segment("EL2MATH3.OVL").unwrap();
     let ds = m.images().iter().find(|i| i.name == "FRONTIER.EXE").unwrap().seg + 0x1615;
-    m.cpu.s[DS] = ds;
     let mut rng = Rng(0x9E37_79B9_7F4A_7C15);
     let mut failures = Vec::new();
     for &(off, slot, name, port) in PORTS {
@@ -63,32 +71,35 @@ fn math3_ports_match_original() {
         let mut hangs = 0;
         let cases = 4000;
         for _ in 0..cases {
-            let input = Regs { ax: rng.word(), bx: rng.word(), cx: rng.word(), dx: rng.word(), si: rng.word(), di: rng.word(), bp: rng.word() };
-            m.cpu.mem.ww(lin(ds, DIVIDE_RESUME), 0x5A5A);
-            regs_to(&mut m.cpu, &input);
+            for r in 0..8 {
+                m.cpu.r[r] = rng.dword();
+            }
+            m.cpu.r[ESP] = 0xFFF0;
             m.cpu.s[DS] = ds;
-            let start = m.cpu.icount;
-            match m.call(seg, off, 200_000) {
-                Ok(()) => {}
+            m.cpu.s[ES] = OUTPUT;
+            m.cpu.s[SS] = STACK;
+            m.cpu.flags = (m.cpu.flags & !frontier_dos::cpu::DF) | if rng.next() % 8 == 0 { frontier_dos::cpu::DF } else { 0 };
+            m.cpu.mem.ww(lin(ds, DIVIDE_RESUME as u32), 0x5A5A);
+            m.cpu.mem.ww(lin(ds, ANGLE_A as u32), rng.word());
+            m.cpu.mem.ww(lin(ds, ANGLE_B as u32), rng.word());
+            m.enter(seg, off);
+            let input = regs_from(&m.cpu);
+            let entry = (m.cpu.r, m.cpu.s, m.cpu.ip, m.cpu.flags);
+            let Some(orig) = record_original(&mut m.cpu, 200_000) else {
                 // The original never returns for this input (e.g. EL2MATH3:1e80 with AX bit 15
                 // set loops forever); outside the routine's domain, so not compared.
-                Err(frontier_dos::Stop::Budget) => {
-                    hangs += 1;
-                    m.cpu.r[frontier_dos::cpu::ESP] = 0xFFF0;
-                    continue;
-                }
-                Err(e) => panic!("{name} {input:x?}: {e:?}"),
+                hangs += 1;
+                continue;
+            };
+            // Back to the state before the call, then the port.
+            for (&a, &(old, _)) in &orig.writes {
+                m.cpu.mem.wb(a, old);
             }
-            let want = regs_from(&m.cpu);
-            let want_resume = m.cpu.mem.rw(lin(ds, DIVIDE_RESUME));
-            // Instructions of the routine: all executed ones but the host return stub's.
-            let want_steps = m.cpu.icount - start - 1;
-            let mut got = input;
-            let exit = port(&mut got);
-            let resume = exit.resume.unwrap_or(0x5A5A);
-            if got != want || resume != want_resume || exit.steps != want_steps {
+            (m.cpu.r, m.cpu.s, m.cpu.ip, m.cpu.flags) = entry;
+            let out = run_port(&m.cpu, port);
+            if let Some(d) = compare(&out, &orig, &m.cpu.mem) {
                 if mismatches == 0 {
-                    failures.push(format!("{name} (EL2MATH3:{off:04x}, slot {slot:04x}): input {input:x?}\n  original {want:x?} [09dc]={want_resume:04x} steps {want_steps}\n  port     {got:x?} [09dc]={resume:04x} steps {}", exit.steps));
+                    failures.push(format!("{name} (EL2MATH3:{off:04x}, slot {slot:04x}): input {input:x?} {:x?}\n  {d}", state(&m.cpu)));
                 }
                 mismatches += 1;
             }

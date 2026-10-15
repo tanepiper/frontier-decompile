@@ -17,6 +17,9 @@ pub struct Memory {
     /// Physical offset into `ram` for each 16 KB page of the 1 MB address space.
     map: [usize; LOW_PAGES],
     ems_pages: usize,
+    /// When set, every write appends `(linear address, previous byte)` per byte written. For
+    /// parity tests and shadow verification of native ports.
+    pub write_log: Option<Vec<(u32, u8)>>,
 }
 
 impl Memory {
@@ -25,7 +28,7 @@ impl Memory {
         for (i, m) in map.iter_mut().enumerate() {
             *m = i * PAGE;
         }
-        Memory { ram: vec![0; (LOW_PAGES + ems_pages) * PAGE], map, ems_pages }
+        Memory { ram: vec![0; (LOW_PAGES + ems_pages) * PAGE], map, ems_pages, write_log: None }
     }
 
     pub fn ems_pages(&self) -> usize {
@@ -53,8 +56,22 @@ impl Memory {
         self.ram[self.phys(a)]
     }
 
+    #[cold]
+    fn log(&mut self, a: u32, n: u32) {
+        for i in 0..n {
+            let b = a.wrapping_add(i) & 0xF_FFFF;
+            let old = self.ram[self.phys(b)];
+            if let Some(l) = self.write_log.as_mut() {
+                l.push((b, old));
+            }
+        }
+    }
+
     #[inline(always)]
     pub fn wb(&mut self, a: u32, v: u8) {
+        if self.write_log.is_some() {
+            self.log(a, 1);
+        }
         let p = self.phys(a);
         self.ram[p] = v;
     }
@@ -71,6 +88,9 @@ impl Memory {
 
     #[inline(always)]
     pub fn ww(&mut self, a: u32, v: u16) {
+        if self.write_log.is_some() {
+            self.log(a, 2);
+        }
         if (a as usize & (PAGE - 1)) < PAGE - 1 {
             let p = self.phys(a);
             self.ram[p..p + 2].copy_from_slice(&v.to_le_bytes());
@@ -94,6 +114,9 @@ impl Memory {
     #[inline(always)]
     pub fn wd(&mut self, a: u32, v: u32) {
         if (a as usize & (PAGE - 1)) < PAGE - 3 {
+            if self.write_log.is_some() {
+                self.log(a, 4);
+            }
             let p = self.phys(a);
             self.ram[p..p + 4].copy_from_slice(&v.to_le_bytes());
         } else {

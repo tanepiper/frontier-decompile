@@ -6,7 +6,7 @@ and how the native ports were proven. Evidence: Ghidra 12.1.4 disassembly
 divide-error handler, and execution of the original on the reference runtime
 ([RUNTIME.md](RUNTIME.md)). That covers fuzzed calls and shadow verification of every real call
 during 60 s of play. The larger routines (`v0300`, `v0310`, `v0314`, `v0328` and others) are not
-traced yet.
+ported yet.
 
 ## Number format
 
@@ -58,23 +58,51 @@ the ports do not move interrupts ([RUNTIME.md](RUNTIME.md)).
 | `02a0` | `EL2MATH3:1e8d` | `norm16` | Normalise signed `AX`, exponent `DX` |
 | `02a4` | `EL2MATH3:1e9a` | `norm32` | Normalise signed `DX:AX`, exponent `CX` |
 | `02ac` | `EL2MATH3:1eaf` | `norm_positive` | Shift positive `AX` left until bit 15 is set |
+| `031c` | `EL2MATH3:0967` | `sqrt32` | √(`DX:AX`) by table: the top bits pick an index into the square-root table at `DS:6dff` by one of six shifts, and the entry is shifted back. `DX` = index |
+| `0320` | `EL2MATH3:0952` | `length3` | Vector length: `DX:AX` = `AX`² + `BX`² + `CX`², then falls into `sqrt32` |
+| `02c8` | `EL2MATH3:0922` | `sqrt_float` | √ of a 16-bit float: mantissa doubled, exponent halved (odd: mantissa halved back, exponent rounded up), `CALLF [031c]`, root halved |
+| `02cc` | `EL2MATH3:0938` | `sqrt_float32` | The same for a 32-bit mantissa, then `CALLF [02a8]` to normalise |
+| `0278` | `EL2MATH3:0ba1` | `frame_e76` | Gives the caller a 0E76h-byte stack frame (`BP` = `SP`), first 150h bytes zeroed (`REP STOSD`), `[BP+E70h..E75h]` = `FFFF 00A8 FFFF` |
+| `0274` | `EL2MATH3:0bcf` | `frame_5598` | Gives the caller a 5598h-byte stack frame, clearing 21 × (8 words 80h apart + 16 bytes), `[BP]` = `00A8`, `[BP+2]` = `FFFF` |
+| `02e0` | `EL2MATH3:09e9` | `rotation_02e0` | 3×3 Q15 rotation matrix at `ES:SI` from the angles at `DS:1f35` and `DS:1f37`, using the sine table at `DS:5bff` |
+| `02dc` | `EL2MATH3:0ac9` | `rotation_02dc` | The same products in another layout |
 
-Not ported yet: `v02c8`/`v02cc` (they call `v031c`), `v0320`/`v031c` (a square-root-style lookup
-in a table at `DS:6dff`, *inferred*), the `SUB SP` frame allocators `v0278`/`v0274`, and the large
-routines.
+The two tables are static data in the main program's data segment. `DS:6dff`: 2048 words,
+entry *k* = 2048·√(*k*/2) (0, 1448, 2048, 2508, 2896, …). `DS:5bff`: 2048 words for a half turn
+of sine (0, 50, 100, 150, 201, …); bit 15 of the angle selects the negative half, and adding
+4000h gives the cosine. The two square roots of floats reach `sqrt32` through `CALLF [031c]`;
+the ports assume the slot holds `EL2MATH3:0967`, as it does once the overlay is loaded.
+
+Not ported yet: `v0300`, `v0304`, `v0308`, `v030c`, `v0310`, `v0314`, `v0318`, `v0324`, `v0328`,
+`v02d8`, `v02e4`, `v02e8`, `v02ec`, `v02f0`, `v02f4`, `v02f8`, `v02fc`, `v0270`.
+
+### Port interface
+
+A port takes the 386 state (all eight 32-bit registers, `DS`, `ES`, `SS`, `CS:IP`, flags) and a
+memory bus by linear address, and runs the whole routine through its `RETF`. In the running
+game the bus stages writes, so a port that declines (an interrupt due inside) leaves no trace.
+Memory below the final stack pointer is not reproduced: it is dead, since any interrupt may
+overwrite it. Return addresses and saved registers that a routine pushes and pops again within
+its frame *are* modelled through memory, because the original reads them back (the frame
+allocators clear downwards over their own return address when `DF` is set).
 
 ## How parity was proven
 
 1. **Fuzzing against the original** (`crates/hooks/tests/math3_parity.rs`). The game is booted on
    the runtime until `EL2MATH3` is resident and the `int 0` handler is installed. Each routine is
-   then called 4,000 times through `Machine::call` with random and edge-value registers and the
-   real DS. Every register, `DS:09dc` and the instruction count are compared. All 21 match. Inputs
-   where the original never returns are skipped: 40 of 4,000 for `norm_unsigned`.
+   then called 4,000 times with random and edge-value 32-bit registers, random angles at
+   `DS:1f35`/`1f37`, `DF` set one time in eight, the real DS, and scratch segments for the stack
+   and `ES`. The original runs first with the runtime's memory write log on; its writes are then
+   undone and the port runs on the same state. All registers, segments, the return address,
+   every byte either wrote and the instruction count are compared. All 29 match. Inputs where
+   the original never returns are skipped: 38 of 4,000 for `norm_unsigned` (`AX` bit 15 set),
+   about 1 in 8 for `frame_e76` (`DF` set: it clears its own return address).
 2. **Shadow verification in play** (`cargo run --release -p frontier-hooks --example native_boot
    -- game-data/original 60 --verify`). Every call of a ported routine during 60 virtual seconds
    (intro, menu, start at Ross 154, cockpit) computes the port's result, runs the original and
-   compares registers, `DS:09dc` and the instruction count. Result: **49,740 calls, 0
-   mismatches**. Another 24 calls had a timer tick due inside them and were left to the original.
+   compares the same things. Result: **333,140 calls, 0 mismatches**; 121 more had a timer tick
+   due inside them and were left to the original. The most frequent are `length3` (188,072),
+   `frame_e76` (85,336), `mul` (10,606), `div_norm` and `to_int16` (about 7,300 each).
 3. **Identical frames.** The same run without `--verify`, with the ports replacing the original,
    gives frames identical to a run with no ports at every 10 ms slice for 60 s.
 
@@ -98,9 +126,7 @@ with the scan.
 
 ## Open questions
 
-- Stack contents below `SP`: the originals of `to_fixed32_raw`, `to_fixed64` and the
-  divide-overflow path write words below the caller's stack pointer (a `PUSH`, the interrupt
-  frame). The ports do not. No difference has been seen, but a caller reading stale stack would
-  notice.
+- Which axis conventions the two rotation matrices use (`02e0`, `02dc`); the layouts are known,
+  the meaning comes from their callers.
 - Roles of the routines in the game (which callers do 3D, orbits, trade). These come from
   tracing the callers.

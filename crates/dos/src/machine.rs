@@ -337,6 +337,12 @@ impl Machine {
         }
     }
 
+    /// Set up a far call to `seg:off` returning to the host stub that ends [`Machine::call`],
+    /// without running it.
+    pub fn enter(&mut self, seg: u16, off: u16) {
+        self.cpu.far_call(seg, off, BIOS_SEG, CALL_RETURN_OFF);
+    }
+
     /// Run the original routine at `seg:off` as a far call with the current registers until it
     /// returns, with interrupts held off. Hooks are bypassed for the called routine's entry, so
     /// this always runs original code there. For parity tests and tracing.

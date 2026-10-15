@@ -70,8 +70,8 @@ See [docs/FINDINGS.md](docs/FINDINGS.md) for what is known about the binaries an
   (loader and seeding done, see [docs/OVERLAYS.md](docs/OVERLAYS.md); indirect calls and names remain)
 - [ ] M2: data formats (`.GRF` graphics, music, ship and planet models, saved commanders)
 - [ ] M3: boot flow and intro rendered by the reimplementation
-- [ ] M4: maths core (fixed point, RNG) and galaxy/system generation, bit-exact. 21 `EL2MATH3`
-  float routines ported and verified, running natively in the game with frames identical to the
+- [ ] M4: maths core (fixed point, RNG) and galaxy/system generation, bit-exact. 29 `EL2MATH3`
+  routines (float arithmetic, square roots, rotation matrices, frame set-up) ported and verified, running natively in the game with frames identical to the
   original over 60 s ([docs/MATH3.md](docs/MATH3.md))
 - [ ] M5: flight, orbits and combat
 - [ ] M6: stations, trade, missions, save/load

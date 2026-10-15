@@ -6,11 +6,104 @@
 //! (docs/OVERLAYS.md §2) and use registers, not the stack, for arguments and results.
 //!
 //! Each port is a register-exact transliteration of the original instructions: it takes and
-//! returns every register the routine writes, including scratch values callers may still read
+//! returns every register and memory byte the routine writes, including scratch values callers may still read
 //! (the code is machine-translated 68000 code) and how many instructions the original executes.
 //! Flags are not modelled (docs/MATH3.md). 386 behaviour is kept,
 //! notably shift counts in `CL` masked to 5 bits. Parity against the original running on the
 //! reference runtime: `crates/hooks/tests/math3_parity.rs`.
+
+/// Main data segment offset of the divide-overflow resume address (docs/MATH3.md).
+pub const DIVIDE_RESUME: u16 = 0x09dc;
+
+/// The 386 state a port sees and leaves: general registers in encoding order (`EAX`, `ECX`,
+/// `EDX`, `EBX`, `ESP`, `EBP`, `ESI`, `EDI`), segments, `CS:IP` (the routine's entry on the
+/// way in, the caller's return address on the way out) and flags (read only: `DF`).
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Cpu {
+    pub r: [u32; 8],
+    pub cs: u16,
+    pub ip: u16,
+    pub ds: u16,
+    pub es: u16,
+    pub ss: u16,
+    pub flags: u32,
+}
+
+pub const EAX: usize = 0;
+pub const ECX: usize = 1;
+pub const EDX: usize = 2;
+pub const EBX: usize = 3;
+pub const ESP: usize = 4;
+pub const EBP: usize = 5;
+pub const ESI: usize = 6;
+pub const EDI: usize = 7;
+
+/// Direction flag.
+const DF: u32 = 0x0400;
+
+impl Cpu {
+    /// 16-bit register `i`.
+    pub fn x(&self, i: usize) -> u16 {
+        self.r[i] as u16
+    }
+
+    pub fn set_x(&mut self, i: usize, v: u16) {
+        self.r[i] = (self.r[i] & 0xFFFF_0000) | v as u32;
+    }
+
+    fn sp(&self) -> u16 {
+        self.x(ESP)
+    }
+
+    fn pop16(&mut self, bus: &mut dyn Bus) -> u16 {
+        let sp = self.sp();
+        self.set_x(ESP, sp.wrapping_add(2));
+        bus.read16(lin(self.ss, sp))
+    }
+
+    /// `RETF`.
+    pub fn retf(&mut self, bus: &mut dyn Bus) {
+        self.ip = self.pop16(bus);
+        self.cs = self.pop16(bus);
+    }
+}
+
+/// Real-mode linear address of `seg:off`, wrapped at 1 MB as on the reference runtime.
+pub fn lin(seg: u16, off: u16) -> u32 {
+    (((seg as u32) << 4) + off as u32) & 0xF_FFFF
+}
+
+/// Memory as the routines see it, by linear address. Multi-byte accesses are little-endian over
+/// consecutive linear addresses, as on the runtime.
+pub trait Bus {
+    fn read8(&mut self, a: u32) -> u8;
+    fn write8(&mut self, a: u32, v: u8);
+
+    fn read16(&mut self, a: u32) -> u16 {
+        self.read8(a) as u16 | (self.read8(a + 1) as u16) << 8
+    }
+
+    fn write16(&mut self, a: u32, v: u16) {
+        self.write8(a, v as u8);
+        self.write8(a + 1, (v >> 8) as u8);
+    }
+
+    fn read32(&mut self, a: u32) -> u32 {
+        self.read16(a) as u32 | (self.read16(a + 2) as u32) << 16
+    }
+
+    fn write32(&mut self, a: u32, v: u32) {
+        self.write16(a, v as u16);
+        self.write16(a + 2, (v >> 16) as u16);
+    }
+}
+
+/// A port of a whole routine, entry to `RETF`: updates the CPU and memory as the original
+/// would and returns the original's instruction count for these inputs (see [`Exit::steps`]).
+///
+/// Memory below the final stack pointer (pushes and call frames the routine has popped again)
+/// is not reproduced: it is dead, as any interrupt may overwrite it.
+pub type Port = fn(&mut Cpu, &mut dyn Bus) -> u64;
 
 /// The 16-bit registers a routine reads and writes.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -22,6 +115,34 @@ pub struct Regs {
     pub si: u16,
     pub di: u16,
     pub bp: u16,
+}
+
+impl Regs {
+    pub fn load(c: &Cpu) -> Self {
+        Regs { ax: c.x(EAX), bx: c.x(EBX), cx: c.x(ECX), dx: c.x(EDX), si: c.x(ESI), di: c.x(EDI), bp: c.x(EBP) }
+    }
+
+    pub fn store(&self, c: &mut Cpu) {
+        c.set_x(EAX, self.ax);
+        c.set_x(EBX, self.bx);
+        c.set_x(ECX, self.cx);
+        c.set_x(EDX, self.dx);
+        c.set_x(ESI, self.si);
+        c.set_x(EDI, self.di);
+        c.set_x(EBP, self.bp);
+    }
+}
+
+/// Run a register-only port as a whole routine: registers, the `DS:09dc` store and `RETF`.
+fn with_regs(c: &mut Cpu, bus: &mut dyn Bus, f: fn(&mut Regs) -> Exit) -> u64 {
+    let mut r = Regs::load(c);
+    let e = f(&mut r);
+    r.store(c);
+    if let Some(v) = e.resume {
+        bus.write16(lin(c.ds, DIVIDE_RESUME), v);
+    }
+    c.retf(bus);
+    e.steps
 }
 
 /// What a routine wrote to `DS:09dc`, the divide-overflow resume offset that the main program's
@@ -556,30 +677,325 @@ pub fn norm_positive(r: &mut Regs) -> Exit {
     Exit::steps(steps + 1)
 }
 
-/// A port: updates the registers and reports how the original's call ended.
-pub type Port = fn(&mut Regs) -> Exit;
+// ---- routines that use memory -------------------------------------------------------------
+
+/// Main data segment offset of the square-root table: 2048 words, entry `k` = 2048·√(k/2)
+/// (observed values: 0, 1448, 2048, 2508, 2896, …).
+pub const SQRT_TABLE: u16 = 0x6dff;
+/// Main data segment offset of the sine table: 2048 words for a half turn, entry `k` =
+/// 32768·sin(k·π/2048) (observed values: 0, 50, 100, 150, 201, …; 16384 at `k` = 170 is
+/// *inferred* from the shape).
+pub const SINE_TABLE: u16 = 0x5bff;
+
+/// Body of `EL2MATH3:0967` up to and including its `RETF` (which the callers' own `CALLF`
+/// balances): `AX` = √(`DX:AX`) by table lookup, `DX` = the table index used. Returns the
+/// instruction count.
+fn sqrt32_body(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let (ax, dx) = (c.x(EAX), c.x(EDX));
+    let dh = (dx >> 8) as u8;
+    // (index, right shift of the table value, instructions)
+    let (idx, shift, steps) = if dh < 0x04 {
+        if dx >= 0x40 {
+            ((dx << 2 | ax >> 14) & 0xFFFE, 3, 11)
+        } else if dx as u8 >= 0x04 {
+            ((dx << 6 | ax >> 10) & 0xFFFE, 5, 13)
+        } else {
+            ((ax >> 6 | dx << 10) & 0xFFFE, 7, 14)
+        }
+    } else if dh >= 0x40 {
+        ((dx >> 4) & 0xFFFE, 0, 10)
+    } else if dh >= 0x10 {
+        ((dx >> 2) & 0xFFFE, 1, 13)
+    } else {
+        (dx & 0xFFFE, 2, 12)
+    };
+    c.set_x(EDX, idx);
+    let v = bus.read16(lin(c.ds, SQRT_TABLE.wrapping_add(idx)));
+    c.set_x(EAX, v >> shift);
+    steps
+}
+
+/// Port of `EL2MATH3:0967` (slot `DS:031c`): square root of the unsigned 32-bit `DX:AX`. The
+/// top non-zero bits pick a 2048-entry table index ([`SQRT_TABLE`]) by one of six shifts and the
+/// entry is shifted back by half the scale: `AX` ≈ √(`DX:AX`) · 2^(-?) per range (the result is
+/// what the table gives, not a computed root). `DX` is left as the index, `BX` unchanged.
+pub fn sqrt32(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let steps = sqrt32_body(c, bus);
+    c.retf(bus);
+    steps
+}
+
+/// Port of `EL2MATH3:0952` (slot `DS:0320`): vector length. `DX:AX` = `AX`² + `BX`² + `CX`²
+/// (signed 16-bit squares, 32-bit sum), then falls into [`sqrt32`]. `BX` is left as the low word
+/// of `AX`² + `BX`², `BP` is preserved.
+pub fn length3(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let sq = |v: u16| ((v as i16 as i32) * (v as i16 as i32)) as u32;
+    let ab = sq(c.x(EAX)).wrapping_add(sq(c.x(EBX)));
+    let sum = ab.wrapping_add(sq(c.x(ECX)));
+    c.set_x(EBX, ab as u16);
+    c.set_x(EAX, sum as u16);
+    c.set_x(EDX, (sum >> 16) as u16);
+    let steps = 12 + sqrt32_body(c, bus);
+    c.retf(bus);
+    steps
+}
+
+/// Port of `EL2MATH3:0922` (slot `DS:02c8`): square root of a float (`AX` mantissa, taken as
+/// positive, `DX` exponent). The mantissa is doubled, the exponent halved (`SAR`); an odd
+/// exponent halves the mantissa back and rounds the exponent up. Then `DX:AX` = mantissa:0 goes
+/// through `CALLF [031c]` ([`sqrt32`]) and the root is halved. `DX` = the new exponent.
+pub fn sqrt_float(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let mut ax = c.x(EAX) << 1;
+    let dx0 = c.x(EDX);
+    let mut dx = ((dx0 as i16) >> 1) as u16;
+    let mut steps = 3;
+    if dx0 & 1 != 0 {
+        ax >>= 1;
+        dx = dx.wrapping_add(1);
+        steps += 2;
+    }
+    c.set_x(EDX, ax);
+    c.set_x(EAX, 0);
+    steps += 4 + sqrt32_body(c, bus);
+    c.set_x(EAX, c.x(EAX) >> 1);
+    c.set_x(EDX, dx);
+    c.retf(bus);
+    steps + 3
+}
+
+/// Port of `EL2MATH3:0938` (slot `DS:02cc`): square root of a 32-bit-mantissa float (`DX:AX`,
+/// taken as positive, exponent `CX`). As [`sqrt_float`] on 32 bits: `DX:AX <<= 1`, `CX` halved,
+/// an odd exponent shifts back and rounds up. Then `CALLF [031c]` ([`sqrt32`]), the root is
+/// halved and normalised with `CALLF [02a8]` ([`norm_unsigned`]), exponent in `DX`. `CX` keeps
+/// the halved exponent.
+pub fn sqrt_float32(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let mut m = ((c.x(EDX) as u32) << 16 | c.x(EAX) as u32) << 1;
+    let cx0 = c.x(ECX);
+    let mut cx = ((cx0 as i16) >> 1) as u16;
+    let mut steps = 4;
+    if cx0 & 1 != 0 {
+        m >>= 1;
+        cx = cx.wrapping_add(1);
+        steps += 3;
+    }
+    c.set_x(EAX, m as u16);
+    c.set_x(EDX, (m >> 16) as u16);
+    c.set_x(ECX, cx);
+    steps += 1 + sqrt32_body(c, bus);
+    c.set_x(EAX, c.x(EAX) >> 1);
+    c.set_x(EDX, cx);
+    let mut r = Regs::load(c);
+    steps += 3 + norm_unsigned(&mut r).steps;
+    r.store(c);
+    c.retf(bus);
+    steps + 1
+}
+
+/// `POP EAX; SUB SP,size; MOV BP,SP; PUSH EAX; PUSH saved`: a stack frame for the caller, with
+/// the far return address re-pushed below it. Returns `BP`.
+fn take_frame(c: &mut Cpu, bus: &mut dyn Bus, size: u16, saved: u16) -> u16 {
+    let sp = c.sp();
+    let ret = bus.read32(lin(c.ss, sp));
+    let bp = sp.wrapping_add(4).wrapping_sub(size);
+    c.set_x(EBP, bp);
+    bus.write32(lin(c.ss, bp.wrapping_sub(4)), ret);
+    c.set_x(ESP, bp.wrapping_sub(6));
+    bus.write16(lin(c.ss, bp.wrapping_sub(6)), saved);
+    bp
+}
+
+/// Port of `EL2MATH3:0ba1` (slot `DS:0278`): give the caller a 0E76h-byte stack frame. `BP` =
+/// `SP` = the frame, its first 150h bytes zeroed (`REP STOSD` through `ES` = `SS`, so `DF`
+/// applies), then `[BP+E72h]` = `00A8h`, `[BP+E74h]` = `[BP+E70h]` = `FFFFh`. Leaves `EAX` = 0,
+/// `CX` = 0 and `DI` past the cleared block. (With `DF` set the clear runs downwards over the
+/// saved `ES` and return address, as in the original.)
+pub fn frame_e76(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let bp = take_frame(c, bus, 0x0E76, c.es);
+    let step: u16 = if c.flags & DF != 0 { 4u16.wrapping_neg() } else { 4 };
+    let mut di = bp;
+    for _ in 0..0x54 {
+        bus.write32(lin(c.ss, di), 0);
+        di = di.wrapping_add(step);
+    }
+    c.es = c.pop16(bus);
+    bus.write16(lin(c.ss, bp.wrapping_add(0x0E72)), 0x00A8);
+    bus.write16(lin(c.ss, bp.wrapping_add(0x0E74)), 0xFFFF);
+    bus.write16(lin(c.ss, bp.wrapping_add(0x0E70)), 0xFFFF);
+    c.r[EAX] = 0;
+    c.set_x(ECX, 0);
+    c.set_x(EDI, di);
+    c.retf(bus);
+    16
+}
+
+/// Port of `EL2MATH3:0bcf` (slot `DS:0274`): give the caller a 5598h-byte stack frame. `BP` =
+/// `SP` = the frame. 21 passes clear, at `BP+46h` + 400h·k, eight words 80h apart, and the 16
+/// bytes at `BP+5596h` − 10h·(k+1). Then `[BP]` = `00A8h`, `[BP+2]` = `FFFFh`. Leaves `EAX` =
+/// 0, `CX` = 0, `DI` = `BP+5446h`; `SI` is preserved.
+pub fn frame_5598(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let bp = take_frame(c, bus, 0x5598, c.x(ESI));
+    let mut di = bp.wrapping_add(0x5596);
+    let mut si = bp.wrapping_add(0x46);
+    for _ in 0..0x15 {
+        for j in 0..8u16 {
+            bus.write16(lin(c.ss, si.wrapping_add(j * 0x80)), 0);
+        }
+        si = si.wrapping_add(0x400);
+        di = di.wrapping_sub(0x10);
+        for j in 0..4u16 {
+            bus.write32(lin(c.ss, di.wrapping_add(j * 4)), 0);
+        }
+    }
+    bus.write16(lin(c.ss, bp), 0x00A8);
+    bus.write16(lin(c.ss, bp.wrapping_add(2)), 0xFFFF);
+    c.r[EAX] = 0;
+    c.set_x(ECX, 0);
+    c.set_x(EDI, di);
+    let si = c.pop16(bus);
+    c.set_x(ESI, si);
+    c.retf(bus);
+    9 + 0x15 * 15 + 4
+}
+
+/// `MOV DI,[angle]; (ADD DI,4000h;) BTR DI,15; SHR DI,3; AND DI,FFFEh; MOV r,[DI+5BFFh]` and
+/// `NEG r` for the second half turn: the sine (or, with the quarter-turn offset, cosine) of a
+/// 16-bit angle from [`SINE_TABLE`]. Returns (value, `DI`, instructions).
+fn sine(c: &Cpu, bus: &mut dyn Bus, angle: u16, cosine: bool) -> (u16, u16, u64) {
+    let mut di = bus.read16(lin(c.ds, angle));
+    let mut steps = 6;
+    if cosine {
+        di = di.wrapping_add(0x4000);
+        steps += 1;
+    }
+    let negative = di & 0x8000 != 0;
+    di = ((di & 0x7FFF) >> 3) & 0xFFFE;
+    let v = bus.read16(lin(c.ds, di.wrapping_add(SINE_TABLE)));
+    if negative {
+        (v.wrapping_neg(), di, steps + 2)
+    } else {
+        (v, di, steps)
+    }
+}
+
+/// Main data segment offsets of the two angles the rotation routines read.
+pub const ANGLE_A: u16 = 0x1f35;
+pub const ANGLE_B: u16 = 0x1f37;
+
+/// The four lookups shared by `EL2MATH3:09e9` and `0ac9`: `AX` = sin a, `BX` = sin b, `CX` =
+/// cos a, `BP` = cos b for the angles at `DS:1f35` (a) and `DS:1f37` (b); `DI` from the last.
+fn sines(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let (sa, _, n1) = sine(c, bus, ANGLE_A, false);
+    let (sb, _, n2) = sine(c, bus, ANGLE_B, false);
+    let (ca, _, n3) = sine(c, bus, ANGLE_A, true);
+    let (cb, di, n4) = sine(c, bus, ANGLE_B, true);
+    c.set_x(EAX, sa);
+    c.set_x(EBX, sb);
+    c.set_x(ECX, ca);
+    c.set_x(EBP, cb);
+    c.set_x(EDI, di);
+    n1 + n2 + n3 + n4
+}
+
+/// `IMUL` of two Q15 values then `SHLD DX,AX,1`: (`DX`, `AX`) = (high word of the product
+/// doubled, low word of the product).
+fn qmul(a: u16, b: u16) -> (u16, u16) {
+    let p = (a as i16 as i32 * b as i16 as i32) as u32;
+    (((p >> 16) as u16) << 1 | (p as u16) >> 15, p as u16)
+}
+
+/// The products both rotation routines form, in their order: (sa·sb, ca·cb, sa·cb, sb·ca),
+/// leaving `DX`/`AX` as the last `IMUL`/`SHLD` and `NEG` leave them.
+fn rotation_products(c: &mut Cpu) -> [u16; 4] {
+    let (sa, sb, ca, cb) = (c.x(EAX), c.x(EBX), c.x(ECX), c.x(EBP));
+    let p1 = qmul(sa, sb).0;
+    let p2 = qmul(ca, cb).0;
+    let p3 = qmul(sa, cb).0.wrapping_neg();
+    let (p4, lo) = qmul(sb, ca);
+    let p4 = p4.wrapping_neg();
+    c.set_x(EAX, lo);
+    c.set_x(EDX, p4);
+    [p1, p2, p3, p4]
+}
+
+/// Port of `EL2MATH3:09e9` (slot `DS:02e0`): build a 3×3 Q15 rotation matrix at `ES:SI` (words
+/// 0–10h) from the angles at `DS:1f35` (a) and `DS:1f37` (b), using [`SINE_TABLE`]:
+///
+/// | `+0` −sb·ca | `+2` ca·cb | `+4` −sa |
+/// | `+6` cb | `+8` sb | `+A` 0 |
+/// | `+C` sa·sb | `+E` −sa·cb | `+10` −ca |
+///
+/// (a row-major reading is *assumed*.) Registers: `AX` = sin a… as left by the last product.
+pub fn rotation_02e0(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let steps = sines(c, bus);
+    let (sa, sb, ca, cb) = (c.x(EAX), c.x(EBX), c.x(ECX), c.x(EBP));
+    let [p1, p2, p3, p4] = rotation_products(c);
+    let at = |k: u16| lin(c.es, c.x(ESI).wrapping_add(k));
+    bus.write16(at(0x4), sa.wrapping_neg());
+    bus.write16(at(0x8), sb);
+    bus.write16(at(0x10), ca.wrapping_neg());
+    bus.write16(at(0x6), cb);
+    bus.write16(at(0xa), 0);
+    bus.write16(at(0xc), p1);
+    bus.write16(at(0x2), p2);
+    bus.write16(at(0xe), p3);
+    bus.write16(at(0x0), p4);
+    c.retf(bus);
+    steps + 26
+}
+
+/// Port of `EL2MATH3:0ac9` (slot `DS:02dc`): the companion of [`rotation_02e0`] with another
+/// layout at `ES:SI`:
+///
+/// | `+0` ca·cb | `+2` sa | `+4` −sb·ca |
+/// | `+6` −sa·cb | `+8` ca | `+A` sa·sb |
+/// | `+C` sb | `+E` 0 | `+10` cb |
+pub fn rotation_02dc(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let steps = sines(c, bus);
+    let (sa, sb, ca, cb) = (c.x(EAX), c.x(EBX), c.x(ECX), c.x(EBP));
+    let [p1, p2, p3, p4] = rotation_products(c);
+    let at = |k: u16| lin(c.es, c.x(ESI).wrapping_add(k));
+    bus.write16(at(0x2), sa);
+    bus.write16(at(0xc), sb);
+    bus.write16(at(0x8), ca);
+    bus.write16(at(0x10), cb);
+    bus.write16(at(0xe), 0);
+    bus.write16(at(0xa), p1);
+    bus.write16(at(0x0), p2);
+    bus.write16(at(0x6), p3);
+    bus.write16(at(0x4), p4);
+    c.retf(bus);
+    steps + 24
+}
 
 /// Every routine in this module: (overlay offset, vector slot, name, port).
 pub const PORTS: &[(u16, u16, &str, Port)] = &[
-    (0x1cf5, 0x02b4, "mul", mul),
-    (0x1cfe, 0x02b8, "mul", mul),
-    (0x1d07, 0x0288, "div_norm", div_norm),
-    (0x1d2e, 0x02b0, "div", div),
-    (0x1d41, 0x02d0, "sub", sub),
-    (0x1d43, 0x027c, "add", add),
-    (0x1d63, 0x02d4, "sub32", sub32),
-    (0x1d6d, 0x0280, "add32", add32),
-    (0x1da1, 0x0284, "add_unsigned", add_unsigned),
-    (0x1db6, 0x02c4, "from_u32", from_u32),
-    (0x1dd2, 0x02bc, "from_i32", from_i32),
-    (0x1dec, 0x02c0, "norm_i32", norm_i32),
-    (0x1e03, 0x028c, "to_fixed32", to_fixed32),
-    (0x1e22, 0x0290, "to_fixed32_raw", to_fixed32_raw),
-    (0x1e34, 0x029c, "to_int16", to_int16),
-    (0x1e4a, 0x0294, "to_fixed32_unsigned", to_fixed32_unsigned),
-    (0x1e65, 0x0298, "to_fixed64", to_fixed64),
-    (0x1e80, 0x02a8, "norm_unsigned", norm_unsigned),
-    (0x1e8d, 0x02a0, "norm16", norm16),
-    (0x1e9a, 0x02a4, "norm32", norm32),
-    (0x1eaf, 0x02ac, "norm_positive", norm_positive),
+    (0x1cf5, 0x02b4, "mul", |c, b| with_regs(c, b, mul)),
+    (0x1cfe, 0x02b8, "mul", |c, b| with_regs(c, b, mul)),
+    (0x1d07, 0x0288, "div_norm", |c, b| with_regs(c, b, div_norm)),
+    (0x1d2e, 0x02b0, "div", |c, b| with_regs(c, b, div)),
+    (0x1d41, 0x02d0, "sub", |c, b| with_regs(c, b, sub)),
+    (0x1d43, 0x027c, "add", |c, b| with_regs(c, b, add)),
+    (0x1d63, 0x02d4, "sub32", |c, b| with_regs(c, b, sub32)),
+    (0x1d6d, 0x0280, "add32", |c, b| with_regs(c, b, add32)),
+    (0x1da1, 0x0284, "add_unsigned", |c, b| with_regs(c, b, add_unsigned)),
+    (0x1db6, 0x02c4, "from_u32", |c, b| with_regs(c, b, from_u32)),
+    (0x1dd2, 0x02bc, "from_i32", |c, b| with_regs(c, b, from_i32)),
+    (0x1dec, 0x02c0, "norm_i32", |c, b| with_regs(c, b, norm_i32)),
+    (0x1e03, 0x028c, "to_fixed32", |c, b| with_regs(c, b, to_fixed32)),
+    (0x1e22, 0x0290, "to_fixed32_raw", |c, b| with_regs(c, b, to_fixed32_raw)),
+    (0x1e34, 0x029c, "to_int16", |c, b| with_regs(c, b, to_int16)),
+    (0x1e4a, 0x0294, "to_fixed32_unsigned", |c, b| with_regs(c, b, to_fixed32_unsigned)),
+    (0x1e65, 0x0298, "to_fixed64", |c, b| with_regs(c, b, to_fixed64)),
+    (0x1e80, 0x02a8, "norm_unsigned", |c, b| with_regs(c, b, norm_unsigned)),
+    (0x1e8d, 0x02a0, "norm16", |c, b| with_regs(c, b, norm16)),
+    (0x1e9a, 0x02a4, "norm32", |c, b| with_regs(c, b, norm32)),
+    (0x1eaf, 0x02ac, "norm_positive", |c, b| with_regs(c, b, norm_positive)),
+    (0x0967, 0x031c, "sqrt32", sqrt32),
+    (0x0952, 0x0320, "length3", length3),
+    (0x0922, 0x02c8, "sqrt_float", sqrt_float),
+    (0x0938, 0x02cc, "sqrt_float32", sqrt_float32),
+    (0x0ba1, 0x0278, "frame_e76", frame_e76),
+    (0x0bcf, 0x0274, "frame_5598", frame_5598),
+    (0x09e9, 0x02e0, "rotation_02e0", rotation_02e0),
+    (0x0ac9, 0x02dc, "rotation_02dc", rotation_02dc),
 ];
