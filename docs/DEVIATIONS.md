@@ -11,7 +11,7 @@ step that only exists to set up DOS hardware or memory and goes straight into th
 
 | Original behaviour | Reimplementation | Status |
 |---|---|---|
-| Text-mode prompt "Please select sound support required" (1 Roland LAPC1, 2 AdLib / SoundBlaster, 3 PC speaker, 4 No sound) before the game starts | Not shown. Boot goes straight to the game's own start-up (intro/menu) | Decided; prompt routine not yet traced (M1) |
+| Text-mode prompt "Please select sound support required" (1 Roland LAPC1, 2 AdLib / SoundBlaster, 3 PC speaker, 4 No sound) before the game starts | Not shown. Boot goes straight to the game's own start-up (intro/menu) | Decided; prompt traced: `EL2SETUP:04af` sets `DS:8920`, see [OVERLAYS.md](OVERLAYS.md) §5 |
 | Choosing a sound driver overlay (`EL2ROL`, `EL2ADLIB`, `EL2SPK`) | No driver choice. Audio reproduces one reference output (AdLib / SoundBlaster, option 2, which the DOSBox reference config also uses) through the platform's audio API | Decided; reference driver may be revisited when audio is traced |
 | Video driver overlay (`EL2MCGA3`) and VGA mode 13h set-up | The 320×200 palettised frame is produced in software and presented with wgpu | Decided |
 | DOS memory checks ("Not enough free memory") and overlay loading | Not reproduced. Overlay code is ported like the rest of the game | Decided |

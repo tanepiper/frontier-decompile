@@ -2,8 +2,8 @@
 
 What is known about the shipped DOS build of Frontier: Elite II. Evidence is static: MZ headers read
 with `crates/formats::mz`, Ghidra 12.1.4 headless analysis (`tools/ghidra/export.sh`), REA load-image
-verification, and one observed boot under DOSBox Staging 0.83.0. Nothing here was traced through
-execution yet.
+verification, disassembly of the loader paths, and one observed boot under DOSBox Staging 0.83.0.
+Nothing here was traced through execution yet.
 
 ## 1. The build
 
@@ -40,20 +40,34 @@ shown).
 Strings include the full ship list (Missile … Long-range Cruiser), station signage, and the overlay
 names the loader opens. `"Not enough free memory$"` is a DOS `$`-terminated message.
 
-## 3. Ghidra coverage (the first problem)
+## 3. Ghidra coverage and the overlay loader
 
-Default auto-analysis finds only 29 functions in `FRONTIER.EXE` and about one per overlay. The
-decompiler also treats the overlays' image start as code, which it is not reliably. Reasons
-(*inferred*): the code is reached through tables and register-indirect calls, and overlays are loaded
-by the program's own loader, so Ghidra sees no call graph into them.
+Default auto-analysis found only 29 functions in `FRONTIER.EXE` and about one per overlay, and it
+decompiled each overlay's image start as code. The cause is now known (see
+[OVERLAYS.md](OVERLAYS.md)):
 
-Next steps (M1):
-1. Trace the overlay loader from the strings `EL2*.OVL`, recover how an overlay's entry table is
-   laid out, and where it is placed in memory (segment) so overlay addresses can be related to
-   main-program calls.
-2. Write a Ghidra script that seeds functions from call targets, jump tables and the overlay
-   entry tables, then re-run the export.
-3. Record function roles in a names table as they are identified.
+- Nearly every call in the main program is `lcall [disp16]` through a far-pointer vector table at
+  `DS:0000`–`0357` (main data segment, file paragraph `0x1615`). Slots `0000`–`01cf` hold the
+  program's own routines. The rest are filled at run time by the video, maths, sound and set-up
+  overlays.
+- Overlays are separate DOS programs. `1000:d34c` runs them with DOS EXEC (`4B00h`). Their common
+  94-byte stub at `0000` stays resident (`3100h`) at its own load segment and returns the address of
+  an export block at `005e` through a far pointer encoded as letters on its command line. Ghidra had
+  run the stub on into that block.
+- `EL2M00`–`EL2M19` are demand-loaded modules in a 64-slot table at `DS:0396`. Lazy thunks
+  (`1000:d5b4`…) build the name `EL2Mnn.OVL` from the slot number, load the module and jump to one of
+  its 12 handlers. Unlocked modules are evicted when DOS runs out of memory.
+
+`tools/ghidra/SeedFunctions.java` (run by `export.sh`) seeds functions from these tables, the
+overlay exports and module headers, call targets and near jump tables. It also sets call overrides
+so `lcall [vec]` decompiles as a direct call. Coverage went from 29 to 342 functions in
+`FRONTIER.EXE` (82 KB of code in functions) and from 36 to 741 across the overlays.
+
+M1 status:
+1. ~~Trace the overlay loader and the overlay entry tables~~: done, [OVERLAYS.md](OVERLAYS.md).
+2. ~~Seed functions from call targets, jump tables and the overlay entry tables~~: done.
+3. Resolve the remaining indirect calls (computed module slots, register calls) and record function
+   roles in a names table as they are identified.
 
 ## 4. Observed in the original (DOSBox)
 
@@ -61,7 +75,8 @@ DOSBox Staging 0.83.0, `tools/dosbox/frontier.conf` (S3 SVGA machine, 16 MB, 250
 
 - From a fresh `game-data/run`, the program first prints a text-mode prompt, "Please select sound
   support required", with options 1 Roland LAPC1, 2 AdLib / SoundBlaster, 3 PC Internal speaker,
-  4 No sound. This presumably selects between `EL2ROL`, `EL2ADLIB` and `EL2SPK` (*inferred*).
+  4 No sound. Statically, `EL2SETUP:04af` stores 1, 2 or 4 in `DS:8920`, and `1000:ee5b` loads
+  `EL2ROL`, `EL2ADLIB` or `EL2SPK`. Option 4 loads no driver ([OVERLAYS.md](OVERLAYS.md) §5).
 - In the very first session it instead switched to VGA mode 13h (320×200, 256 colours) about 6 s
   after launch and showed the cockpit landed at Merlin, 12:00:01 1-Jan-3200, with no intro and no
   menu. Whether that run got past the prompt through stray input is unknown. Re-check this by
@@ -71,5 +86,4 @@ DOSBox Staging 0.83.0, `tools/dosbox/frontier.conf` (S3 SVGA machine, 16 MB, 250
 
 - What are `LAVE`, `MARS`, `MOON`, `VTOL`, `BATTLE` and the `LATIS._0n` files?
 - After the sound prompt, does the game play the intro and offer the start-position menu (`LAVE`, `MARS`, …)?
-- How does the program choose between `EL2ADLIB`, `EL2ROL` and `EL2SPK`?
 - Does the main program run entirely in real mode, or does it switch to protected or unreal mode?

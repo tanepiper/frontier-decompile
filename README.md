@@ -55,6 +55,7 @@ See [docs/FINDINGS.md](docs/FINDINGS.md) for what is known about the binaries an
 
 - [x] M0: reference runtime (DOSBox Staging), repository layout, Ghidra export
 - [ ] M1: function discovery across `FRONTIER.EXE` and the overlays; overlay loader traced
+  (loader and seeding done, see [docs/OVERLAYS.md](docs/OVERLAYS.md); indirect calls and names remain)
 - [ ] M2: data formats (`.GRF` graphics, music, ship and planet models, saved commanders)
 - [ ] M3: boot flow and intro rendered by the reimplementation
 - [ ] M4: maths core (fixed point, RNG) and galaxy/system generation, bit-exact

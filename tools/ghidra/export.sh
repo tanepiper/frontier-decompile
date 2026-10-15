@@ -20,9 +20,11 @@ fi
 export JAVA_HOME="${JAVA_HOME:-/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home}"
 
 # Every overlay is its own MZ image, imported as a separate program in one project.
+# SeedFunctions.java adds the functions reached only through vector tables and overlay export
+# blocks (docs/OVERLAYS.md) before ExportAll.java writes the export.
 mkdir -p "$out/ghidra-project" "$out/export"
 MAXMEM="${MAXMEM:-4G}" "$ghidra/support/analyzeHeadless" "$out/ghidra-project" frontier \
   -overwrite -max-cpu "${GHIDRA_CPUS:-6}" \
   -import "$bins/FRONTIER.EXE" "$bins"/EL2*.OVL \
-  -scriptPath "$repo/tools/ghidra" -postScript ExportAll.java "$out/export" \
-  2>&1 | tee "$out/headless.log" | grep -E --line-buffered "EXPORT DONE|Analysis succeeded|ERROR.*Exception"
+  -scriptPath "$repo/tools/ghidra" -postScript SeedFunctions.java -postScript ExportAll.java "$out/export" \
+  2>&1 | tee "$out/headless.log" | grep -E --line-buffered "SEED DONE|call overrides|EXPORT DONE|ERROR.*Exception"
