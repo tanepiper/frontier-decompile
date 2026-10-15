@@ -1328,11 +1328,14 @@ fn interpolate(v: &mut V) -> u64 {
         }
     }
     let b = v.pop16();
-    let rel = |v: &mut V, k: u16, p: u32| p.wrapping_add(v.ss32(b.wrapping_add(k)));
+    // ADD lo,[BP+k]; ADC hi,[BP+k+2]: two word accesses, each offset wrapping on its own.
+    let words = |v: &mut V, at: u16| v.ss16(at) as u32 | (v.ss16(at.wrapping_add(2)) as u32) << 16;
+    let rel = |v: &mut V, k: u16, p: u32| p.wrapping_add(words(v, b.wrapping_add(k)));
     let (rx, ry, rz) = (rel(v, 0x14, px), rel(v, 0x18, py), rel(v, 0x1c, pz));
     let out = v.ss16(v.c.x(ESP).wrapping_add(4));
     for (k, r) in [(0x14u16, rx), (0x18, ry), (0x1c, rz)] {
-        v.set_ss32(out.wrapping_add(k), r);
+        v.set_ss16(out.wrapping_add(k), r as u16);
+        v.set_ss16(out.wrapping_add(k + 2), (r >> 16) as u16);
     }
     v.c.set_x(EDI, rx as u16);
     v.c.set_x(ESI, (rx >> 16) as u16);
@@ -1887,4 +1890,756 @@ pub fn face_shade(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
     v.c.set_x(ESI, si);
     v.retf();
     n + 8
+}
+
+// ---- 32-bit arithmetic on register pairs -----------------------------------------------------
+
+/// Main data segment dword scratch at `DS:7bc` (the float library's work area, *inferred*):
+/// the squared length for [`normalise_pairs`].
+const WORK: u16 = 0x07bc;
+/// Main data segment dword at `DS:7d4`: the length [`normalise_pairs`] scales to.
+const TARGET_LENGTH: u16 = 0x07d4;
+
+fn pair(c: &Cpu, hi: usize, lo: usize) -> u32 {
+    (c.x(hi) as u32) << 16 | c.x(lo) as u32
+}
+
+fn set_pair(c: &mut Cpu, hi: usize, lo: usize, v: u32) {
+    c.set_x(hi, (v >> 16) as u16);
+    c.set_x(lo, v as u16);
+}
+
+/// Port of `EL2MATH3:1ebb` (slot `DS:02f4`): unsigned 32-bit division by shift and subtract.
+/// `DX:AX` / `CX:BX` → quotient `DX:AX`, remainder `CX:BX`. The divisor is shifted up while the
+/// dividend is still larger (until its top bit is set), then one quotient bit is decided per
+/// shift back down. The quotient's high word is built in `DS:7bc`, which is restored after. A
+/// zero divisor with a non-zero dividend never returns.
+pub fn divide32(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let mut num = pair(c, EDX, EAX);
+    let mut den = pair(c, ECX, EBX);
+    if den == 0 && num != 0 {
+        return DECLINE;
+    }
+    let mut bit: u32 = 1;
+    let mut q: u32 = 0;
+    let mut n: u64 = 4 + 4 + 2; // pushes; XOR BP; MOV [7bc]; MOV DI,1; XOR SI; OR CX,CX; JS
+    if (den as i32) >= 0 {
+        loop {
+            // 1ed1: SHL DI; RCL SI; SHL BX; RCL CX; OR CX,CX; JS 1eef
+            bit <<= 1;
+            den <<= 1;
+            n += 6;
+            if (den as i32) < 0 {
+                break;
+            }
+            // CMP DX,CX; JA 1ed1; JC 1ee7; CMP AX,BX; JA 1ed1
+            let (nh, dh) = (num >> 16, den >> 16);
+            let more = if nh != dh {
+                n += if nh > dh { 2 } else { 3 };
+                nh > dh
+            } else {
+                n += 5;
+                (num & 0xffff) > (den & 0xffff)
+            };
+            if !more {
+                // 1ee7: SHR SI; RCR DI; SHR CX; RCR BX
+                bit >>= 1;
+                den >>= 1;
+                n += 4;
+                break;
+            }
+        }
+    }
+    loop {
+        // 1eef: CMP DX,CX; JC; JA; CMP AX,BX; JC
+        let (lt, k) = lt32_b(num, den);
+        n += k;
+        if !lt {
+            num = num.wrapping_sub(den);
+            q = q.wrapping_add(bit);
+            n += 4;
+        }
+        // SHR SI,1; RCR DI,1; JNZ (ZF from SI); OR DI,DI; JNZ
+        bit >>= 1;
+        n += 3;
+        if bit >> 16 == 0 {
+            n += 2;
+            if bit == 0 {
+                break;
+            }
+        }
+        den >>= 1;
+        n += 2; // 1eeb: SHR CX,1; RCR BX,1
+    }
+    set_pair(c, ECX, EBX, num);
+    set_pair(c, EDX, EAX, q);
+    c.retf(bus);
+    n + 9
+}
+
+/// Port of `EL2MATH3:1f1f` (slot `DS:02f8`): the 3×3 matrix of words at `ES:BP` (m0…m8) times
+/// (`AX`, `BX`, `CX`), each row's 32-bit sum doubled: `DX:AX` = 2(m0·a + m3·b + m6·c), `CX:BX`
+/// with m1/m4/m7, `SI:DI` with m2/m5/m8. `DS:7bc` keeps a.
+pub fn matrix_vector(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let (a, b, cc) = (c.x(EAX), c.x(EBX), c.x(ECX));
+    bus.write16(lin(c.ds, WORK), a);
+    let m = |bus: &mut dyn Bus, k: u16| bus.read16(lin(c.es, c.x(EBP).wrapping_add(2 * k)));
+    let p = |x: u16, y: u16| (x as i16 as i32 * y as i16 as i32) as u32;
+    let mut rows = [0u32; 3];
+    for (i, r) in rows.iter_mut().enumerate() {
+        let i = i as u16;
+        let (m0, m3, m6) = (m(bus, i), m(bus, i + 3), m(bus, i + 6));
+        *r = p(m0, a).wrapping_add(p(m3, b)).wrapping_add(p(m6, cc)) << 1;
+    }
+    set_pair(c, EDX, EAX, rows[0]);
+    set_pair(c, ECX, EBX, rows[1]);
+    set_pair(c, ESI, EDI, rows[2]);
+    // PUSH AX; PUSH DX for the first two rows, popped again: left below SP.
+    let sp = c.x(ESP);
+    for (k, w) in [rows[0] as u16, (rows[0] >> 16) as u16, rows[1] as u16, (rows[1] >> 16) as u16].into_iter().enumerate() {
+        bus.write16(lin(c.ss, sp.wrapping_sub(2 * (k as u16 + 1))), w);
+    }
+    c.retf(bus);
+    51
+}
+
+/// The 32-round restoring division of [`divide31`] on register pairs: (quotient, rounds that
+/// borrowed). Each round is 8 instructions, 10 when it borrows.
+fn restoring(x: u32, d: u32) -> (u32, u64) {
+    let (q, n) = divide31(x, d);
+    // divide31 counts 5 per round + 1 per borrow + 2 for NOT/SHR.
+    let borrows = n - 2 - 5 * 32;
+    (q, borrows)
+}
+
+/// `(|v|·L)`: the 16 × 16-bit products of `EL2MATH3:20e1`, doubled, with v's sign; with the
+/// sign tests 28 instructions, plus 4 for each negation.
+fn scale_pair(v: u32, l: u32) -> (u32, u64) {
+    let neg = (v as i32) < 0;
+    let a = if neg { v.wrapping_neg() } else { v };
+    let (hq, lq) = (a >> 16, a & 0xffff);
+    let (hl, ll) = (l >> 16, l & 0xffff);
+    let sum = hq.wrapping_mul(ll).wrapping_add(lq.wrapping_mul(hl));
+    let r = hq.wrapping_mul(hl).wrapping_add(sum >> 16) << 1;
+    if neg {
+        (r.wrapping_neg(), 28 + 8)
+    } else {
+        (r, 28)
+    }
+}
+
+/// `|v| / len` by [`restoring`], with v's sign (`EL2MATH3:2097`…): (result, instructions from
+/// the sign test to the signed result).
+fn divide_signed(v: u32, len: u32) -> (u32, u64) {
+    let neg = (v as i32) < 0;
+    let a = if neg { v.wrapping_neg() } else { v };
+    let (q, borrows) = restoring(a, len);
+    let n = 2 + 2 + 32 * 8 + 2 * borrows + 4 + 3 + if neg { 8 } else { 0 };
+    (if neg { q.wrapping_neg() } else { q }, n)
+}
+
+/// Body of `EL2MATH3:202e` up to its `RETF`. Returns the instructions, or [`DECLINE`].
+fn normalise_pairs_body(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let x = pair(c, EDX, EAX);
+    let y = pair(c, ECX, EBX);
+    let z = pair(c, ESI, EDI);
+    let s2 = bus.read32(lin(c.ds, WORK)) << 1;
+    let mut n: u64 = 15;
+    let mut len = (s2 >> 1).wrapping_add(0x4000_0000);
+    let mut rounds = 0;
+    loop {
+        let (q, borrows) = restoring(s2, len);
+        n += 2 + 2 + 32 * 8 + 2 * borrows + 2 + 2 + 2;
+        len = len.wrapping_add(q) >> 1;
+        let d = q.wrapping_sub(len);
+        n += 4 + 2;
+        let hi = (d >> 16) as i16;
+        if hi < -1 {
+            n += 2;
+        } else if hi > -1 {
+            n += 3;
+            break;
+        } else {
+            n += 5;
+            if d & 0xffff >= 0x8000 {
+                break;
+            }
+        }
+        rounds += 1;
+        if rounds > 1000 {
+            return DECLINE;
+        }
+    }
+    bus.write32(lin(c.ds, WORK), len);
+    let target = bus.read32(lin(c.ds, TARGET_LENGTH));
+    // POPs and stores after the root; PUSH SI/DI/DX; the moves between components and the
+    // PUSH CX / PUSH SI before the y and z divisions.
+    n += 6 + 3 + 10 + 6 + 2;
+    let mut out = [0u32; 3];
+    for (i, v) in [x, y, z].into_iter().enumerate() {
+        let (q, k) = divide_signed(v, len);
+        let (r, m) = scale_pair(q, target);
+        out[i] = r;
+        n += k + 4 + m;
+    }
+    n += 2 + 4;
+    set_pair(c, EDX, EAX, out[0]);
+    set_pair(c, ECX, EBX, out[1]);
+    set_pair(c, ESI, EDI, out[2]);
+    n
+}
+
+/// Port of `EL2MATH3:202e` (slot `DS:0328`): [`normalise`] on register pairs: scale (`DX:AX`,
+/// `CX:BX`, `SI:DI`) to the length at `DS:7d4`, given the squared length at `DS:7bc` (doubled,
+/// Newton's square root, kept in `DS:7bc`). `BP` is preserved.
+pub fn normalise_pairs(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let n = normalise_pairs_body(c, bus);
+    if n == DECLINE {
+        return DECLINE;
+    }
+    c.retf(bus);
+    n + 1
+}
+
+/// `v`²/2^32, roughly, from 16-bit halves of |v| (`EL2MATH3:1fa0`…): (square, instructions).
+fn square_pair(v: u32) -> (u32, u64) {
+    let neg = (v as i32) < 0;
+    let a = if neg { v.wrapping_neg() } else { v };
+    let (hi, lo) = (a >> 16, a & 0xffff);
+    let cross = (lo.wrapping_mul(hi) << 1) >> 16;
+    (hi.wrapping_mul(hi).wrapping_add(cross), 2 + 9 + if neg { 4 } else { 0 })
+}
+
+/// Port of `EL2MATH3:1f93` (slot `DS:0324`): normalise (`DX:AX`, `CX:BX`, `SI:DI`) to the length
+/// at `DS:7d4`: the squared length from 16-bit halves, then `CALLF [0328]`
+/// ([`normalise_pairs`]). `DS:7bc` is restored after.
+pub fn length_normalise(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let saved = bus.read32(lin(c.ds, WORK));
+    let (sx, a) = square_pair(pair(c, EDX, EAX));
+    let (sy, b) = square_pair(pair(c, ECX, EBX));
+    let (sz, d) = square_pair(pair(c, ESI, EDI));
+    bus.write32(lin(c.ds, WORK), sx.wrapping_add(sy).wrapping_add(sz));
+    let n = normalise_pairs_body(c, bus);
+    if n == DECLINE {
+        return DECLINE;
+    }
+    bus.write32(lin(c.ds, WORK), saved);
+    c.retf(bus);
+    9 + a + 6 + b + 6 + d + 2 + 2 + 6 + 1 + n + 1 + 1 + 1
+}
+
+// ---- positions, orbits and the 64-bit work area -----------------------------------------------
+
+/// `MOV DI,angle; BTR DI,15; JNC; SHR DI,3; AND DI,FFFEh; MOV r,[DI+5BFFh]; (NEG r; JMP)`: the
+/// sine of a 16-bit angle from [`SINE_TABLE`]: (value, index register, instructions after the
+/// `BTR`'s `JNC`: 5 for the second half turn, 3 otherwise).
+fn sine_reg(ds: u16, bus: &mut dyn Bus, angle: u16) -> (u16, u16, u64) {
+    let negative = angle & 0x8000 != 0;
+    let idx = ((angle & 0x7fff) >> 3) & 0xfffe;
+    let v = bus.read16(lin(ds, idx.wrapping_add(SINE_TABLE)));
+    if negative {
+        (v.wrapping_neg(), idx, 5)
+    } else {
+        (v, idx, 3)
+    }
+}
+
+/// Port of `EL2MATH3:24f2` (slot `DS:02d8`): a direction from two angles, a (`AX`) and b (`BX`):
+/// `AX` = −sb·ca, `BX` = sa·sb, `CX` = cb (Q15, `DX` = sb·ca). `SI` and `DI` are preserved.
+pub fn direction(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let (a, b) = (c.x(EAX), c.x(EBX));
+    let (sb, _, n1) = sine_reg(c.ds, bus, b);
+    let (cb, _, n2) = sine_reg(c.ds, bus, b.wrapping_add(0x4000));
+    let (sa, _, n3) = sine_reg(c.ds, bus, a);
+    let (ca, _, n4) = sine_reg(c.ds, bus, a.wrapping_add(0x4000));
+    let sasb = qmul(sa, sb).0;
+    let sbca = qmul(sb, ca).0;
+    c.set_x(EAX, sbca.wrapping_neg());
+    c.set_x(EBX, sasb);
+    c.set_x(ECX, cb);
+    c.set_x(EDX, sbca);
+    c.retf(bus);
+    2 + 3 + n1 + 3 + n2 + 4 + n3 + 3 + n4 + 13
+}
+
+fn ds16(c: &Cpu, bus: &mut dyn Bus, off: u16) -> u16 {
+    bus.read16(lin(c.ds, off))
+}
+fn set_ds16(c: &Cpu, bus: &mut dyn Bus, off: u16, v: u16) {
+    bus.write16(lin(c.ds, off), v)
+}
+fn ds32(c: &Cpu, bus: &mut dyn Bus, off: u16) -> u32 {
+    bus.read32(lin(c.ds, off))
+}
+fn set_ds32(c: &Cpu, bus: &mut dyn Bus, off: u16, v: u32) {
+    bus.write32(lin(c.ds, off), v)
+}
+fn es16(c: &Cpu, bus: &mut dyn Bus, off: u16) -> u16 {
+    bus.read16(lin(c.es, c.x(ESI).wrapping_add(off)))
+}
+fn set_es16(c: &Cpu, bus: &mut dyn Bus, off: u16, v: u16) {
+    bus.write16(lin(c.es, c.x(ESI).wrapping_add(off)), v)
+}
+fn es32(c: &Cpu, bus: &mut dyn Bus, off: u16) -> u32 {
+    bus.read32(lin(c.es, c.x(ESI).wrapping_add(off)))
+}
+fn set_es32(c: &Cpu, bus: &mut dyn Bus, off: u16, v: u32) {
+    bus.write32(lin(c.es, c.x(ESI).wrapping_add(off)), v)
+}
+
+/// Two word accesses `ES:[SI+off]`, `ES:[SI+off+2]` (each offset wraps at 64 KB on its own).
+fn es_words(c: &Cpu, bus: &mut dyn Bus, off: u16) -> u32 {
+    es16(c, bus, off) as u32 | (es16(c, bus, off.wrapping_add(2)) as u32) << 16
+}
+fn set_es_words(c: &Cpu, bus: &mut dyn Bus, off: u16, v: u32) {
+    set_es16(c, bus, off, v as u16);
+    set_es16(c, bus, off.wrapping_add(2), (v >> 16) as u16);
+}
+
+/// A 64-bit value kept as two dwords of the work area (low at `lo`, high at `hi`).
+fn work64(c: &Cpu, bus: &mut dyn Bus, lo: u16, hi: u16) -> u64 {
+    ds32(c, bus, lo) as u64 | (ds32(c, bus, hi) as u64) << 32
+}
+fn set_work64(c: &Cpu, bus: &mut dyn Bus, lo: u16, hi: u16, v: u64) {
+    set_ds32(c, bus, lo, v as u32);
+    set_ds32(c, bus, hi, (v >> 32) as u32);
+}
+
+/// The three 64-bit values the orbit routines build in the work area: (low dword, high dword).
+const X64: [(u16, u16); 3] = [(0x7bc, 0x7c8), (0x7c0, 0x7cc), (0x7c4, 0x7d0)];
+
+/// `SAR dword [hi],1; RCR …` loops of `EL2MATH3:2649` and `2706`: the three 64-bit values
+/// ([7c8]:DX:AX, [7cc]:CX:BX, [7d0]:DI:BP) shifted right while the count at `DS:7d8`, decremented
+/// each time, stays non-negative. Returns the low dwords and instructions.
+fn shift_down(c: &Cpu, bus: &mut dyn Bus, count: u16, his: [u16; 3]) -> ([u32; 3], u64) {
+    let mut v = [0u64; 3];
+    for (x, &h) in v.iter_mut().zip(his.iter()) {
+        *x = (ds32(c, bus, h) as u64) << 32;
+    }
+    let mut cnt = count;
+    let mut n = 0;
+    loop {
+        for x in v.iter_mut() {
+            *x = ((*x as i64) >> 1) as u64;
+        }
+        cnt = cnt.wrapping_sub(1);
+        n += 11;
+        if (cnt as i16) < 0 {
+            break;
+        }
+    }
+    set_ds16(c, bus, 0x7d8, cnt);
+    for (x, &h) in v.iter().zip(his.iter()) {
+        set_ds32(c, bus, h, (x >> 32) as u32);
+    }
+    ([v[0] as u32, v[1] as u32, v[2] as u32], n)
+}
+
+/// Port of `EL2MATH3:258f` (slot `DS:02e8`): a position on an orbit (*inferred*). Two
+/// directions ([`direction`]) at the angles (`[7bc]`, `[7c2]` & FFF0h) and (`[7bc]`,
+/// that + 10h); their difference goes to `ES:[SI+8Ah]`. The 64-bit result, per axis, is
+/// (`[7c0..7c3]` >> 4) · `[7d4]` (high word) · difference + first direction · `[7d4]`, shifted by
+/// 3Dh − `[7d8]`, into `ES:[SI+2Ch]` (low dwords) and `ES:[SI+38h]` (high dwords).
+pub fn orbit_position(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let a = ds16(c, bus, 0x7bc);
+    let b = ds16(c, bus, 0x7c2) & 0xfff0;
+    let sp = c.x(ESP);
+    // PUSH BX; PUSH AX; CALLF [02d8]
+    bus.write16(lin(c.ss, sp.wrapping_sub(2)), b);
+    bus.write16(lin(c.ss, sp.wrapping_sub(4)), a);
+    let dir = |c: &mut Cpu, bus: &mut dyn Bus, a: u16, b: u16| -> ([u16; 3], u16, u64) {
+        let mut t = *c;
+        t.set_x(EAX, a);
+        t.set_x(EBX, b);
+        let (sb, _, n1) = sine_reg(t.ds, bus, b);
+        let (cb, _, n2) = sine_reg(t.ds, bus, b.wrapping_add(0x4000));
+        let (sa, _, n3) = sine_reg(t.ds, bus, a);
+        let (ca, _, n4) = sine_reg(t.ds, bus, a.wrapping_add(0x4000));
+        let sbca = qmul(sb, ca).0;
+        ([sbca.wrapping_neg(), qmul(sa, sb).0, cb], sbca, 2 + 3 + n1 + 3 + n2 + 4 + n3 + 3 + n4 + 13)
+    };
+    let (u1, _, k1) = dir(c, bus, a, b);
+    // PUSH CX; PUSH BX; PUSH AX; MOV BP,SP
+    let bp = sp.wrapping_sub(10);
+    for (k, w) in [u1[2], u1[1], u1[0]].into_iter().enumerate() {
+        bus.write16(lin(c.ss, sp.wrapping_sub(6 + 2 * k as u16)), w);
+    }
+    let (u2, _, k2) = dir(c, bus, a, b.wrapping_add(0x10));
+    let d = [u2[0].wrapping_sub(u1[0]), u2[1].wrapping_sub(u1[1]), u2[2].wrapping_sub(u1[2])];
+    set_es16(c, bus, 0x8a, d[0]);
+    set_es16(c, bus, 0x8c, d[1]);
+    set_es16(c, bus, 0x8e, d[2]);
+    let r32 = ds32(c, bus, 0x7c0) >> 4;
+    let l = ds16(c, bus, 0x7d4);
+    let r = ((r32 as u16 as u32 * l as u32) >> 16) as u16;
+    let p = |x: u16, y: u16| (x as i16 as i32 * y as i16 as i32) as u32;
+    let mut acc = [0u32; 3];
+    for i in 0..3 {
+        acc[i] = p(d[i], r).wrapping_add(p(u1[i], l));
+    }
+    let last = p(u1[2], l); // DX:AX after the last IMUL
+    for (i, &(_, hi)) in X64.iter().enumerate() {
+        set_ds32(c, bus, hi, acc[i]);
+    }
+    let mut n: u64 = 5 + 1 + k1 + 4 + 3 + 1 + k2 + 3 + 3 + 1 + 10 + 1 + 5 + 4 + 4 + 3 + 1 + 3 + 4 + 4;
+    let e = ds16(c, bus, 0x7d8);
+    n += 2; // SUB word [7d8],3Dh; JG
+    if (e as i16) > 0x3d {
+        let mut cnt = e.wrapping_sub(0x3d).wrapping_sub(1);
+        n += 2; // DEC; JZ
+        let mut v = acc;
+        while cnt != 0 {
+            for x in v.iter_mut() {
+                *x <<= 1;
+            }
+            cnt = cnt.wrapping_sub(1);
+            n += 5;
+        }
+        if e.wrapping_sub(0x3d).wrapping_sub(1) != 0 {
+            n += 1; // JMP 266a
+        }
+        set_ds16(c, bus, 0x7d8, 0);
+        for (i, &(_, hi)) in X64.iter().enumerate() {
+            set_ds32(c, bus, hi, v[i]);
+        }
+        // AX…BP keep what the multiplications left.
+        let ax = last as u16;
+        let dx = (last >> 16) as u16;
+        set_es16(c, bus, 0x2c, ax);
+        set_es16(c, bus, 0x2e, dx);
+        set_es16(c, bus, 0x30, u1[1]);
+        set_es16(c, bus, 0x32, u1[2]);
+        set_es16(c, bus, 0x34, bp);
+        set_es16(c, bus, 0x36, l);
+        c.set_x(EAX, ax);
+        c.set_x(EDX, dx);
+        c.set_x(EBX, u1[1]);
+        c.set_x(ECX, u1[2]);
+        c.set_x(EBP, bp);
+        c.set_x(EDI, l);
+    } else {
+        let cnt = 0x3du16.wrapping_sub(e);
+        n += 1 + 6;
+        let (lo, k) = shift_down(c, bus, cnt, [0x7c8, 0x7cc, 0x7d0]);
+        n += k;
+        set_es_words(c, bus, 0x2c, lo[0]);
+        set_es_words(c, bus, 0x30, lo[1]);
+        set_es_words(c, bus, 0x34, lo[2]);
+        c.set_x(EAX, lo[0] as u16);
+        c.set_x(EDX, (lo[0] >> 16) as u16);
+        c.set_x(EBX, lo[1] as u16);
+        c.set_x(ECX, (lo[1] >> 16) as u16);
+        c.set_x(EBP, lo[2] as u16);
+        c.set_x(EDI, (lo[2] >> 16) as u16);
+    }
+    for (k, &(_, hi)) in X64.iter().enumerate() {
+        let v = ds32(c, bus, hi);
+        set_es32(c, bus, 0x38 + 4 * k as u16, v);
+        if k == 2 {
+            c.r[EAX] = v;
+        }
+    }
+    c.retf(bus);
+    n + 1 + 6 + 6 + 1
+}
+
+/// Port of `EL2MATH3:26be` (slot `DS:02ec`): advance a 64-bit position along the stored
+/// difference vector (`ES:[SI+8Ah]`, see [`orbit_position`]): t = high word of `AX` ·
+/// `ES:[SI+86h]` (unsigned); each axis's d·t (32-bit) shifted right as a 64-bit value by
+/// 3Dh − `ES:[SI+88h]` + 1 is added to `ES:[SI+2Ch]`/`[SI+38h]`.
+pub fn orbit_advance(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let w = es16(c, bus, 0x86);
+    let t = ((c.x(EAX) as u32 * w as u32) >> 16) as u16;
+    let p = |x: u16, y: u16| (x as i16 as i32 * y as i16 as i32) as u32;
+    for (k, &(_, hi)) in X64.iter().enumerate() {
+        let d = es16(c, bus, 0x8a + 2 * k as u16);
+        set_ds32(c, bus, hi, p(d, t));
+    }
+    let cnt = 0x3du16.wrapping_sub(es16(c, bus, 0x88));
+    set_ds16(c, bus, 0x7d8, cnt);
+    let mut n: u64 = 2 + 4 + 4 + 4 + 3 + 6;
+    let (lo, k) = shift_down(c, bus, cnt, [0x7c8, 0x7cc, 0x7d0]);
+    n += k;
+    for (k, &(_, hi)) in X64.iter().enumerate() {
+        let k = k as u16;
+        // ADD word; ADC word; ADC dword
+        let old = es_words(c, bus, 0x2c + 4 * k) as u64 | (es32(c, bus, 0x38 + 4 * k) as u64) << 32;
+        let add = lo[k as usize] as u64 | (ds32(c, bus, hi) as u64) << 32;
+        let v = old.wrapping_add(add);
+        set_es_words(c, bus, 0x2c + 4 * k, v as u32);
+        set_es32(c, bus, 0x38 + 4 * k, (v >> 32) as u32);
+        if k == 2 {
+            c.r[EAX] = ds32(c, bus, hi);
+        }
+    }
+    c.set_x(EDX, (lo[0] >> 16) as u16);
+    c.set_x(EBX, lo[1] as u16);
+    c.set_x(ECX, (lo[1] >> 16) as u16);
+    c.set_x(EBP, lo[2] as u16);
+    c.set_x(EDI, (lo[2] >> 16) as u16);
+    c.retf(bus);
+    n + 12 + 1
+}
+
+/// Near routine `EL2MATH3:277e`: the 64-bit work value A at `DS:7c4` times the 32-bit B at
+/// `DS:7cc` (modulo 2^64, skipping zero partial products) into `DS:7bc`, then `DX:CX:BX:AX` =
+/// that << 3. Returns the instructions including its `RETF`.
+fn multiply64(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let a = work64(c, bus, 0x7c4, 0x7c8);
+    let b = ds32(c, bus, 0x7cc) as u64;
+    let r = a.wrapping_mul(b);
+    set_work64(c, bus, 0x7bc, 0x7c0, r);
+    let mut n: u64 = 12;
+    if (a >> 16) as u16 != 0 {
+        n += 9;
+    }
+    n += 3;
+    if a >> 32 != 0 {
+        n += 10;
+    }
+    let v = r << 3;
+    c.set_x(EAX, v as u16);
+    c.set_x(EBX, (v >> 16) as u16);
+    c.set_x(ECX, (v >> 32) as u16);
+    c.set_x(EDX, (v >> 48) as u16);
+    n + 17
+}
+
+/// Port of `EL2MATH3:275b` (slot `DS:02e4`): A = `DS:7c4` (64-bit) − `DS:7bc` (64-bit), kept
+/// in `DS:7c4`; then `DX:CX:BX:AX` = A × `DS:7cc` (32-bit) << 3, signed by A (the magnitude is
+/// multiplied, `EL2MATH3:277e`, then negated back).
+pub fn delta_times(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let b = work64(c, bus, 0x7bc, 0x7c0);
+    let a = work64(c, bus, 0x7c4, 0x7c8).wrapping_sub(b);
+    set_work64(c, bus, 0x7c4, 0x7c8, a);
+    c.set_x(EAX, b as u16);
+    c.set_x(EDX, (b >> 16) as u16);
+    c.set_x(EBX, (b >> 32) as u16);
+    c.set_x(ECX, (b >> 48) as u16);
+    let n: u64 = 9;
+    if (a as i64) >= 0 {
+        let m = multiply64(c, bus);
+        c.retf(bus);
+        return n + m;
+    }
+    set_work64(c, bus, 0x7c4, 0x7c8, a.wrapping_neg());
+    let m = multiply64(c, bus);
+    let v = (pair(c, EDX, ECX) as u64) << 32 | pair(c, EBX, EAX) as u64;
+    let v = v.wrapping_neg();
+    c.set_x(EAX, v as u16);
+    c.set_x(EBX, (v >> 16) as u16);
+    c.set_x(ECX, (v >> 32) as u16);
+    c.set_x(EDX, (v >> 48) as u16);
+    c.retf(bus);
+    n + 4 + 1 + m + 8 + 1
+}
+
+/// `EL2MATH3:2898`: the three 32-bit values at `DS:7cc`, `7d0`, `7d4` times the 15-bit t (kept at
+/// `DS:7d8`), as 64-bit values in the work area ([`X64`]), each shifted right by 2. 56
+/// instructions including the `RETF`.
+fn scale_three(c: &mut Cpu, bus: &mut dyn Bus, t: u16) -> u64 {
+    set_ds16(c, bus, 0x7d8, t);
+    let mut regs = (0u16, 0u16, 0u16);
+    for (k, &(lo, hi)) in X64.iter().enumerate() {
+        let v = ds32(c, bus, 0x7cc + 4 * k as u16);
+        let x = (v as i32 as i64).wrapping_mul(t as i64);
+        set_work64(c, bus, lo, hi, x as u64);
+        // MOV BX,AX (low word of the high product); AX:DX the sign-extended high part.
+        let hp = ((v >> 16) as i16 as i32 * t as i32) as u32;
+        let ll = (v & 0xffff) * t as u32;
+        let (_, carry) = ((ll >> 16) as u16).overflowing_add(hp as u16);
+        let top = ((hp >> 16) as i16 as i32 as u32).wrapping_add(carry as u32);
+        regs = (top as u16, (top >> 16) as u16, hp as u16);
+    }
+    for &(lo, hi) in X64.iter() {
+        let x = work64(c, bus, lo, hi);
+        set_work64(c, bus, lo, hi, ((x as i64) >> 2) as u64);
+    }
+    c.set_x(EAX, regs.0);
+    c.set_x(EDX, regs.1);
+    c.set_x(EBX, regs.2);
+    56
+}
+
+/// `SHL dword [lo],1; RCL dword [hi],1` for the three values, `count`+1 times (`EL2MATH3:2977`,
+/// with its `POP CX` and `RETF`).
+fn shift_up(c: &mut Cpu, bus: &mut dyn Bus, count: u16) -> u64 {
+    let mut cnt = count;
+    let mut n = 1;
+    loop {
+        for &(lo, hi) in X64.iter() {
+            let x = work64(c, bus, lo, hi);
+            set_work64(c, bus, lo, hi, x << 1);
+        }
+        cnt = cnt.wrapping_sub(1);
+        n += 8;
+        if (cnt as i16) < 0 {
+            break;
+        }
+    }
+    c.set_x(ECX, cnt);
+    n + 1
+}
+
+/// `EL2MATH3:299a`: the low dword of A, already shifted down by 7, is shifted further until it
+/// fits 15 bits; [`scale_three`] with it, then the results shifted back up.
+fn scale_wide(c: &mut Cpu, bus: &mut dyn Bus, mut v: u32) -> u64 {
+    let mut cx: u16 = 0xffff;
+    let mut n: u64 = 1;
+    loop {
+        cx = cx.wrapping_add(1);
+        v >>= 1;
+        n += 4;
+        if v >> 16 != 0 {
+            continue;
+        }
+        n += 2;
+        if v & 0x8000 != 0 {
+            continue;
+        }
+        break;
+    }
+    c.set_x(EDX, (v >> 16) as u16);
+    n += 2 + scale_three(c, bus, v as u16) + 1;
+    n + shift_up(c, bus, cx)
+}
+
+/// `EL2MATH3:286b`: A's low dword shifted down by 7 as t (else [`scale_wide`]).
+fn scale_low(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let v = ds32(c, bus, 0x7c4) >> 7;
+    c.set_x(EAX, v as u16);
+    c.set_x(EDX, (v >> 16) as u16);
+    let mut n: u64 = 17;
+    if v >> 16 != 0 {
+        return n + scale_wide(c, bus, v);
+    }
+    n += 2;
+    if v & 0x8000 != 0 {
+        return n + scale_wide(c, bus, v);
+    }
+    n + scale_three(c, bus, v as u16)
+}
+
+/// `EL2MATH3:2860`: A ≥ 0. If its high dword is not zero A is shifted down until it is
+/// (`EL2MATH3:2959`), scaled, and the results shifted back up.
+fn scale_positive(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let mut n: u64 = 3;
+    if ds32(c, bus, 0x7c8) == 0 {
+        return n + scale_low(c, bus);
+    }
+    let mut a = work64(c, bus, 0x7c4, 0x7c8);
+    let mut cx: u16 = 0;
+    n += 1;
+    loop {
+        a >>= 1;
+        n += 5;
+        if a >> 32 == 0 {
+            break;
+        }
+        cx = cx.wrapping_add(1);
+        n += 2;
+    }
+    set_work64(c, bus, 0x7c4, 0x7c8, a);
+    c.set_x(EAX, 0);
+    n += 2 + scale_low(c, bus);
+    n + shift_up(c, bus, cx)
+}
+
+/// Port of `EL2MATH3:2a0e` (slot `DS:02f0`): move an object along a vector by a 64-bit
+/// amount: the vector `ES:[SI+62h]` (three dwords, copied to `DS:7cc`) times A = `DS:7c4`
+/// (64-bit, signed; near routine `2857`) is added to the 64-bit position `ES:[SI+2Ch]`/`[38h]`.
+pub fn advance_position(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    for k in 0..3u16 {
+        let v = es32(c, bus, 0x62 + 4 * k);
+        set_ds32(c, bus, 0x7cc + 4 * k, v);
+        c.r[EAX] = v;
+    }
+    let mut n: u64 = 6 + 2;
+    // 2857: CMP word [7ca],0; JS
+    n += 2;
+    let a = work64(c, bus, 0x7c4, 0x7c8);
+    if (a as i64) < 0 {
+        set_work64(c, bus, 0x7c4, 0x7c8, a.wrapping_neg());
+        n += 4 + 1 + scale_positive(c, bus);
+        for &(lo, hi) in X64.iter() {
+            let x = work64(c, bus, lo, hi);
+            set_work64(c, bus, lo, hi, x.wrapping_neg());
+        }
+        n += 12 + 1;
+    } else {
+        n += scale_positive(c, bus);
+    }
+    for (k, &(lo, hi)) in X64.iter().enumerate() {
+        let k = k as u16;
+        let old = es32(c, bus, 0x2c + 4 * k) as u64 | (es32(c, bus, 0x38 + 4 * k) as u64) << 32;
+        let add = work64(c, bus, lo, hi);
+        let v = old.wrapping_add(add);
+        set_es32(c, bus, 0x2c + 4 * k, v as u32);
+        set_es32(c, bus, 0x38 + 4 * k, (v >> 32) as u32);
+        c.r[EAX] = add as u32;
+        c.r[EBX] = (add >> 32) as u32;
+    }
+    c.retf(bus);
+    n + 12 + 1
+}
+
+/// Port of `EL2MATH3:2bae` (slot `DS:0270`): add the three signed 32-bit values at `DS:7bc`
+/// to the 64-bit position `ES:[SI+2Ch]`/`[38h]`.
+pub fn add_position(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    for k in 0..3u16 {
+        let d = ds32(c, bus, 0x7bc + 4 * k);
+        let old = es32(c, bus, 0x2c + 4 * k) as u64 | (es32(c, bus, 0x38 + 4 * k) as u64) << 32;
+        let v = old.wrapping_add(d as i32 as i64 as u64);
+        set_es32(c, bus, 0x2c + 4 * k, v as u32);
+        set_es32(c, bus, 0x38 + 4 * k, (v >> 32) as u32);
+        c.r[EAX] = d;
+        c.r[EDX] = ((d as i32) >> 31) as u32;
+    }
+    c.retf(bus);
+    16
+}
+
+/// Port of `EL2MATH3:2a67` (slot `DS:0318`): rotate two vectors in their common plane by the
+/// angle at `DS:7d8`: u (words `ES:[SI]`, `+6`, `+0Ch`) and w (the same at the far pointer
+/// `DS:7e0`) become u·cos + w·sin and w·cos − u·sin (Q15). `DS:7d8` and `7d4` keep the sine and
+/// cosine.
+pub fn rotate_pair(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let angle = ds16(c, bus, 0x7d8);
+    let (s, _, n1) = sine_reg(c.ds, bus, angle);
+    set_ds16(c, bus, 0x7d8, s);
+    let (co, _, n2) = sine_reg(c.ds, bus, angle.wrapping_add(0x4000));
+    set_ds16(c, bus, 0x7d4, co);
+    let p = |x: u16, y: u16| (x as i16 as i32 * y as i16 as i32) as u32;
+    let u = [es16(c, bus, 0), es16(c, bus, 6), es16(c, bus, 0xc)];
+    for (k, &x) in u.iter().enumerate() {
+        set_ds32(c, bus, 0x7bc + 4 * k as u16, p(x, co));
+    }
+    let woff = ds16(c, bus, 0x7e0);
+    let wseg = ds16(c, bus, 0x7e2);
+    let w = [bus.read16(lin(wseg, woff)), bus.read16(lin(wseg, woff.wrapping_add(6))), bus.read16(lin(wseg, woff.wrapping_add(0xc)))];
+    for (k, &x) in w.iter().enumerate() {
+        let sum = p(s, x).wrapping_add(ds32(c, bus, 0x7bc + 4 * k as u16)) << 1;
+        set_es16(c, bus, 6 * k as u16, (sum >> 16) as u16);
+    }
+    for (k, &x) in w.iter().enumerate() {
+        set_ds16(c, bus, 0x7c8 + 4 * k as u16, x);
+    }
+    for (k, &x) in u.iter().enumerate() {
+        set_ds32(c, bus, 0x7bc + 4 * k as u16, p(x, s));
+    }
+    let woff2 = ds16(c, bus, 0x7e0);
+    let wseg2 = ds16(c, bus, 0x7e2);
+    let mut last = 0;
+    for k in 0..3u16 {
+        let wk = ds16(c, bus, 0x7c8 + 4 * k);
+        last = p(wk, co).wrapping_sub(ds32(c, bus, 0x7bc + 4 * k)) << 1;
+        bus.write16(lin(wseg2, woff2.wrapping_add(6 * k)), (last >> 16) as u16);
+    }
+    c.set_x(EAX, last as u16);
+    c.set_x(EDX, (last >> 16) as u16);
+    c.set_x(EBX, u[1]);
+    c.set_x(ECX, u[2]);
+    c.set_x(EDI, woff2);
+    c.retf(bus);
+    4 + n1 + 1 + 3 + n2 + 1 + 87
 }

@@ -191,7 +191,8 @@ impl frontier_dos::cpu::Io for NoIo {
     }
 }
 
-/// The far-call effect of the instruction at `CS:IP`: +1 for `CALLF`, −1 for `RETF`, else 0.
+/// The far-call effect of the instruction at `CS:IP`: +1 for `CALLF` (and for a near `CALL`
+/// right after `PUSH CS`, the far-call idiom at `EL2MATH3:2a29`), −1 for `RETF`, else 0.
 fn far_call_depth(cpu: &Cpu) -> i32 {
     let mut a = frontier_dos::mem::lin(cpu.s[CS], cpu.ip);
     let mut op = cpu.mem.rb(a);
@@ -202,6 +203,7 @@ fn far_call_depth(cpu: &Cpu) -> i32 {
     match op {
         0x9A => 1,
         0xFF if (cpu.mem.rb(a + 1) >> 3) & 7 == 3 => 1,
+        0xE8 if cpu.mem.rb(a.wrapping_sub(1)) == 0x0E => 1,
         0xCA | 0xCB => -1,
         _ => 0,
     }

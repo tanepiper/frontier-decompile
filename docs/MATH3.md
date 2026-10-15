@@ -1,12 +1,12 @@
-# `EL2MATH3`: the software floating-point library
+# `EL2MATH3`: the maths overlay
 
-This covers the maths overlay's leaf routines: what they compute, the number format they share,
-and how the native ports were proven. Evidence: Ghidra 12.1.4 disassembly
+This covers the maths overlay: its software floating-point routines, the 3D pipeline (vertex
+transformation, projection, face shading) and the 64-bit position arithmetic. It says what
+they compute, the formats they share, and how the native ports were proven. Evidence: Ghidra 12.1.4 disassembly
 (`tools/ghidra/ExportDisasm.java`, output in `analysis/`), the bytes of the main program's
 divide-error handler, and execution of the original on the reference runtime
 ([RUNTIME.md](RUNTIME.md)). That covers fuzzed calls and shadow verification of every real call
-during 60 s of play. The larger routines (`v0300`, `v0310`, `v0314`, `v0328` and others) are not
-ported yet.
+during 60 s of play. All 47 entries are ported.
 
 ## Number format
 
@@ -73,6 +73,17 @@ the ports do not move interrupts ([RUNTIME.md](RUNTIME.md)).
 | `0304` | `EL2MATH3:0c35` | `vertex_position` | World position of a vertex, transforming it first if needed |
 | `0310` | `EL2MATH3:1763` | `project_pairs` | `project` for a point in 16-bit register pairs (`DX:AX`, `CX:BX`, `SI:DI`) |
 | `0308` | `EL2MATH3:1bcd` | `face_shade` | Face visibility (8000h = facing away) and shade from the light |
+| `02f4` | `EL2MATH3:1ebb` | `divide32` | Unsigned 32-bit division `DX:AX` / `CX:BX` by shift and subtract: quotient `DX:AX`, remainder `CX:BX` |
+| `02f8` | `EL2MATH3:1f1f` | `matrix_vector` | The 3×3 word matrix at `ES:BP` times (`AX`, `BX`, `CX`), rows doubled into `DX:AX`, `CX:BX`, `SI:DI` |
+| `0328` | `EL2MATH3:202e` | `normalise_pairs` | Scales (`DX:AX`, `CX:BX`, `SI:DI`) to the length at `DS:7d4`, given the squared length at `DS:7bc` |
+| `0324` | `EL2MATH3:1f93` | `length_normalise` | The squared length of those, then `CALLF [0328]`; `DS:7bc` restored |
+| `02d8` | `EL2MATH3:24f2` | `direction` | A direction from two angles: (−sb·ca, sa·sb, cb) in `AX`, `BX`, `CX` |
+| `02e8` | `EL2MATH3:258f` | `orbit_position` | A 64-bit position from two directions and the work area, into `ES:[SI+2Ch]` (see below) |
+| `02ec` | `EL2MATH3:26be` | `orbit_advance` | Advances that position along the stored difference vector |
+| `02e4` | `EL2MATH3:275b` | `delta_times` | (`DS:7c4` − `DS:7bc`) × `DS:7cc` as 64 × 32 bits, shifted left by 3, into `DX:CX:BX:AX` |
+| `02f0` | `EL2MATH3:2a0e` | `advance_position` | Adds the vector `ES:[SI+62h]` times the 64-bit amount at `DS:7c4` to the position |
+| `0270` | `EL2MATH3:2bae` | `add_position` | Adds the three signed dwords at `DS:7bc` to the position |
+| `0318` | `EL2MATH3:2a67` | `rotate_pair` | Rotates two vectors in their plane by the angle at `DS:7d8` |
 
 The two tables are static data in the main program's data segment. `DS:6dff`: 2048 words,
 entry *k* = 2048·√(*k*/2) (0, 1448, 2048, 2508, 2896, …). `DS:5bff`: 2048 words for a half turn
@@ -80,8 +91,8 @@ of sine (0, 50, 100, 150, 201, …); bit 15 of the angle selects the negative ha
 4000h gives the cosine. The two square roots of floats reach `sqrt32` through `CALLF [031c]`;
 the ports assume the slot holds `EL2MATH3:0967`, as it does once the overlay is loaded.
 
-Not ported yet: `v0318`, `v0324`, `v0328`, `v02d8`, `v02e4`, `v02e8`, `v02ec`, `v02f0`, `v02f4`,
-`v02f8`, `v0270`.
+Every entry of the vector table that leads into `EL2MATH3` (`DS:0270`–`0328`, 47 slots) is
+ported.
 
 A port may also *decline* an input (`math3::DECLINE`): a path not ported yet, or one where the
 original never returns. The hook then discards what the port staged and runs the original, so
@@ -141,6 +152,22 @@ means the face points away (`SS:[DI]` = 8000h). Otherwise the normal's dot produ
 at `BP-2Ah` gives 0 if not negative, else a shade word from the frame at `BP-68h`, picked by bits
 11–13 of the product.
 
+## Positions and the work area
+
+The last group works on 64-bit object positions, kept as three low dwords at `ES:[SI+2Ch]` and
+three high dwords at `ES:[SI+38h]` (names and the orbit reading are *inferred*), and on a work
+area in the main data segment, `DS:7bc`–`7e3`: three 64-bit values with their low dwords at
+`7bc`, `7c0`, `7c4` and high dwords at `7c8`, `7cc`, `7d0`; `7d4` a length or cosine; `7d8` a
+shift count or angle; `7e0` a far pointer to a second vector. `orbit_position` takes two
+directions half a step apart in the second angle, stores their difference at `ES:[SI+8Ah]` and
+builds the position from the first one and the difference, scaled by `DS:7c0` and `DS:7d4` and
+shifted by 3Dh − `DS:7d8`. `orbit_advance` adds the difference times a fraction (`AX` ·
+`ES:[SI+86h]`). `advance_position` multiplies three dwords by a signed 64-bit amount: the
+amount is shifted down to 15 bits, multiplied, and the products are shifted back up (near
+routine `2857`, reached with `PUSH CS; CALL`, and a far call at `2972` the loader relocates).
+Where the original adds a position as two word operations (`ADD [SI+2Ch]`, `ADC [SI+2Eh]`), the
+port does the same, since each offset wraps at 64 KB on its own.
+
 `project` brings x and y within ±z by `SAR`-ing all three (two loops, chosen by unsigned compares
 against z and −z), then picks a reciprocal from the 1024-word table at `EL2MATH3` offset `0122`
 at one of four depth scales and multiplies. At the two nearest scales x and y are halved together
@@ -165,7 +192,7 @@ allocators clear downwards over their own return address when `DF` is set).
    `DS:1f35`/`1f37`, `DF` set one time in eight, the real DS, and scratch segments for the stack
    and `ES`. The original runs first with the runtime's memory write log on; its writes are then
    undone and the port runs on the same state. All registers, segments, the return address,
-   every byte either wrote and the instruction count are compared. All 34 match. (With random
+   every byte either wrote and the instruction count are compared. All 47 match. (With random
    registers the 3D routines run on garbage frames; that is still a valid comparison.) A second
    test builds consistent synthetic models (a frame above the stack, definitions of every vertex
    type naming valid vertices, records in every state) and compares 6,000 calls of each vertex
@@ -175,11 +202,13 @@ allocators clear downwards over their own return address when `DF` is set).
 2. **Shadow verification in play** (`cargo run --release -p frontier-hooks --example native_boot
    -- game-data/original 60 --verify`). Every call of a ported routine during 60 virtual seconds
    (intro, menu, start at Ross 154, cockpit) computes the port's result, runs the original and
-   compares the same things. Result: **2,241,533 calls, 0 mismatches**; 3,838 more had a timer
-   tick due inside them and were left to the original. (Before the 3D routines were ported:
-   332,598 calls, 104 left.) The most frequent are `project_vertex` (1,569,558,
+   compares the same things. Result: **2,592,154 calls, 0 mismatches**; 4,216 more had a timer
+   tick due inside them and were left to the original, and no call was left for lack of a
+   ported path. `add_position`, `rotate_pair` and direct calls of `direction` did not occur in
+   those 60 s; they rest on the fuzzing alone. The most frequent are `project_vertex` (1,569,558,
    with the transforms and projections it makes inside counted as one call), `vertex_position`
-   (249,211), `length3` (187,791), `init_list` (88,722) and `frame_e76` (85,156).
+   (249,211), `face_shade` (232,993), `length3` (187,791), `project_pairs` (98,322), `init_list`
+   (88,722) and `frame_e76` (85,156).
 3. **Identical frames.** The same run without `--verify`, with the ports replacing the original,
    gives frames identical to a run with no ports at every 10 ms slice for 60 s.
 
