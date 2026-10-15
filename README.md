@@ -38,14 +38,18 @@ tools/dosbox/reset.sh            # throw away saves/state in game-data/run
 # 3. Ghidra analysis of FRONTIER.EXE and every overlay into analysis/export (~20 s)
 tools/ghidra/export.sh
 
-# 4. The reimplementation (currently validates the game data) and tests
+# 4. The game (native window; runs your original files on the reference runtime) and tests
 cargo run --release -p frontier-app
 cargo test --release             # the game-data tests skip if game-data/ is missing
+
+# 5. The game in the browser (WASM; your files are served only to 127.0.0.1)
+tools/dev-web.sh                 # http://127.0.0.1:8743/?data=/game-data/
 ```
 
 | Crate | Purpose |
 |---|---|
 | `crates/formats` | Dependency-free readers for the shipped files (MZ images so far) |
+| `crates/dos` | Reference runtime: 386 real-mode CPU + DOS/BIOS/EMS/VGA services that run the original as oracle and scaffold ([docs/RUNTIME.md](docs/RUNTIME.md)) |
 | `crates/game` | Deterministic game logic, ported 1:1 and proven bit-exact against the original |
 | `apps/game` | `frontier`: the game, native and browser |
 
@@ -54,6 +58,9 @@ cargo test --release             # the game-data tests skip if game-data/ is mis
 See [docs/FINDINGS.md](docs/FINDINGS.md) for what is known about the binaries and the milestone plan.
 
 - [x] M0: reference runtime (DOSBox Staging), repository layout, Ghidra export
+- [x] Playable: the original runs on the in-process runtime, native and WASM, from boot through the
+  intro and start menu into the cockpit ([docs/RUNTIME.md](docs/RUNTIME.md)); native ports replace it
+  routine by routine
 - [ ] M1: function discovery across `FRONTIER.EXE` and the overlays; overlay loader traced
   (loader and seeding done, see [docs/OVERLAYS.md](docs/OVERLAYS.md); indirect calls and names remain)
 - [ ] M2: data formats (`.GRF` graphics, music, ship and planet models, saved commanders)

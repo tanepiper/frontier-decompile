@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "frontier-web",
+      "runtimeExecutable": "tools/dev-web.sh",
+      "runtimeArgs": [],
+      "port": 8743
+    }
+  ]
+}

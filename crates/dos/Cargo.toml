@@ -1,0 +1,10 @@
+[package]
+name = "frontier-dos"
+version = "0.1.0"
+description = "Reference runtime: a 386 real-mode CPU and the DOS/BIOS/EMS/VGA services Frontier uses, for running the user's original FRONTIER.EXE in-process as an oracle and as the scaffold the native port replaces"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+frontier-formats = { path = "../formats" }

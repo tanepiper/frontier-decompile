@@ -1,9 +1,10 @@
 # Findings
 
-What is known about the shipped DOS build of Frontier: Elite II. Evidence is static: MZ headers read
-with `crates/formats::mz`, Ghidra 12.1.4 headless analysis (`tools/ghidra/export.sh`), REA load-image
-verification, disassembly of the loader paths, and one observed boot under DOSBox Staging 0.83.0.
-Nothing here was traced through execution yet.
+What is known about the shipped DOS build of Frontier: Elite II. Evidence: MZ headers read with
+`crates/formats::mz`, Ghidra 12.1.4 headless analysis (`tools/ghidra/export.sh`), REA load-image
+verification, disassembly of the loader paths, boots under DOSBox Staging 0.83.0, and runs of the
+original on the project's own reference runtime (`crates/dos`, [RUNTIME.md](RUNTIME.md)) from boot
+to the cockpit.
 
 ## 1. The build
 
@@ -82,8 +83,27 @@ DOSBox Staging 0.83.0, `tools/dosbox/frontier.conf` (S3 SVGA machine, 16 MB, 250
   menu. Whether that run got past the prompt through stray input is unknown. Re-check this by
   answering the prompt deliberately.
 
+## 5. The original running on the reference runtime
+
+`crates/dos` runs the user's `FRONTIER.EXE` and overlays on an in-process 386 real-mode
+interpreter with the DOS/BIOS/EMS/mouse services the program uses ([RUNTIME.md](RUNTIME.md)). The
+`frontier` app shows it natively and in the browser. **Observed** on it:
+
+- The overlay loader runs as traced statically: `EL2SETUP`, `EL2MATH3`, `EL2MCGA3`, then
+  `EL2M00`–`EL2M17` through `modules_init_all`. `EL2M08` is evicted under memory pressure and
+  reloaded at start-up.
+- The program allocates 48 EMS pages (768 KB), sets mode 13h and reads `EL2G.GRF`.
+- The intro plays: the GameTek + Konami card, "DAVID BRABEN'S", planets and the 3D title. Then the
+  **Select Start Position** menu appears: 1 Ross 154 (recommended), 2 Mars, 3 Lave, 4 Last Saved
+  Position, 5 Select Position from disc. DOSBox shows the same screens, compared by eye.
+- Choosing 1 lands the player at **Merlin, Ross 154, 12:00:01 1-Jan-3200**, cockpit view, with the
+  clock running. This is the screen the first DOSBox session reached, so that session had most
+  likely been sent through the prompt and menu by stray input.
+- The program never leaves real mode (no `mov cr0`/`lgdt` anywhere) and uses the PIT, the
+  keyboard port and `int 33h` directly ([RUNTIME.md](RUNTIME.md)).
+
 ## Open questions
 
 - What are `LAVE`, `MARS`, `MOON`, `VTOL`, `BATTLE` and the `LATIS._0n` files?
-- After the sound prompt, does the game play the intro and offer the start-position menu (`LAVE`, `MARS`, …)?
-- Does the main program run entirely in real mode, or does it switch to protected or unreal mode?
+- Which start option reads which of `LAVE`, `MARS`, `MOON`, `VTOL`, `BATTLE`? Watch the `open`
+  log on the runtime for each menu choice.
