@@ -33,4 +33,9 @@ someone else's edits, stage only your hunks (build the staged blob with `git has
 
 Imperative subject ≤ 72 chars naming the trace/port; body says what was traced/ported and how it
 was verified. End with the co-author line from the current session's attribution instructions.
-Push only when a remote is configured and the user has asked for pushes.
+```bash
+git show --stat HEAD            # confirm only your files went in
+git pull --rebase origin main && git push origin main
+```
+`origin` is `git@github.com:tanepiper/frontier-decompile.git`. If the rebase conflicts in files
+you didn't touch, stop and report rather than resolving someone else's work.
