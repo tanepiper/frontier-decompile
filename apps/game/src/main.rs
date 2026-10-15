@@ -5,6 +5,7 @@
 //! the window, the 320×200 frame, keyboard, mouse and timing. Native ports replace original
 //! routines as they are traced (docs/RUNTIME.md). Legacy DOS set-up is skipped (DEVIATIONS.md).
 
+mod audio;
 mod input;
 mod render;
 #[cfg(target_arch = "wasm32")]
@@ -106,6 +107,8 @@ struct App {
     captured: bool,
     /// Sub-unit remainder of relative motion, so slow movement is not lost.
     motion_frac: (f64, f64),
+    /// The game's audio output, if the platform has one.
+    audio: Option<audio::Output>,
 }
 
 impl App {
@@ -122,6 +125,7 @@ impl App {
             cursor: None,
             captured: false,
             motion_frac: (0.0, 0.0),
+            audio: None,
         }
     }
 
@@ -131,7 +135,9 @@ impl App {
         }
         let Some(files) = self.pending.take() else { return };
         match Game::new(files) {
-            Ok(game) => {
+            Ok(mut game) => {
+                self.audio = audio::Output::new();
+                game.machine.dev.adlib.capture = self.audio.is_some();
                 #[cfg(not(target_arch = "wasm32"))]
                 let game = Game { save_dir: self.save_dir.clone(), ..game };
                 self.game = Some(game);
@@ -142,6 +148,9 @@ impl App {
     }
 
     fn send_key(&mut self, key: PhysicalKey, pressed: bool) {
+        if let Some(a) = &self.audio {
+            a.resume();
+        }
         let (Some(game), PhysicalKey::Code(code)) = (&mut self.game, key) else { return };
         if let Some((ext, make)) = input::scancode(code) {
             if ext {
@@ -290,6 +299,9 @@ impl ApplicationHandler<UserEvent> for App {
                 }
             }
             WindowEvent::MouseInput { state, button, .. } => {
+                if let Some(a) = &self.audio {
+                    a.resume();
+                }
                 if !self.captured && state == ElementState::Pressed && self.game.is_some() {
                     // The capturing click is not passed to the game.
                     self.set_capture(true);
@@ -311,6 +323,11 @@ impl ApplicationHandler<UserEvent> for App {
                 let dt = self.last_frame.map_or(0.0, |t| (now - t).as_secs_f64()).min(0.1);
                 self.last_frame = Some(now);
                 game.update(dt);
+                if let Some(a) = &mut self.audio {
+                    let now = game.machine.now();
+                    game.machine.dev.adlib.advance(now);
+                    a.pump(&mut game.machine.dev.adlib.samples);
+                }
                 if let Some(Stop::Exited(_)) = game.stopped {
                     event_loop.exit();
                     return;

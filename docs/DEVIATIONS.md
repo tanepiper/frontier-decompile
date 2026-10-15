@@ -12,11 +12,11 @@ step that only exists to set up DOS hardware or memory and goes straight into th
 | Original behaviour | Reimplementation | Status |
 |---|---|---|
 | Text-mode prompt "Please select sound support required" (1 Roland LAPC1, 2 AdLib / SoundBlaster, 3 PC speaker, 4 No sound) before the game starts | Not shown. Boot goes straight to the game's own start-up (intro/menu) | Decided; prompt traced: `EL2SETUP:04af` sets `DS:8920`, see [OVERLAYS.md](OVERLAYS.md) §5 |
-| Choosing a sound driver overlay (`EL2ROL`, `EL2ADLIB`, `EL2SPK`) | No driver choice. Audio reproduces one reference output (AdLib / SoundBlaster, option 2, which the DOSBox reference config also uses) through the platform's audio API | Decided; reference driver may be revisited when audio is traced |
+| Choosing a sound driver overlay (`EL2ROL`, `EL2ADLIB`, `EL2SPK`) | No driver choice and one audio output (a single stereo mixer; cpal natively, WebAudio in the browser). The sound is the AdLib / Sound Blaster driver's (option 2, also the DOSBox reference), the only driver whose music and effects come entirely from the original files ([AUDIO.md](AUDIO.md)) | Decided; MT-32 or General MIDI rendering of the `.ROL` MIDI files are options awaiting a decision ([AUDIO.md](AUDIO.md), *Higher-quality options*) |
 | Video driver overlay (`EL2MCGA3`) and VGA mode 13h set-up | The 320×200 palettised frame is produced in software and presented with wgpu | Decided |
 | DOS memory checks ("Not enough free memory") and overlay loading | Not reproduced. Overlay code is ported like the rest of the game | Decided |
 | `EL2SETUP:0496` set-up checks (DOS version, 386, 580 KB, EMS) and the sound prompt | On the reference runtime ([RUNTIME.md](RUNTIME.md)), the runtime overwrites `EL2SETUP:0496` with a host stub (`0F FF F8`, `retf`) after `EXEC` loads it. The stub writes the sound selection to `DS:8920` and returns carry clear. `EL2SETUP` is still loaded, freed and unloaded by the original code | Implemented (`crates/dos/src/machine.rs`, `setup_skip`) |
-| Sound selection | The runtime currently stores **0** (no sound) in `DS:8920`, not the reference value 2, so the sound vectors keep their `retf`. It moves to 2 once an OPL2 model exists for `EL2ADLIB` | Temporary |
+| Sound selection | The runtime stores **2** (AdLib) in `DS:8920`, so the original `EL2ADLIB` loads and drives the runtime's OPL2 model (`crates/opl`, ports `388h`/`389h`) | Implemented |
 
 ### Where set-up hands off to the game
 

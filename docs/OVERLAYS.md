@@ -72,7 +72,7 @@ the main data segment. Overlays run with DS = the main data segment (*inferred*:
 | `DS:0000`–`01cf` | 116 | Static in the file: the main program's own routines, in segments `1000` and `1ee8` |
 | `DS:01d0`–`026f` | 40 | `EL2MCGA3` video driver |
 | `DS:0270`–`032b` | 47 | `EL2MATH3` maths |
-| `DS:032c`–`0357` | 11 | The chosen sound driver: `EL2ADLIB`, `EL2ROL` or `EL2SPK`. All three export 11 entries to the same slots. With no sound the slots keep their file value `1000:ee5a`, a lone `retf` |
+| `DS:032c`–`0357` | 11 | The chosen sound driver: `EL2ADLIB`, `EL2ROL` or `EL2SPK`. All three export 11 entries to the same slots. With no sound the slots keep their file value `1000:ee5a`, a lone `retf`. Roles: [AUDIO.md](AUDIO.md) §1 |
 | `DS:0358`–`035b` | 1 | `EL2SETUP` (`EL2SETUP:0496`, the set-up checks) |
 
 Of the 437 `lcall [disp16]` sites in the main program, 140 use the static slots, 126 the video

@@ -49,6 +49,7 @@ tools/dev-web.sh                 # http://127.0.0.1:8743/?data=/game-data/
 | Crate | Purpose |
 |---|---|
 | `crates/formats` | Dependency-free readers for the shipped files (MZ images so far) |
+| `crates/opl` | YM3812 (OPL2) FM chip at its native 49,716 Hz, and the band-limited resampler for the audio output ([docs/AUDIO.md](docs/AUDIO.md)) |
 | `crates/hooks` | Installs native ports at the original routines' addresses; parity tests and shadow verification ([docs/MATH3.md](docs/MATH3.md)) |
 | `crates/dos` | Reference runtime: 386 real-mode CPU + DOS/BIOS/EMS/VGA services that run the original as oracle and scaffold ([docs/RUNTIME.md](docs/RUNTIME.md)) |
 | `crates/game` | Deterministic game logic, ported 1:1 and proven bit-exact against the original |
@@ -62,6 +63,9 @@ See [docs/FINDINGS.md](docs/FINDINGS.md) for what is known about the binaries an
 - [x] Playable: the original runs on the in-process runtime, native and WASM, from boot through the
   intro and start menu into the cockpit ([docs/RUNTIME.md](docs/RUNTIME.md)); native ports replace it
   routine by routine
+- [x] Audio: the original AdLib driver plays music and effects through an OPL2 model, one stereo
+  output natively (cpal) and in the browser (WebAudio) ([docs/AUDIO.md](docs/AUDIO.md)). Native
+  port of the driver's sequencer and a DOSBox audio comparison remain
 - [ ] M1: function discovery across `FRONTIER.EXE` and the overlays; overlay loader traced
   (loader and seeding done, see [docs/OVERLAYS.md](docs/OVERLAYS.md); indirect calls and names remain)
 - [ ] M2: data formats (`.GRF` graphics, music, ship and planet models, saved commanders)

@@ -27,8 +27,8 @@ fn boots_through_overlay_loading() {
     let Some(mut m) = machine() else { return };
     let stop = m.run(5_000_000);
     assert_eq!(stop, Stop::Budget, "runtime stopped early; log: {:#?}", m.log);
-    let execs: Vec<&str> = m.log.iter().filter_map(|l| l.strip_prefix("exec ")).map(|l| l.split(' ').next().unwrap()).collect();
-    let mut expected = vec!["EL2SETUP.OVL", "EL2MATH3.OVL", "EL2MCGA3.OVL"];
+    let execs: Vec<&str> = m.log.iter().filter(|l| l.contains(" at PSP")).filter_map(|l| l.strip_prefix("exec ")).map(|l| l.split(' ').next().unwrap()).collect();
+    let mut expected = vec!["EL2SETUP.OVL", "EL2MATH3.OVL", "EL2ADLIB.OVL", "EL2MCGA3.OVL"];
     let modules: Vec<String> = (0..18).map(|i| format!("EL2M{i:02}.OVL")).collect();
     expected.extend(modules.iter().map(String::as_str));
     assert_eq!(&execs[..expected.len()], &expected[..], "overlay load order (docs/OVERLAYS.md §3–4)");

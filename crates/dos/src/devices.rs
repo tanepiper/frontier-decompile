@@ -1,9 +1,11 @@
 //! Port-mapped hardware the game touches: the 8259 PIC, the 8253 PIT, the keyboard controller,
 //! the VGA DAC/sequencer/CRTC and its status register. Time is virtual: it advances with executed
-//! instructions at [`Devices::ips`] instructions per second, so runs are deterministic.
+//! instructions at [`Devices::ips`] instructions per second, so runs are deterministic. The FM
+//! sound chip is in [`crate::audio`].
 
 use std::collections::VecDeque;
 
+use crate::audio::Adlib;
 use crate::cpu::Io;
 
 pub const PIT_HZ: f64 = 1_193_182.0;
@@ -109,7 +111,8 @@ pub struct Devices {
     port61: u8,
     /// Ports read or written that have no model, for the log.
     pub unknown_ports: std::collections::BTreeSet<u16>,
-    pub adlib_index: u8,
+    /// OPL2 FM chip (AdLib / Sound Blaster FM).
+    pub adlib: Adlib,
 }
 
 impl Devices {
@@ -148,7 +151,7 @@ impl Devices {
             kbd_full: false,
             port61: 0,
             unknown_ports: Default::default(),
-            adlib_index: 0,
+            adlib: Adlib::new(),
         }
     }
 
@@ -244,7 +247,7 @@ impl Io for Devices {
                 let vr = self.in_retrace();
                 (if vr { 0x08 | 0x01 } else { 0 }) | self.vga.status_toggle as u8
             }
-            0x388 | 0x389 => 0x06,
+            0x388 | 0x389 | 0x228 | 0x229 => self.adlib.read(port, self.now),
             0x201 => 0xFF,
             _ => {
                 self.unknown_ports.insert(port);
@@ -329,8 +332,7 @@ impl Io for Devices {
             0x3D4 => self.vga.crtc_index = v,
             0x3D5 => self.vga.crtc[(self.vga.crtc_index & 31) as usize] = v,
             0x3C0 => self.vga.attr_flip = !self.vga.attr_flip,
-            0x388 => self.adlib_index = v,
-            0x389 => {}
+            0x388 | 0x389 | 0x228 | 0x229 => self.adlib.write(port, v, self.now),
             _ => {
                 self.unknown_ports.insert(port);
             }

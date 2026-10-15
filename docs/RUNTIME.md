@@ -36,6 +36,7 @@ time (`game-data/` natively, the file picker in the browser).
 | EMS `67h` | LIM 4.0 core: `40h`–`4Eh`, `50h`, `51h`, `58h`. The driver's segment carries `EMMXXXX0` at offset `0Ah` | `machine.rs` |
 | Mouse `33h` | Reset, position, ranges, buttons, mickeys. The event handler (`0Ch`) is recorded but not yet called | `machine.rs` |
 | Hardware | 8259 PIC (mask, EOI), 8253 PIT (reload, latch, modes) driving IRQ 0, keyboard controller (port `60h`/`64h`, IRQ 1, set-1 scan codes), VGA DAC (`3C7h`–`3C9h`), sequencer, CRTC and graphics registers (stored), `3DAh` retrace at 70 Hz | `devices.rs` |
+| Sound | OPL2 FM chip on `388h`/`389h` (and `228h`/`229h`), rendered from virtual time at 49,716 Hz ([AUDIO.md](AUDIO.md)) | `audio.rs`, `crates/opl` |
 | Time | Virtual: 25 M instructions = 1 s. Devices are checked and interrupts delivered before every instruction, so a run depends only on the instruction count, never on how the host slices it. The app runs `ips × frame time` instructions per host frame | `devices.rs`, `machine.rs` |
 
 ### Static facts behind the design
@@ -119,8 +120,8 @@ maps to driver coordinates by absolute position over the frame.
 
 - The mouse event handler (`int 33h AX=000Ch`): does the game install one? Not seen in the logs
   up to the menu.
-- Sound: the selection is 0 (no driver) for now, so the sound vectors keep their `retf`.
-  Reproducing the AdLib output needs `EL2ADLIB` running against an OPL2 model.
+- Sound: answered in [AUDIO.md](AUDIO.md). The selection is 2, and `EL2ADLIB` drives the OPL2
+  model on ports `388h`/`389h`.
 - Timing: the virtual PC speed (25 MIPS) is a guess. Compare intro timing with DOSBox at
   matched cycles.
 - Pixel-exact comparison with DOSBox frames (raw 320×200 captures, Ctrl+F5) is not done yet.

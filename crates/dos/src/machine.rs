@@ -183,7 +183,7 @@ impl Machine {
             exit_code: None,
             console: String::new(),
             skip_setup: true,
-            sound_selection: 0,
+            sound_selection: 2,
         };
         m.install_bios();
         for name in ["CON", "CON", "CON", "AUX", "PRN"] {

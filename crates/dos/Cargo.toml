@@ -8,3 +8,4 @@ repository.workspace = true
 
 [dependencies]
 frontier-formats = { path = "../formats" }
+frontier-opl = { path = "../opl" }

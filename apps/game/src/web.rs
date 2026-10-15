@@ -129,3 +129,62 @@ pub fn install_file_picker(proxy: EventLoopProxy<UserEvent>) {
     input.add_event_listener_with_callback("change", on_change.as_ref().unchecked_ref()).unwrap();
     on_change.forget();
 }
+
+/// WebAudio output: stereo chunks scheduled back to back on one `AudioContext`. Browsers start
+/// the context suspended until the page gets a click or key press; [`WebAudio::resume`] is called
+/// from input events, and audio produced before that is dropped.
+pub struct WebAudio {
+    ctx: web_sys::AudioContext,
+    /// Context time at which the next chunk starts.
+    next: f64,
+}
+
+impl WebAudio {
+    pub fn new() -> Option<WebAudio> {
+        let ctx = web_sys::AudioContext::new().ok()?;
+        Some(WebAudio { ctx, next: 0.0 })
+    }
+
+    pub fn rate(&self) -> f64 {
+        self.ctx.sample_rate() as f64
+    }
+
+    pub fn resume(&self) {
+        if self.ctx.state() != web_sys::AudioContextState::Running {
+            let _ = self.ctx.resume();
+        }
+    }
+
+    pub fn running(&self) -> bool {
+        self.ctx.state() == web_sys::AudioContextState::Running
+    }
+
+    /// Seconds of audio scheduled but not yet played.
+    pub fn queued(&self) -> f64 {
+        (self.next - self.ctx.current_time()).max(0.0)
+    }
+
+    /// Schedule interleaved stereo `frames` after what is already queued.
+    pub fn play(&mut self, frames: &[f32]) {
+        let n = frames.len() / 2;
+        if n == 0 || !self.running() {
+            return;
+        }
+        let rate = self.ctx.sample_rate();
+        let Ok(buffer) = self.ctx.create_buffer(2, n as u32, rate) else { return };
+        let mut left: Vec<f32> = frames.iter().step_by(2).copied().collect();
+        let mut right: Vec<f32> = frames.iter().skip(1).step_by(2).copied().collect();
+        let _ = buffer.copy_to_channel(&mut left, 0);
+        let _ = buffer.copy_to_channel(&mut right, 1);
+        let Ok(source) = self.ctx.create_buffer_source() else { return };
+        source.set_buffer(Some(&buffer));
+        let _ = source.connect_with_audio_node(&self.ctx.destination());
+        let now = self.ctx.current_time();
+        // Restart the schedule after an underrun (tab in the background, a long frame).
+        if self.next < now + 0.01 {
+            self.next = now + crate::audio::TARGET_LATENCY;
+        }
+        let _ = source.start_with_when(self.next);
+        self.next += n as f64 / rate as f64;
+    }
+}
