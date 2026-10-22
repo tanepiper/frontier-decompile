@@ -17,10 +17,12 @@
 
 mod raster;
 mod screen;
+mod palette;
 mod shapes;
 mod sprite;
 pub use raster::*;
 pub use screen::*;
+pub use palette::*;
 pub use shapes::*;
 pub use sprite::*;
 
@@ -274,4 +276,15 @@ pub const EXPORTS: &[(u16, u16, &str, Port)] = &[
     (0x34c9, 0x01e4, "copy_panel", copy_panel),
     (0x34cd, 0, "copy_panel@34cd", panel_after_hide),
     (0x34e6, 0, "copy_panel@34e6", retf_after_call),
+    (0x59ce, 0x0238, "colour", colour),
+    (0x5a20, 0x0200, "colour_entry", colour_entry),
+    (0x5a29, 0x023c, "colours_tick", colours_tick),
+    (0x5b50, 0x0234, "upload_colours", upload_colours),
+    (0x5d4a, 0x0244, "nothing", nothing),
+    (0x0811, 0x024c, "set_palette", set_palette),
+    (0x081d, 0, "set_palette@081d", palette_after_reset),
+    (0x142a, 0x0248, "load_high_colours", load_high_colours),
+    (0x1432, 0, "load_high_colours@1432", high_after_reset),
+    (0x34e7, 0x0250, "load_colours", load_colours),
+    (0x34f0, 0, "load_colours@34f0", colours_after_reset),
 ];

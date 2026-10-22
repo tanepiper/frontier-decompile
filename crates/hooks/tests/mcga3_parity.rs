@@ -292,6 +292,39 @@ fn setup(m: &mut Machine, rng: &mut Rng, name: &str, ds: u16) -> bool {
             }
             true
         }
+        "colour" | "colour_entry" | "colours_tick" | "upload_colours" | "nothing" | "set_palette" | "set_palette@081d"
+        | "load_high_colours" | "load_high_colours@1432" | "load_colours" | "load_colours@34f0" => {
+            for r in [EAX, EBX, ECX, EDX, ESI, EDI, EBP] {
+                m.cpu.r[r] = rng.dword();
+            }
+            let set = |m: &mut Machine, r: usize, v: u16| m.cpu.r[r] = (m.cpu.r[r] & 0xFFFF_0000) | v as u32;
+            for i in 0..0x20u32 {
+                m.cpu.mem.ww(lin(STACK, 0xFF00 + 2 * i), rng.next());
+            }
+            // Disturb the allocator: some slots get other states, colours and entries.
+            if rng.below(2) == 0 {
+                for _ in 0..rng.below(40) {
+                    let n = rng.below(0xff) as u32;
+                    let a = lin(ds, video::SLOTS as u32 + 4 * n);
+                    m.cpu.mem.wb(a, [1, 2, 2, 3, 4, 5, 6][rng.below(7) as usize]);
+                    m.cpu.mem.wb(a + 1, 0x80 | rng.next() as u8);
+                    let key = rng.next() & 0xfff;
+                    m.cpu.mem.ww(a + 2, key);
+                    if rng.below(2) == 0 {
+                        m.cpu.mem.wb(lin(ds, video::COLOUR_MAP as u32 + key as u32), n as u8);
+                    }
+                }
+            }
+            match name {
+                "colour" => set(m, EBX, rng.next()),
+                "colour_entry" => set(m, EDI, rng.below(0x100)),
+                "colours_tick" => m.cpu.r[EAX] = (m.cpu.r[EAX] & !0xFF) | (rng.below(4) == 0) as u32,
+                "set_palette" => m.cpu.r[EAX] = (m.cpu.r[EAX] & !0xFF) | rng.below(4) as u32,
+                "set_palette@081d" => m.cpu.mem.ww(lin(STACK, 0xFF00), rng.below(4)),
+                _ => {}
+            }
+            true
+        }
         _ => false,
     }
 }
