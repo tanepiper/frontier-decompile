@@ -6,6 +6,7 @@
 //! (`/// Port of 1000:2f3a: …`) and numeric code is proven bit-exact against emulator ground truth
 //! (see the `frontier-emulate` skill).
 pub mod adlib;
+pub mod galaxy;
 pub mod math3;
 pub mod rng;
 pub mod video;

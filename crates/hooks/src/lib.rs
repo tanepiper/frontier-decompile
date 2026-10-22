@@ -95,8 +95,53 @@ pub struct Original {
 
 /// Run the original routine the CPU is at (see [`run_original`]) with the memory write log on.
 pub fn record_original(cpu: &mut Cpu, budget: u64) -> Option<Original> {
+    record_with(cpu, budget, run_original)
+}
+
+/// [`record_original`] for a near routine (one that ends in `RET`), run by [`run_original_near`].
+pub fn record_original_near(cpu: &mut Cpu, budget: u64) -> Option<Original> {
+    record_with(cpu, budget, run_original_near)
+}
+
+/// [`record_original`] that stops where a port stopped: when the original reaches `CS:IP` =
+/// `cs:ip` with `SP` = `sp`. Covers ports that return (the caller's return address) and ports
+/// that end by entering original code (a tail call into a routine that is not ported).
+pub fn record_original_until(cpu: &mut Cpu, budget: u64, cs: u16, ip: u16, sp: u16) -> Option<Original> {
+    let mut run = |cpu: &mut Cpu, budget: u64| run_original_until(cpu, budget, cs, ip, sp);
+    record_with_dyn(cpu, budget, &mut run)
+}
+
+/// Run original code until `CS:IP` = `cs:ip` with `SP` = `sp` (after at least one instruction).
+pub fn run_original_until(cpu: &mut Cpu, budget: u64, cs: u16, ip: u16, sp: u16) -> Option<u64> {
+    let start = cpu.icount;
+    cpu.skip_breakpoint = true;
+    let mut io = NoIo(false);
+    loop {
+        match cpu.step(&mut io) {
+            Ok(()) => {}
+            Err(frontier_dos::cpu::Event::Breakpoint(_)) => {
+                cpu.skip_breakpoint = true;
+                continue;
+            }
+            Err(_) => return None,
+        }
+        if cpu.icount - start > budget || io.0 {
+            return None;
+        }
+        if cpu.s[CS] == cs && cpu.ip as u16 == ip && cpu.r[frontier_dos::cpu::ESP] as u16 == sp {
+            return Some(cpu.icount - start);
+        }
+    }
+}
+
+fn record_with(cpu: &mut Cpu, budget: u64, run: fn(&mut Cpu, u64) -> Option<u64>) -> Option<Original> {
+    let mut run = |cpu: &mut Cpu, budget: u64| run(cpu, budget);
+    record_with_dyn(cpu, budget, &mut run)
+}
+
+fn record_with_dyn(cpu: &mut Cpu, budget: u64, run: &mut dyn FnMut(&mut Cpu, u64) -> Option<u64>) -> Option<Original> {
     cpu.mem.write_log = Some(Vec::new());
-    let steps = run_original(cpu, budget);
+    let steps = run(cpu, budget);
     let log = cpu.mem.write_log.take().unwrap_or_default();
     let mut writes = BTreeMap::new();
     for &(a, old) in &log {
@@ -250,6 +295,34 @@ pub fn run_original(cpu: &mut Cpu, budget: u64) -> Option<u64> {
     }
 }
 
+/// Run the near routine the CPU is at (just called: the return offset is on top of the stack)
+/// until it returns to that offset in the same code segment with the stack back where it was.
+/// Returns the instruction count, or `None` if it did I/O, faulted or ran past `budget`.
+pub fn run_original_near(cpu: &mut Cpu, budget: u64) -> Option<u64> {
+    let start = cpu.icount;
+    let (cs, sp) = (cpu.s[CS], cpu.r[frontier_dos::cpu::ESP] as u16);
+    let ret = cpu.mem.rw(frontier_dos::mem::lin(cpu.s[SS], sp as u32));
+    let done_sp = sp.wrapping_add(2);
+    cpu.skip_breakpoint = true;
+    let mut io = NoIo(false);
+    loop {
+        match cpu.step(&mut io) {
+            Ok(()) => {}
+            Err(frontier_dos::cpu::Event::Breakpoint(_)) => {
+                cpu.skip_breakpoint = true;
+                continue;
+            }
+            Err(_) => return None,
+        }
+        if cpu.icount - start > budget || io.0 {
+            return None;
+        }
+        if cpu.s[CS] == cs && cpu.ip as u16 == ret && cpu.r[frontier_dos::cpu::ESP] as u16 == done_sp {
+            return Some(cpu.icount - start);
+        }
+    }
+}
+
 /// Shadow verification: at each call of a ported `EL2MATH3` routine, compute the port's result,
 /// then run the original to its return and compare registers, memory and the instruction
 /// count ([`compare`]). The original's results are kept, so the game is exactly the unported
@@ -259,10 +332,12 @@ pub fn verify_math3(m: &mut Machine) -> Rc<RefCell<VerifyStats>> {
     verify_ports(m, "EL2MATH3.OVL", math3::PORTS)
 }
 
-/// Shadow verification of any port table, as [`verify_math3`] does for `EL2MATH3`.
+/// Shadow verification of any port table, as [`verify_math3`] does for `EL2MATH3`. An entry
+/// whose vector slot is 0 is a near routine (no slot; it ends in `RET`) or may end by entering
+/// original code; it is recorded with [`record_original_until`] up to where the port stopped.
 pub fn verify_ports(m: &mut Machine, module: &str, ports: &'static [(u16, u16, &'static str, Port)]) -> Rc<RefCell<VerifyStats>> {
     let stats = Rc::new(RefCell::new(VerifyStats::default()));
-    for &(offset, _slot, name, port) in ports {
+    for &(offset, slot, name, port) in ports {
         let stats = stats.clone();
         m.hook(
             module,
@@ -278,7 +353,7 @@ pub fn verify_ports(m: &mut Machine, module: &str, ports: &'static [(u16, u16, &
                     stats.borrow_mut().declined += 1;
                     return false;
                 }
-                let diff = match record_original(cpu, 10_000_000) {
+                let diff = match if slot == 0 { record_original_until(cpu, 10_000_000, out.cpu.cs, out.cpu.ip, out.cpu.x(math3::ESP)) } else { record_original(cpu, 10_000_000) } {
                     Some(orig) => compare(&out, &orig, &cpu.mem),
                     None => Some("original did I/O, faulted or did not return".into()),
                 };
@@ -302,6 +377,7 @@ pub fn verify_ports(m: &mut Machine, module: &str, ports: &'static [(u16, u16, &
 pub fn install_all(m: &mut Machine) {
     install_math3(m);
     install_ports(m, "FRONTIER.EXE", frontier_game::rng::PORTS);
+    install_ports(m, "EL2M02.OVL", frontier_game::galaxy::PORTS_M02);
     adlib::install(m);
     video::install(m);
 }
