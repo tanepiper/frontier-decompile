@@ -128,7 +128,12 @@ pub fn run_original_until(cpu: &mut Cpu, budget: u64, cs: u16, ip: u16, sp: u16)
                 cpu.skip_breakpoint = true;
                 continue;
             }
-            Err(_) => return None,
+            Err(e) => {
+                if std::env::var_os("HOOKS_DEBUG").is_some() {
+                    eprintln!("run_original_until: {e:?} at {:04x}:{:04x}", cpu.s[CS], cpu.ip);
+                }
+                return None;
+            }
         }
         if cpu.icount - start > budget || io.0 {
             return None;

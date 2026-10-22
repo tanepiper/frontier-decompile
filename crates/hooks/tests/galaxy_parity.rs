@@ -76,6 +76,13 @@ fn galaxy_ports_match_original() {
         if std::env::var("GALAXY_ONLY").is_ok_and(|o| o != name) {
             continue;
         }
+        // EL2M00:50d6 is checked in a game-generated system instead
+        // (binary_matches_original_in_a_generated_system): in random states the original itself
+        // crashes, e.g. a saturated mass walks the class table into data and calls a garbage
+        // classifier address.
+        if name == "binary" {
+            continue;
+        }
         let (mut mismatches, mut declined, mut compared, mut nonzero) = (0, 0, 0, 0);
         let cases = match name {
             "sector_stars" => 5_000,
@@ -199,7 +206,7 @@ fn galaxy_ports_match_original() {
             if out.cpu.r[0] as u16 != 0 {
                 nonzero += 1;
             }
-            let diff = match record_original_until(&mut m.cpu, 200_000, out.cpu.cs, out.cpu.ip, out.cpu.r[4] as u16) {
+            let diff = match record_original_until(&mut m.cpu, std::env::var("GALAXY_BUDGET").ok().and_then(|b| b.parse().ok()).unwrap_or(200_000), out.cpu.cs, out.cpu.ip, out.cpu.r[4] as u16) {
                 // EL2M00:468a's caller tests ZF (EL2M00:4fb1): compare ZF and SF there too.
                 Some(orig) if matches!(name, "setup_body" | "finish_body") && (orig.cpu.flags ^ out.cpu.flags) & 0xC0 != 0 => {
                     Some(format!("flags: original {:04x}, port {:04x}", orig.cpu.flags, out.cpu.flags))
