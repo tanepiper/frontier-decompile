@@ -322,15 +322,29 @@ pub fn project(rect: egui::Rect, scene: &Scene, default: u16, o: Options) -> Vec
     if fit.is_empty() {
         fit = scene.points.clone();
     }
-    let radius = fit.iter().map(|v| (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]).sqrt()).fold(1.0f32, f32::max);
+    // Centre on the middle of what is drawn (models often lie off their origin) and size the
+    // view to the farthest point from there.
+    let (mut lo, mut hi) = ([f32::MAX; 3], [f32::MIN; 3]);
+    for v in &fit {
+        for i in 0..3 {
+            lo[i] = lo[i].min(v[i]);
+            hi[i] = hi[i].max(v[i]);
+        }
+    }
+    let centre: [f32; 3] = if fit.is_empty() { [0.0; 3] } else { std::array::from_fn(|i| (lo[i] + hi[i]) / 2.0) };
+    let radius = fit
+        .iter()
+        .map(|v| ((v[0] - centre[0]).powi(2) + (v[1] - centre[1]).powi(2) + (v[2] - centre[2]).powi(2)).sqrt())
+        .fold(1.0f32, f32::max);
     let s = rect.width().min(rect.height()) * 0.45 / radius * o.zoom;
     let (cy, sy, cp, sp) = (o.yaw.cos(), o.yaw.sin(), o.pitch.cos(), o.pitch.sin());
     // Model space: x right, y up, z away from the viewer.
-    let xf = |v: [f32; 3]| -> [f32; 3] {
+    let rot = |v: [f32; 3]| -> [f32; 3] {
         let x = v[0] * cy - v[2] * sy;
         let z = v[0] * sy + v[2] * cy;
         [x, v[1] * cp - z * sp, v[1] * sp + z * cp]
     };
+    let xf = |v: [f32; 3]| rot([v[0] - centre[0], v[1] - centre[1], v[2] - centre[2]]);
     let scr = |v: [f32; 3]| Pos2::new(rect.center().x + v[0] * s, rect.center().y - v[1] * s);
     let base_colour = |c: u16| if c & 0xeee == 0 || model::texture_entry(c).is_some() { default } else { c };
     let colour = |c: u16| {
@@ -361,7 +375,7 @@ pub fn project(rect: egui::Rect, scene: &Scene, default: u16, o: Options) -> Vec
                 let t: Vec<[f32; 3]> = pts.iter().map(|&q| xf(q)).collect();
                 // The face's normal, turned with the model: the stored one, else from the corners.
                 let n = match normal {
-                    Some(n) => xf(*n),
+                    Some(n) => rot(*n),
                     None => {
                         let (a, b, c) = (t[0], t[1], t[2]);
                         let u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
