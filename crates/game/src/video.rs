@@ -174,4 +174,7 @@ pub const EXPORTS: &[(u16, u16, &str, Port)] = &[
     (0x2f4e, 0x01d4, "disc_clipped", disc_clipped),
     (0x2f5a, 0x01d8, "disc", disc),
     (0x2dd1, 0x0214, "blob", blob),
+    (0x3108, 0x01fc, "fill_rows", fill_rows),
+    (0x3399, 0x01f4, "fill_masks", fill_masks),
+    (0x3343, 0x01f8, "fill_masks_args", fill_masks_args),
 ];

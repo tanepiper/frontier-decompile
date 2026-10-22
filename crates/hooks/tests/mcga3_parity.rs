@@ -144,6 +144,75 @@ fn setup(m: &mut Machine, rng: &mut Rng, name: &str, ds: u16) -> bool {
             m.cpu.mem.wb(lin(ds, video::COLOUR as u32), rng.next() as u8);
             true
         }
+        "fill_rows" => {
+            // The caller's frame starts after the return address the call pushes (SP = 7FFCh).
+            let bp = 0x7FFCu16;
+            let at = |o: u16| lin(STACK, bp.wrapping_add(o) as u32);
+            let inside = rng.below(2) == 0;
+            let rows = match rng.below(8) {
+                0 => rng.below(4),
+                _ => 1 + rng.below(video::VIEW_HEIGHT),
+            };
+            m.cpu.mem.ww(at(video::ROWS_COUNT), rows);
+            let top = if rng.below(4) == 0 { rng.next() % 200 } else { rng.below(rows.max(1)) };
+            m.cpu.mem.ww(at(video::ROWS_TOP), top);
+            m.cpu.mem.ww(at(video::ROWS_INSIDE), if inside { 1 + rng.below(5) } else { 0 });
+            for y in 0..video::VIEW_HEIGHT {
+                let end = [0, 0x2a0, 0x540, 0x7e0][if rng.below(5) == 0 { 0 } else { rng.below(4) } as usize];
+                m.cpu.mem.ww(at(4 + 2 * y), end);
+                for k in 1..8 {
+                    let v = if inside { rng.below(video::WIDTH) } else { rng.coord(video::WIDTH) };
+                    m.cpu.mem.ww(at(4 + 2 * y + k * video::ROWS_STRIDE), v);
+                }
+            }
+            for r in [EAX, EBX, ECX, EDX, ESI] {
+                m.cpu.r[r] = rng.dword();
+            }
+            m.cpu.mem.ww(lin(ds, video::TARGET as u32), target);
+            m.cpu.mem.wb(lin(ds, video::COLOUR as u32), rng.next() as u8);
+            true
+        }
+        "fill_masks" | "fill_masks_args" => {
+            // SP = 7FFCh after the call; with arguments, 8 words above the return address.
+            let sp = 0x7FFCu16;
+            let bp = if name == "fill_masks_args" { sp + 16 } else { sp };
+            for i in 0..8 {
+                m.cpu.mem.ww(lin(STACK, (sp + 4 + 2 * i) as u32), rng.next());
+            }
+            for w in [0x7bcu16, 0x7c0, 0x7c4, 0x7c8, 0x7cc, 0x7d0, 0x7d4, 0x7d8] {
+                m.cpu.mem.ww(lin(ds, w as u32), rng.next());
+            }
+            let at = |o: u16| lin(STACK, bp.wrapping_add(o) as u32);
+            let rows = match rng.below(8) {
+                0 => rng.below(3),
+                1 => 160 + rng.below(16),
+                _ => 1 + rng.below(video::VIEW_HEIGHT),
+            };
+            m.cpu.mem.ww(at(6), rows);
+            for i in 0..0x40u16 {
+                m.cpu.mem.wb(at(8 + i), rng.next() as u8);
+            }
+            for y in 0..176u16 {
+                let list = 0x4a + 0x80 * y;
+                let k = if rng.below(4) == 0 { 0 } else { rng.below(10) };
+                m.cpu.mem.ww(at(list), 4 * k);
+                for j in 0..40u16 {
+                    let v = match rng.below(4) {
+                        0 => 0,
+                        1 => 2 * rng.below(24),
+                        _ => rng.coord(video::WIDTH),
+                    };
+                    m.cpu.mem.ww(at(list + 2 + 2 * j), v);
+                }
+                m.cpu.mem.ww(at(0x544a + 2 * y), 2 * rng.below(24));
+            }
+            m.cpu.mem.ww(at(0x544a + 0x14e), 2 * rng.below(24));
+            for r in [EAX, EBX, ECX, EDX, ESI, EBP] {
+                m.cpu.r[r] = rng.dword();
+            }
+            m.cpu.mem.ww(lin(ds, video::TARGET as u32), target);
+            true
+        }
         _ => false,
     }
 }
@@ -167,7 +236,7 @@ fn mcga3_ports_match_original() {
             for r in [EDI] {
                 m.cpu.r[r] = rng.dword();
             }
-            m.cpu.r[ESP] = 0xFF00;
+            m.cpu.r[ESP] = if name.starts_with("fill_") { 0x8000 } else { 0xFF00 };
             m.cpu.s[DS] = ds;
             m.cpu.s[SS] = STACK;
             m.cpu.flags &= !frontier_dos::cpu::DF;
@@ -184,11 +253,23 @@ fn mcga3_ports_match_original() {
                 }
             };
             ran += 1;
+            let mut orig_writes = std::collections::BTreeMap::new();
             let diff = match record_original(&mut m.cpu, &mut m.dev, 50_000_000) {
-                Some(orig) => compare(&out, &shadow, &orig, &m.cpu.mem, &m.dev.vga),
+                Some(orig) => {
+                    let d = compare(&out, &shadow, &orig, &m.cpu.mem, &m.dev.vga);
+                    orig_writes = orig.writes;
+                    d
+                }
                 None => Some(format!("the original did not return; the port claims {} steps", out.steps)),
             };
             if let Some(d) = diff {
+                if mismatches == 0 && std::env::var_os("MCGA3_DEBUG").is_some() {
+                    let mut ws: Vec<(u32, u8)> = shadow.writes().filter(|w| w.0 >= 0xA0000 && w.0 < 0xB0000 || w.0 >= 0xE0000).collect();
+                    ws.sort();
+                    eprintln!("port frame writes: {} first {:x?}", ws.len(), &ws[..ws.len().min(8)]);
+                    let o: Vec<_> = orig_writes.iter().filter(|w| *w.0 >= 0xA0000 && *w.0 < 0xB0000 || *w.0 >= 0xE0000).take(8).collect();
+                    eprintln!("orig frame writes: {} first {:x?}", orig_writes.iter().filter(|w| *w.0 >= 0xA0000 && *w.0 < 0xB0000 || *w.0 >= 0xE0000).count(), o);
+                }
                 if mismatches < 3 {
                     failures.push(format!("{name} (EL2MCGA3:{off:04x}, slot {slot:04x}): input {entry:x?}\n  {d}"));
                 }
