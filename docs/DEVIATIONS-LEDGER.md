@@ -18,11 +18,11 @@ Deviation: 9, Not ported: 3.
 
 - [Deviation] [line 1](../apps/viewer/src/sound.rs#L1): Sound in the viewer, on the shared audio output (`frontier-platform`). - The AdLib music and effects are played by the original driver's port (`frontier_game::adlib`) running alone on the user's `EL2ADLIB.OVL` image, ticked at the game's 202.27 Hz into the OPL2 model: the same notes the game plays. - The `.ROL` MIDI songs were written for a Roland MT-32 (`EL2ROL`, docs/AUDIO.md §4). There is no MT-32 model here, so they are played on the OPL2 chip with one generic instrument. Deviation: an approximation for listening only; the original never plays them on an AdLib.
 - [Deviation] [line 43](../apps/viewer/src/sound.rs#L43): Deviation: writes land at the tick they are made in, not at their instruction count.
-- [Deviation] [line 172](../apps/viewer/src/sound.rs#L172): MIDI on the OPL2: nine voices, one organ-like two-operator patch, notes allocated to the oldest free voice. Deviation: see the module comment.
+- [Deviation] [line 179](../apps/viewer/src/sound.rs#L179): MIDI on the OPL2: nine voices, one organ-like two-operator patch, notes allocated to the oldest free voice. Deviation: see the module comment.
 
 ## `apps/viewer/src/ui.rs`
 
-- [Deviation] [line 444](../apps/viewer/src/ui.rs#L444): Draw a model with a simple orthographic camera. Deviation: the game's renderer (perspective, its own shading and depth sorting) is not used; this is a viewer's picture of the geometry. [allow(clippy::too_many_arguments)]
+- [Deviation] [line 465](../apps/viewer/src/ui.rs#L465): Draw a model with a simple orthographic camera. Deviation: the game's renderer (perspective, its own shading and depth sorting) is not used; this is a viewer's picture of the geometry. [allow(clippy::too_many_arguments)]
 
 ## `crates/dos/src/machine.rs`
 

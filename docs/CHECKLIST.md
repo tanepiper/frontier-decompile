@@ -23,7 +23,11 @@ original on the runtime). Keep it short. Details belong in the topic documents.
 - [x] The random number generators: `random(n)` `1000:069b`, `random32` `1000:0645`, `mix` `1000:066a`, ported and verified ([RNG.md](RNG.md))
 - [x] Galaxy: the density map (`EL2M19`), sector density `EL2M02:3b34`, sector seed `EL2M02:3abe` and sector star list `EL2M02:3c2f`, ported and verified ([GALAXY.md](GALAXY.md))
 - [ ] Star systems: from a star in the list to its system, type, name and planets ([GALAXY.md](GALAXY.md); leads: the routines only a hyperspace jump runs, in `EL2M00` and `FRONTIER.EXE`, [COVERAGE.md](COVERAGE.md))
-- [ ] The data files: `EL2G.GRF`, the models, saves
+- [x] `EL2G.GRF` (`1000:e2ba`, `EL2MCGA3:02d3`) and the `PICnnn.GRF` screenshots (`1000:db9f`) decoded, every byte of the shipped files ([FORMATS.md](FORMATS.md))
+- [x] The `.ROL` songs read as Standard MIDI Files ([FORMATS.md](FORMATS.md) §3)
+- [ ] The models: tables (`1000:18b5`), header, vertices and mesh walk read; opcodes `15`, `16`, `18`, `19`, `1E` and several drawing ops not traced ([FORMATS.md](FORMATS.md) §4)
+- [ ] Saves and the position files (`11 00 C6`, packed) ([FORMATS.md](FORMATS.md) §6)
+- [x] Resource viewer (`apps/viewer`): every file, native and browser
 
 ## Systems
 
@@ -37,4 +41,4 @@ original on the runtime). Keep it short. Details belong in the topic documents.
 - [x] Deviations: the policy ([DEVIATIONS.md](DEVIATIONS.md)) and the generated ledger ([DEVIATIONS-LEDGER.md](DEVIATIONS-LEDGER.md))
 - [x] Labels from the port's citations, one file per binary in `labels/` (91 labels)
 - [x] Hand labels for the routines only one action runs (`labels/names.tsv`, `labels/names-EL2M00.tsv`, `labels/names-EL2M10.tsv`), roles inferred
-- [ ] The open questions in [FINDINGS.md](FINDINGS.md): the `LAVE`, `MARS`, `MOON`, `VTOL`, `BATTLE` and `LATIS._0n` files
+- [ ] The open questions in [FINDINGS.md](FINDINGS.md): the `LAVE`, `MARS`, `MOON`, `VTOL`, `BATTLE` and `LATIS._0n` files (all packed, same 3-byte header; [FORMATS.md](FORMATS.md) §6)

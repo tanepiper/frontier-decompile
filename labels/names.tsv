@@ -23,3 +23,21 @@
 1000:eb90	bulletin_board_eb90	ran only in the coverage run `f4_bbs` (docs/COVERAGE.md); role inferred, not traced
 1000:ebc4	equipment_screen_ebc4	ran only in the coverage run `f3_equipment` (docs/COVERAGE.md); role inferred, not traced
 1000:ec48	commander_profile_ec48	ran only in the coverage run `f3_profile` (docs/COVERAGE.md); role inferred, not traced
+1000:e2ba	grf_load_archive	docs/FORMATS.md §1 (slot DS:0094; EL2MCGA3:0638 loads EL2G.GRF with it)
+1000:e349	grf_entry_header	docs/FORMATS.md §1
+1000:e378	grf_unpack	docs/FORMATS.md §1 (back-reference coder)
+1000:e3cb	grf_ems_alloc	docs/FORMATS.md §1
+1000:e487	grf_read_byte	docs/FORMATS.md §1 (256-byte read buffer at DS:8606)
+1000:db9f	screenshot_write	docs/FORMATS.md §2 (picNNN.grf)
+1000:dcb1	screenshot_pack_byte	docs/FORMATS.md §2 (PackBits)
+1000:ddf5	screenshot_write_palette	docs/FORMATS.md §2
+1000:18b5	model_lookup	docs/FORMATS.md §4 (slot DS:0050)
+1000:18c5	model_table_set	docs/FORMATS.md §4 (slot DS:0150)
+1000:18de	model_table_default	docs/FORMATS.md §4 (slot DS:013c)
+1000:b207	mesh_interpret	docs/FORMATS.md §4 (dispatch through CS:2864)
+1000:b27a	model_draw_setup	docs/FORMATS.md §4
+1000:67e7	mesh_polygon	docs/FORMATS.md §4 (op 05)
+1000:54c4	mesh_triangle	docs/FORMATS.md §4 (op 03)
+1000:5c6f	mesh_quad	docs/FORMATS.md §4 (op 04)
+1000:51bc	mesh_line	docs/FORMATS.md §4 (op 02)
+1000:7c0c	mesh_subobject	docs/FORMATS.md §4 (op 0E)

@@ -6,6 +6,15 @@
       "runtimeExecutable": "tools/dev-web.sh",
       "runtimeArgs": [],
       "port": 8743
+    },
+    {
+      "name": "frontier-viewer-web",
+      "runtimeExecutable": "tools/dev-web.sh",
+      "runtimeArgs": [
+        "--app",
+        "viewer"
+      ],
+      "port": 8741
     }
   ]
 }

@@ -3,7 +3,13 @@
 //! Every parser cites the routine in `FRONTIER.EXE` (or an `EL2*.OVL` overlay) that reads the
 //! same bytes, using the segment:offset address from the Ghidra export (see `docs/FINDINGS.md`).
 
+pub mod grf;
+pub mod identify;
+pub mod model;
 pub mod mz;
+pub mod overlay;
+pub mod smf;
+pub mod text;
 
 /// Errors returned by the readers in this crate.
 #[derive(Debug, Clone, PartialEq, Eq)]

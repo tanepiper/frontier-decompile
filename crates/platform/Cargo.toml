@@ -1,0 +1,20 @@
+[package]
+name = "frontier-platform"
+version = "0.1.0"
+description = "Host services shared by the Frontier apps: audio output, loading the player's game files, browser glue"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+frontier-opl = { path = "../opl" }
+log = "0.4"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+cpal = "0.16"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2.129"
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+web-sys = { version = "0.3", features = ["Document", "Window", "Location", "Element", "HtmlCanvasElement", "HtmlElement", "HtmlInputElement", "File", "FileList", "Blob", "Event", "EventTarget", "Response", "UrlSearchParams", "AudioContext", "AudioContextState", "BaseAudioContext", "AudioBuffer", "AudioBufferSourceNode", "AudioScheduledSourceNode", "AudioNode", "AudioDestinationNode"] }

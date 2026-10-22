@@ -1,0 +1,12 @@
+[build]
+target = "index.html"
+dist = "../../dist/viewer"
+
+[serve]
+addresses = ["127.0.0.1"]
+port = 8741
+
+# Dev only: tools/dev-web.sh serves your local game-data/ on 8742.
+[[proxy]]
+backend = "http://127.0.0.1:8742/"
+rewrite = "/game-data/"

@@ -44,16 +44,33 @@ cargo test --release             # the game-data tests skip if game-data/ is mis
 
 # 5. The game in the browser (WASM; your files are served only to 127.0.0.1)
 tools/dev-web.sh                 # http://127.0.0.1:8743/?data=/game-data/
+
+# 6. The resource viewer: every file, picture, song, model and string in your copy
+cargo run --release -p frontier-viewer [-- path/to/game]
+tools/dev-web.sh --app viewer    # http://127.0.0.1:8741/?data=/game-data/
 ```
+
+### The resource viewer
+
+`frontier-viewer` (`apps/viewer`) browses your own game files outside the game, natively or in the
+browser (pick the files, or `?data=` from the dev server). It shows the MZ headers, relocations,
+overlay export blocks and module headers of the program and every overlay; the 225 pictures of
+`EL2G.GRF` and the `PIC000.GRF` screenshot; the `.ROL` MIDI songs (tracks and events, with an OPL2
+approximation to listen to); the AdLib songs and effects, played by the ported original driver;
+the 3D models of both model tables, drawn and listed command by command; the strings of every
+binary; and a hex view for the packed position files and anything not yet understood. Formats and
+how each is known: [docs/FORMATS.md](docs/FORMATS.md).
 
 | Crate | Purpose |
 |---|---|
-| `crates/formats` | Dependency-free readers for the shipped files (MZ images so far) |
+| `crates/formats` | Dependency-free readers for the shipped files: MZ images, overlay headers, `.GRF` pictures and screenshots, MIDI, 3D models, text ([docs/FORMATS.md](docs/FORMATS.md)) |
+| `crates/platform` | Host services both apps share: the audio output (cpal / WebAudio), loading the player's files (a folder, `?data=`, the file picker) and the browser page glue |
 | `crates/opl` | YM3812 (OPL2) FM chip at its native 49,716 Hz, and the band-limited resampler for the audio output ([docs/AUDIO.md](docs/AUDIO.md)) |
 | `crates/hooks` | Installs native ports at the original routines' addresses; parity tests and shadow verification ([docs/MATH3.md](docs/MATH3.md)) |
 | `crates/dos` | Reference runtime: 386 real-mode CPU + DOS/BIOS/EMS/VGA services that run the original as oracle and scaffold ([docs/RUNTIME.md](docs/RUNTIME.md)) |
 | `crates/game` | Deterministic game logic, ported 1:1 and proven bit-exact against the original |
 | `apps/game` | `frontier`: the game, native and browser |
+| `apps/viewer` | `frontier-viewer`: the resource viewer, native and browser |
 
 ## Status
 
@@ -69,7 +86,9 @@ See [docs/FINDINGS.md](docs/FINDINGS.md) for what is known about the binaries an
   A DOSBox audio comparison remains
 - [ ] M1: function discovery across `FRONTIER.EXE` and the overlays; overlay loader traced
   (loader and seeding done, see [docs/OVERLAYS.md](docs/OVERLAYS.md); indirect calls and names remain)
-- [ ] M2: data formats (`.GRF` graphics, music, ship and planet models, saved commanders)
+- [ ] M2: data formats. `EL2G.GRF` and the screenshot format, the MIDI songs, the model tables,
+  headers and vertices decoded and shown in the resource viewer; 178 of 230 models' command lists
+  walked; saved commanders and the position files remain ([docs/FORMATS.md](docs/FORMATS.md))
 - [ ] M3: boot flow and intro rendered by the reimplementation
 - [ ] M4: maths core (fixed point, RNG) and galaxy/system generation, bit-exact. All 47 `EL2MATH3`
   routines (float arithmetic, square roots, rotation matrices, frame set-up, perspective projection,

@@ -22,8 +22,8 @@ may be patched — *inferred*).
 | `EL2ADLIB.OVL`, `EL2ROL.OVL`, `EL2SPK.OVL` | AdLib, ROL music, PC speaker sound drivers (*inferred*) | names, strings in EXE |
 | `EL2SETUP.OVL` | Setup/config overlay (*inferred*) | name, string in EXE |
 | `*.ROL` / `*.rol` | Standard MIDI files (`MThd`), despite the extension | magic |
-| `EL2G.GRF`, `PIC000.GRF` | Graphics. `PIC000.GRF` opens with 6-bit VGA palette bytes | bytes |
-| `LAVE`, `MARS`, `MOON`, `VTOL`, `BATTLE` | Starting positions or scenarios (*inferred*); unknown format | names |
+| `EL2G.GRF`, `PIC000.GRF` | `EL2G.GRF`: the packed image archive the video driver loads. `PIC000.GRF`: a screenshot the game wrote, not read by it ([FORMATS.md](FORMATS.md)) | code, all bytes decoded |
+| `LAVE`, `MARS`, `MOON`, `VTOL`, `BATTLE` | Starting positions or scenarios (*inferred*); packed, all begin `11 00 C6` like `LATIS._0n` ([FORMATS.md](FORMATS.md) §6) | names, bytes |
 | `LATIS._01`–`._04`, `COMMANDR/` | 2010-dated additions (`COMMANDR/` is empty) | dates |
 
 ## 2. `FRONTIER.EXE` load image

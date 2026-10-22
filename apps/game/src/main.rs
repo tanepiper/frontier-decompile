@@ -5,15 +5,15 @@
 //! the window, the 320×200 frame, keyboard, mouse and timing. Native ports replace original
 //! routines as they are traced (docs/RUNTIME.md). Legacy DOS set-up is skipped (DEVIATIONS.md).
 
-mod audio;
 mod input;
 mod render;
-#[cfg(target_arch = "wasm32")]
-mod web;
 
 use std::sync::Arc;
 
 use frontier_dos::{Machine, Stop, Vfs};
+use frontier_platform::audio;
+#[cfg(target_arch = "wasm32")]
+use frontier_platform::web;
 use render::Renderer;
 use web_time::Instant;
 use winit::application::ApplicationHandler;
@@ -21,6 +21,10 @@ use winit::event::{ElementState, MouseButton, WindowEvent};
 use winit::event_loop::{ActiveEventLoop, EventLoop, EventLoopProxy};
 use winit::keyboard::PhysicalKey;
 use winit::window::{Window, WindowId};
+
+/// Id of the page's canvas (index.html).
+#[cfg(target_arch = "wasm32")]
+const CANVAS: &str = "game";
 
 pub enum UserEvent {
     Renderer(Box<Renderer>),
@@ -213,7 +217,7 @@ fn set_status(text: &str, loaded: bool) {
         log::info!("{text}");
     }
     #[cfg(target_arch = "wasm32")]
-    web::set_status(text, loaded);
+    web::set_status(text, loaded, CANVAS);
     #[cfg(not(target_arch = "wasm32"))]
     let _ = loaded;
 }
@@ -232,7 +236,7 @@ impl ApplicationHandler<UserEvent> for App {
         #[cfg(target_arch = "wasm32")]
         {
             use winit::platform::web::WindowAttributesExtWebSys;
-            attrs = attrs.with_canvas(Some(web::canvas()));
+            attrs = attrs.with_canvas(Some(web::canvas(CANVAS)));
         }
         let window = Arc::new(event_loop.create_window(attrs).expect("create window"));
         window.set_cursor_visible(false);
@@ -359,20 +363,6 @@ impl ApplicationHandler<UserEvent> for App {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-fn read_dir_files(root: &std::path::Path, rel: &str, out: &mut Vec<(String, Vec<u8>)>) {
-    let Ok(entries) = std::fs::read_dir(root.join(rel)) else { return };
-    for e in entries.flatten() {
-        let name = e.file_name().to_string_lossy().to_string();
-        let r = if rel.is_empty() { name } else { format!("{rel}/{name}") };
-        if e.file_type().map(|t| t.is_dir()).unwrap_or(false) {
-            read_dir_files(root, &r, out);
-        } else if let Ok(d) = std::fs::read(e.path()) {
-            out.push((r.replace('/', "\\"), d));
-        }
-    }
-}
-
-#[cfg(not(target_arch = "wasm32"))]
 fn main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
     let arg = std::env::args().skip(1).find(|a| !a.starts_with("--"));
@@ -381,9 +371,8 @@ fn main() {
         let run = std::path::PathBuf::from("game-data/run");
         if run.join("FRONTIER.EXE").exists() { run } else { "game-data/original".into() }
     });
-    let mut files = Vec::new();
-    read_dir_files(&dir, "", &mut files);
-    if !files.iter().any(|(n, _)| n.eq_ignore_ascii_case("FRONTIER.EXE")) {
+    let files = frontier_platform::files::read_dir(&dir);
+    if !frontier_platform::files::has_program(&files) {
         eprintln!("frontier: no FRONTIER.EXE in {} (run tools/extract-assets.sh or pass your game folder)", dir.display());
         std::process::exit(1);
     }
@@ -401,8 +390,13 @@ fn main() {
     let _ = console_log::init_with_level(log::Level::Info);
     let event_loop = EventLoop::<UserEvent>::with_user_event().build().expect("event loop");
     let proxy = event_loop.create_proxy();
-    web::install_file_picker(proxy.clone());
-    web::load_from_query(proxy.clone());
+    let send = proxy.clone();
+    let on_files: web::OnFiles = std::rc::Rc::new(move |files| {
+        let _ = send.send_event(UserEvent::Files(files));
+    });
+    let status: fn(&str) = |text| web::set_status(text, false, CANVAS);
+    web::install_file_picker(on_files.clone(), status);
+    web::load_from_query(on_files, status);
     use winit::platform::web::EventLoopExtWebSys;
     event_loop.spawn_app(App::new(proxy));
 }
