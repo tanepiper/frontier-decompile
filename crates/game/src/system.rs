@@ -420,8 +420,369 @@ pub fn big_body_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
     }
 }
 
+fn call_moons(c: &mut Cpu, bus: &mut dyn Bus, ret_ip: u16) -> Option<u64> {
+    push16(c, bus, ret_ip);
+    let n = moons(c, bus)?;
+    let sp = c.x(ESP);
+    c.set_x(ESP, sp.wrapping_add(2));
+    Some(1 + n + 1)
+}
+
+fn call_big_body(c: &mut Cpu, bus: &mut dyn Bus, ret_ip: u16) -> Option<u64> {
+    push16(c, bus, ret_ip);
+    let n = big_body(c, bus)?;
+    let sp = c.x(ESP);
+    c.set_x(ESP, sp.wrapping_add(2));
+    Some(1 + n + 1)
+}
+
+/// Body record fields the classifiers write: `+0Ah`, `+0Ch` (the type/model), `+20h` (temperature).
+fn set_field(c: &Cpu, bus: &mut dyn Bus, off: u16, v: u16) {
+    bus.write16(lin(c.es, c.x(ESI).wrapping_add(off)), v);
+}
+
+fn field(c: &Cpu, bus: &mut dyn Bus, off: u16) -> u16 {
+    bus.read16(lin(c.es, c.x(ESI).wrapping_add(off)))
+}
+
+/// `EL2M00:4b69` without its `RET`, *observed*: a body with temperature 96h–1F4h is named with
+/// kind 10 when the parent value (`DS:2049`) is above B4h, or when the temperature is at least
+/// C8h and the parent value above 8; from a parent value of 2Dh it gets small bodies (`BX` = 0,
+/// `DX` = 18h) and from 96h a large body (`AX` = 0).
+fn classify_4b69(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let cx = bus.read16(lin(c.ds, 0x2049));
+    let bx = field(c, bus, 0x20);
+    c.set_x(ECX, cx);
+    c.set_x(EBX, bx);
+    let (cx, bx) = (cx as i16, bx as i16);
+    if bx > 0x1f4 {
+        return Some(4);
+    }
+    if bx < 0x96 {
+        return Some(6);
+    }
+    let mut n = 8;
+    if cx <= 0xb4 {
+        n += 2;
+        if bx < 0xc8 {
+            return Some(n);
+        }
+        n += 2;
+        if cx <= 8 {
+            return Some(n);
+        }
+    }
+    c.set_x(EAX, 0x0a);
+    n += 1;
+    n += call_body_name(c, bus, 0x4b94)?;
+    n += 2;
+    if (c.x(ECX) as i16) < 0x2d {
+        return Some(n);
+    }
+    c.set_x(EBX, 0);
+    c.set_x(EDX, 0x18);
+    n += 2;
+    n += call_moons(c, bus, 0x4ba1)?;
+    n += 2;
+    if (c.x(ECX) as i16) < 0x96 {
+        return Some(n);
+    }
+    c.set_x(EAX, 0);
+    n += 1;
+    n += call_big_body(c, bus, 0x4bac)?;
+    Some(n)
+}
+
+/// `EL2M00:4abb` without its `RET`, *observed*: the cool-body classifier. Temperature `+= 14h`.
+/// With a parent value of at least 96h and a temperature of 111h–139h: temperature 127h, type
+/// 88h, `+0Ah` = 12h, named kind 8, small bodies (`BX` = parent >> 6, `DX` = 0), a large body
+/// (`AX` = 1 from a parent value of B4h). Otherwise type 7Eh, `+0Ah` = 8, and (temperature up to
+/// 212h, and either a parent value ≥ C8h with temperature ≥ A0h, or temperature ≥ B4h with a
+/// parent value above 6): `+2` capped at 47h, named kind 10, small bodies from a parent value of
+/// 1Eh (`BX` = 0, `DX` = 18h), a large body from 64h (`AX` = 1 from AAh).
+fn classify_4abb(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let cx = bus.read16(lin(c.ds, 0x2049));
+    let bx = field(c, bus, 0x20).wrapping_add(0x14);
+    set_field(c, bus, 0x20, bx);
+    c.set_x(ECX, cx);
+    c.set_x(EBX, bx);
+    let (cxs, bxs) = (cx as i16, bx as i16);
+    let mut n: u64 = 6;
+    if cxs >= 0x96 {
+        n += 2;
+        if bxs >= 0x111 {
+            n += 2;
+            if bxs <= 0x139 {
+                set_field(c, bus, 0x20, 0x127);
+                set_field(c, bus, 0x0c, 0x88);
+                set_field(c, bus, 0x0a, 0x12);
+                c.set_x(EAX, 8);
+                n += 4;
+                n += call_body_name(c, bus, 0x4b51)?;
+                let b = c.x(ECX) >> 6;
+                c.set_x(EBX, b);
+                c.set_x(EDX, 0);
+                n += 3;
+                n += call_moons(c, bus, 0x4b5c)?;
+                let mut ax = 0u16;
+                n += 3;
+                if (c.x(ECX) as i16) >= 0xb4 {
+                    ax = 1;
+                    n += 1;
+                }
+                c.set_x(EAX, ax);
+                n += call_big_body(c, bus, 0x4b68)?;
+                return Some(n);
+            }
+        }
+    }
+    // 4ad0
+    set_field(c, bus, 0x0c, 0x7e);
+    set_field(c, bus, 0x0a, 0x08);
+    n += 4;
+    if bxs > 0x212 {
+        return Some(n);
+    }
+    n += 2;
+    let to_4af9 = if cxs >= 0xc8 {
+        n += 2;
+        bxs >= 0xa0
+    } else {
+        false
+    };
+    if !to_4af9 {
+        n += 2;
+        if bxs < 0xb4 {
+            return Some(n);
+        }
+        n += 2;
+        if cxs <= 6 {
+            return Some(n);
+        }
+    }
+    // 4af9
+    n += 2;
+    if (field(c, bus, 0x02) as i16) >= 0x47 {
+        set_field(c, bus, 0x02, 0x47);
+        n += 1;
+    }
+    c.set_x(EAX, 0x0a);
+    n += 1;
+    n += call_body_name(c, bus, 0x4b0c)?;
+    n += 2;
+    if (c.x(ECX) as i16) < 0x1e {
+        return Some(n);
+    }
+    c.set_x(EBX, 0);
+    c.set_x(EDX, 0x18);
+    n += 2;
+    n += call_moons(c, bus, 0x4b19)?;
+    n += 2;
+    if (c.x(ECX) as i16) < 0x64 {
+        return Some(n);
+    }
+    let mut ax = 0u16;
+    n += 3;
+    if (c.x(ECX) as i16) >= 0xaa {
+        ax = 1;
+        n += 1;
+    }
+    c.set_x(EAX, ax);
+    n += call_big_body(c, bus, 0x4b2c)?;
+    Some(n)
+}
+
+/// `EL2M00:4990` without its `RET`, *observed*: the temperate-body classifier (habitable band
+/// D8h–139h), with branches for hot (above 139h), warm (AAh–D7h), cool (42h–7Bh) and the rest
+/// (which continue in [`classify_4abb`]). See docs/SYSTEM.md for the table of outcomes.
+fn classify_4990(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let cx = bus.read16(lin(c.ds, 0x2049));
+    let mut bx = field(c, bus, 0x20);
+    c.set_x(ECX, cx);
+    c.set_x(EBX, bx);
+    let cxs = cx as i16;
+    let mut n: u64 = 4;
+    if bx > 0x139 {
+        // 4a65: hot
+        set_field(c, bus, 0x0c, 0x84);
+        set_field(c, bus, 0x0a, 0x18);
+        let ax = bus.read16(lin(c.ds, 0x07bc)) >> 1;
+        c.set_x(EAX, ax);
+        bx = bx.wrapping_add(ax);
+        c.set_x(EBX, bx);
+        set_field(c, bus, 0x20, bx);
+        return Some(n + 6);
+    }
+    n += 2;
+    if bx <= 0xd7 {
+        // 4a7d
+        n += 2;
+        if (bx as i16) < 0xaa {
+            // 4a9d
+            n += 2;
+            if (bx as i16) > 0x7b {
+                return Some(n + classify_4abb(c, bus)?);
+            }
+            n += 2;
+            if (bx as i16) < 0x42 {
+                return Some(n + classify_4abb(c, bus)?);
+            }
+            bx = bx.wrapping_add(0x16);
+            c.set_x(EBX, bx);
+            set_field(c, bus, 0x20, bx);
+            set_field(c, bus, 0x0c, 0x86);
+            set_field(c, bus, 0x0a, 0x0e);
+            return Some(n + 4);
+        }
+        bx = bx.wrapping_add(0x19);
+        c.set_x(EBX, bx);
+        set_field(c, bus, 0x20, bx);
+        n += 4;
+        if cxs >= 0xc8 {
+            return self_4a45(c, bus, n);
+        }
+        set_field(c, bus, 0x0c, 0x84);
+        set_field(c, bus, 0x0a, 0x0c);
+        return Some(n + 2);
+    }
+    // Habitable band.
+    bx = bx.wrapping_add(0x23);
+    set_field(c, bus, 0x20, bx);
+    n += 3; // ADD; MOV; PUSH CX
+    push16(c, bus, cx);
+    push16(c, bus, 0x49b3);
+    n += 1 + sys_step_inline(c, bus);
+    let sp = c.x(ESP);
+    c.set_x(ESP, sp.wrapping_add(4)); // RET; POP CX
+    c.set_x(ECX, cx);
+    n += 1;
+    let bx = field(c, bus, 0x20).wrapping_sub(0xfa);
+    c.set_x(EBX, bx);
+    let al = (c.x(EAX) as u8) >> 2;
+    c.set_x(EAX, (c.x(EAX) & 0xff00) | al as u16);
+    n += 5; // MOV BX; SUB; SHR AL; CMP; JA
+    if al > bx as u8 {
+        // 4a33
+        n += 2;
+        if cxs < 0x78 {
+            set_field(c, bus, 0x0c, 0x8e);
+            set_field(c, bus, 0x0a, 0x10);
+            return Some(n + 2);
+        }
+        return self_4a45(c, bus, n);
+    }
+    n += 2;
+    if cxs < 4 {
+        return Some(n);
+    }
+    c.set_x(EAX, 9);
+    n += 1;
+    n += call_body_name(c, bus, 0x49ce)?;
+    n += 2;
+    if cxs < 0x10 {
+        return Some(n);
+    }
+    n += 2;
+    if (field(c, bus, 0x20) as i16) <= 0x118 {
+        // 4a11
+        set_field(c, bus, 0x0c, 0x8c);
+        c.set_x(EBX, cx >> 6);
+        c.set_x(EDX, 0x30);
+        n += 4;
+        n += call_moons(c, bus, 0x4a22)?;
+        n += 2;
+        if cxs < 0x28 {
+            return Some(n);
+        }
+        c.set_x(EAX, 0);
+        n += 3;
+        if cxs >= 0x50 {
+            c.set_x(EAX, 1);
+            n += 1;
+        }
+        n += call_big_body(c, bus, 0x4a32)?;
+        return Some(n);
+    }
+    n += 2;
+    if bus.read16(lin(c.ds, SYS_S0)) & 0x0f == 0 {
+        set_field(c, bus, 0x0c, 0x8e);
+        c.set_x(EDX, 0x48);
+        n += 3;
+    } else {
+        c.set_x(EDX, 0);
+        n += 1;
+    }
+    after_49f1(c, bus, n)
+}
+
+/// `EL2M00:49f1`: small bodies (`BX` = parent >> 5), then a large body sized by the parent value.
+fn after_49f1(c: &mut Cpu, bus: &mut dyn Bus, mut n: u64) -> Option<u64> {
+    let cx = c.x(ECX);
+    c.set_x(EBX, cx >> 5);
+    n += 2;
+    n += call_moons(c, bus, 0x49f9)?;
+    n += 2;
+    let cxs = c.x(ECX) as i16;
+    if cxs < 0x1e {
+        return Some(n);
+    }
+    let mut ax = 0u16;
+    n += 3;
+    if cxs >= 0x32 {
+        ax = 1;
+        n += 3;
+        if cxs >= 0xf2 {
+            ax = 2;
+            n += 1;
+        }
+    }
+    c.set_x(EAX, ax);
+    n += call_big_body(c, bus, 0x4a10)?;
+    Some(n)
+}
+
+/// `EL2M00:4a45` (in [`classify_4990`]): temperature at least 127h, type 8Ah, `+0Ah` = 16h, named
+/// kind 8, then (from `49ee`) `DX` = 0 and [`after_49f1`].
+fn self_4a45(c: &mut Cpu, bus: &mut dyn Bus, mut n: u64) -> Option<u64> {
+    n += 2;
+    if (c.x(EBX) as i16) < 0x127 {
+        set_field(c, bus, 0x20, 0x127);
+        n += 1;
+    }
+    set_field(c, bus, 0x0c, 0x8a);
+    set_field(c, bus, 0x0a, 0x16);
+    c.set_x(EAX, 8);
+    n += 3;
+    n += call_body_name(c, bus, 0x4a63)?;
+    c.set_x(EDX, 0);
+    n += 2; // JMP 49ee; MOV DX,0
+    after_49f1(c, bus, n)
+}
+
+macro_rules! near_port {
+    ($name:ident, $inner:ident) => {
+        /// Port of the `EL2M00` routine of the same name (entered by a near `CALL`).
+        pub fn $name(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+            match $inner(c, bus) {
+                Some(n) => {
+                    near_ret(c, bus);
+                    n + 1
+                }
+                None => DECLINE,
+            }
+        }
+    };
+}
+
+near_port!(classify_4990_port, classify_4990);
+near_port!(classify_4abb_port, classify_4abb);
+near_port!(classify_4b69_port, classify_4b69);
+
 /// Every ported routine of `EL2M00` (near routines: slot 0).
 pub const PORTS_M00: &[(u16, u16, &str, Port)] = &[
+    (0x4990, 0, "classify_4990", classify_4990_port),
+    (0x4abb, 0, "classify_4abb", classify_4abb_port),
+    (0x4b69, 0, "classify_4b69", classify_4b69_port),
     (0x4bda, 0, "body_4bda", body_4bda_port),
     (0x4c32, 0, "moons", moons_port),
     (0x4d10, 0, "big_body", big_body_port),

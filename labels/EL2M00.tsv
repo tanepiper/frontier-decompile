@@ -1,0 +1,11 @@
+# Labels made from the port's citations by tools/triage/cite_labels.py: address, the item that cites
+# it, and where it is cited. Do not edit: label by hand in names.tsv, which wins over this file.
+1000:4990	classify_4990	crates/game/src/system.rs
+1000:4abb	classify_4abb	crates/game/src/system.rs
+1000:4b69	classify_4b69	crates/game/src/system.rs
+1000:4bda	body_4bda_port	crates/game/src/system.rs
+1000:4c32	moons	crates/game/src/system.rs
+1000:4d10	big_body	crates/game/src/system.rs
+1000:4db8	body_name	crates/game/src/system.rs
+1000:4df5	sys_step	crates/game/src/system.rs
+1000:4e29	lookup_3c39_port	crates/game/src/system.rs
