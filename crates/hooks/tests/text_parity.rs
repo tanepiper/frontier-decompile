@@ -104,11 +104,16 @@ fn dispatcher_matches_original() {
     let port = frontier_game::text::MAIN_TEXT[0].3;
     let mut ids: Vec<u16> = (0..0x300).step_by(3).collect();
     ids.extend([0x3016; 8]);
+    // Every formatter, 24 times each with random arguments.
+    for _ in 0..24 {
+        ids.extend(0x3000..0x302a);
+    }
     ids.extend((0x4000..0x4200).step_by(5));
     for slot in [0u16, 3, 5, 7, 10, 11, 14, 15, 17, 18] {
         ids.extend((0..0x40).map(|k| 0x8000 | slot << 9 | k));
     }
     let (mut compared, mut declined, mut failures) = (0, 0, Vec::new());
+    let mut seed: u64 = 0x1234_5678_9ABC_DEF1;
     for id in ids {
         m.cpu.r[0] = id as u32;
         m.cpu.r[7] = 0x8000;
@@ -119,6 +124,15 @@ fn dispatcher_matches_original() {
         m.cpu.mem.write_bytes(lin(0xA000, 0x0100), b"Merlin\0");
         m.cpu.mem.ww(lin(ds, 0x07e4), 0x0100);
         m.cpu.mem.ww(lin(ds, 0x07e6), 0xA000);
+        // Random formatter arguments (numbers of every size and sign).
+        seed ^= seed << 13;
+        seed ^= seed >> 7;
+        seed ^= seed << 17;
+        let shift = (seed >> 59) as u32;
+        for (k, slot) in [0x07c0u32, 0x07c4, 0x07c8].iter().enumerate() {
+            let v = ((seed >> (k * 7)) as u32) >> shift.min(31);
+            m.cpu.mem.wd(lin(ds, *slot), if k == 1 && seed & 1 != 0 { v.wrapping_neg() } else { v });
+        }
         m.enter(main, 0xe89d);
         let out = run_port(&m.cpu, port);
         if out.steps == DECLINE {

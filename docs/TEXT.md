@@ -55,6 +55,33 @@ Other shapes, not ported yet:
   ([NAMES.md](NAMES.md)).
 - `EL2M12:4c26` forwards to module 18's handler.
 
+## The formatters (`3000h`–`3029h`, `1000:e9b2`–`ed40`)
+
+Each formatter reads an argument slot (`DS:07c0`, `07c4`, `07c8`, sometimes `07e4`, `07e8`,
+`1fc5`), which the dispatcher saves and restores around it. Short entry stubs load a slot and
+jump to a shared body. Ported (`frontier_game::text`, *observed*):
+
+| Ids | Body | Output |
+|---|---|---|
+| `3000h` | `e9b2` | nothing (`RET`) |
+| `3001h`–`3003h`, `301Dh`, `301Eh` | `1000:b607` | signed decimal |
+| `3004h`–`3006h`, `3007h`–`3009h`, `300Ah`–`300Ch` | `1000:b609` with `BL` = 1, 2, 3 | 1, 2 or 3 decimals: the point is moved in before the last digits |
+| `3013h`–`3015h` | `1000:b5a3` | 8 hex digits (A–F as the font's codes 8Bh–90h) |
+| `301Fh`–`3021h` | `eb3f` | a tonnage: the number and `t`, or `-` for 0 |
+| `3016h`, `3017h` | `eaf3`, `eafc` | the strings at `[DS:07e4]`, `[DS:07e8]` |
+| `3018h`–`301Ch` | `ec38`–`ec58` | the text id held in a slot, expanded through the dispatcher |
+| `300Dh`–`300Fh`, `3029h` (`DS:1fc5`, the game date) | `ea14` | a date `d-Mon-yyyy` from a day count: 1461-day cycles, the first year a leap year, a day skipped after 28 February in the others, so one day-of-year table (`1000:e529`) and the month names (`1000:e4f9`) serve all |
+| `3026h`–`3028h` | `ea14` | the same without the year |
+| `3010h`–`3012h` | `eab9` | `h:mm:ss`: `divide32` (`EL2MATH3`, slot `02f4`) by 0:C22Eh, then `DIV 3600` and `DIV 60` |
+
+The number printer (`1000:b609`) prints `-` for a negative value. It then finds the first power of
+ten (10⁹ down) that fits, through a cascade of 32-bit compares, and finds each digit by
+subtracting until a borrow. `BL` = 3, 2, 1 forces at least 4, 3, 2 digits. A final `STOSW` writes
+the units digit and the 0.
+
+Not ported: `3022h` (`ec60`, which calls slot `DS:0038`) and `3023h`–`3025h` (`ecc1`, unit
+conversions with the ` km` strings at `1000:e805`).
+
 ## The dispatcher's port
 
 `frontier_game::text::dispatch_port` covers the main table, `[DS:5703]` and module strings (when
@@ -84,9 +111,11 @@ declined (the original runs it).
 | `EL2M18` | 374 | 138 | 0 |
 
 The dispatcher (`dispatcher_matches_original`), with all ten modules loaded, was asked for main
-ids 0–2FDh, `3016h`, `[DS:5703]` ids `4000h`–`41FBh` and 64 strings of every module: **852
-compared, 0 mismatches**, and 155 declined (formatters that are not ported).
+ids 0–2FDh, `3016h`, `[DS:5703]` ids `4000h`–`41FBh` and 64 strings of every module: Every
+formatter `3000h`–`3029h` was asked 24 times with random arguments of every size and sign:
+**1,806 compared, 0 mismatches**, and 209 declined (`3022h`–`3025h`, and module strings that
+reach them).
 
 ## Open questions
-- The formatters `3000h`–`3FFFh` (the jump table at `1000:8915 + 6000h`): numbers, credits, dates.
+- The formatters `3022h`–`3025h`.
 - The control codes `1Eh` and `1Fh`: the renderer interprets them (colour, position, *inferred*).
