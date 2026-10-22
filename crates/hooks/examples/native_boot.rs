@@ -2,6 +2,7 @@
 //! ported routines ran and whether the frames match a run without ports.
 //!
 //! Usage: cargo run --release -p frontier-hooks --example native_boot -- [game-dir] [seconds] [--verify]
+//!   [--ports math3,adlib,video]
 //! `--verify` runs the original alongside each `EL2MATH3` and `EL2MCGA3` port and compares
 //! (timing identical to no ports).
 //! Writes game-data/derived/captures/native-NN.png (with ports) every 5 virtual seconds.
@@ -45,8 +46,22 @@ fn main() {
     let mut plain = machine(&dir);
     let verify = args.iter().any(|a| a == "--verify");
     let mut native = machine(&dir);
+    // `--ports math3,adlib,video`: only these port sets (default: every port, install_all).
+    let only = args.iter().position(|a| a == "--ports").and_then(|i| args.get(i + 1)).map(|v| v.split(',').map(String::from).collect::<Vec<_>>());
     let stats = if verify { Some((frontier_hooks::verify_math3(&mut native), frontier_hooks::video::verify(&mut native))) } else {
-        frontier_hooks::install_all(&mut native);
+        match &only {
+            None => frontier_hooks::install_all(&mut native),
+            Some(sets) => {
+                for set in sets {
+                    match set.as_str() {
+                        "math3" => frontier_hooks::install_math3(&mut native),
+                        "adlib" => frontier_hooks::adlib::install(&mut native),
+                        "video" => frontier_hooks::video::install(&mut native),
+                        other => panic!("unknown port set {other} (math3, adlib, video)"),
+                    }
+                }
+            }
+        }
         None
     };
     println!("{} hooks installed", native.hook_count());
