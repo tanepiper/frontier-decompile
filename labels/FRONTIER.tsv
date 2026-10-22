@@ -1,3 +1,6 @@
 # Labels made from the port's citations by tools/triage/cite_labels.py: address, the item that cites
 # it, and where it is cited. Do not edit: label by hand in names.tsv, which wins over this file.
+1000:0645	random32_port	crates/game/src/rng.rs
+1000:066a	mix_port	crates/game/src/rng.rs
 1000:069b	Driver::main_random	crates/game/src/adlib.rs
+1000:cdeb	DivideResume	crates/game/src/math3.rs

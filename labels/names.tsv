@@ -1,1 +1,4 @@
 # address	label	evidence (where you saw it: a string, a caller, an export, a test)
+1000:069b	random	docs/RNG.md (slot DS:0124)
+1000:0645	random32	docs/RNG.md (slot DS:012c)
+1000:066a	mix	docs/RNG.md (slot DS:0128)

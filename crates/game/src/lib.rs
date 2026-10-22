@@ -7,4 +7,5 @@
 //! (see the `frontier-emulate` skill).
 pub mod adlib;
 pub mod math3;
+pub mod rng;
 pub mod video;

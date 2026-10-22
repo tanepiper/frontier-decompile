@@ -145,9 +145,16 @@ pub fn compare(port: &Outcome, orig: &Original, mem: &Memory) -> Option<String> 
 
 /// Replace the `EL2MATH3` routines in [`math3::PORTS`] with their native ports.
 pub fn install_math3(m: &mut Machine) {
-    for &(offset, _slot, _name, port) in math3::PORTS {
+    install_ports(m, "EL2MATH3.OVL", math3::PORTS);
+}
+
+/// Replace each routine in `ports` (offsets in `module`'s load image, Ghidra segment `1000`) with
+/// its native port. A call is left to the original when the port declines it or when an
+/// interrupt is due before the original would have returned.
+pub fn install_ports(m: &mut Machine, module: &str, ports: &'static [(u16, u16, &'static str, Port)]) {
+    for &(offset, _slot, _name, port) in ports {
         m.hook(
-            "EL2MATH3.OVL",
+            module,
             offset,
             Box::new(move |cpu: &mut Cpu, limit: u64| {
                 let out = run_port(cpu, port);
@@ -249,11 +256,16 @@ pub fn run_original(cpu: &mut Cpu, budget: u64) -> Option<u64> {
 /// game. Calls the port would decline (an interrupt due inside) are left to the runtime, as in
 /// [`install_math3`].
 pub fn verify_math3(m: &mut Machine) -> Rc<RefCell<VerifyStats>> {
+    verify_ports(m, "EL2MATH3.OVL", math3::PORTS)
+}
+
+/// Shadow verification of any port table, as [`verify_math3`] does for `EL2MATH3`.
+pub fn verify_ports(m: &mut Machine, module: &str, ports: &'static [(u16, u16, &'static str, Port)]) -> Rc<RefCell<VerifyStats>> {
     let stats = Rc::new(RefCell::new(VerifyStats::default()));
-    for &(offset, _slot, name, port) in math3::PORTS {
+    for &(offset, _slot, name, port) in ports {
         let stats = stats.clone();
         m.hook(
-            "EL2MATH3.OVL",
+            module,
             offset,
             Box::new(move |cpu: &mut Cpu, limit: u64| {
                 let input = regs_from(cpu);
@@ -289,6 +301,7 @@ pub fn verify_math3(m: &mut Machine) -> Rc<RefCell<VerifyStats>> {
 /// Every native port available.
 pub fn install_all(m: &mut Machine) {
     install_math3(m);
+    install_ports(m, "FRONTIER.EXE", frontier_game::rng::PORTS);
     adlib::install(m);
     video::install(m);
 }

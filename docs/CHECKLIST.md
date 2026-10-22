@@ -19,7 +19,8 @@ original on the runtime). Keep it short. Details belong in the topic documents.
 - [x] `EL2MATH3`: every routine ported and verified, floats, 3D transforms, orbits and positions ([MATH3.md](MATH3.md))
 - [x] `EL2ADLIB`: the AdLib sound driver ported, identical to the original, with an OPL2 model ([AUDIO.md](AUDIO.md))
 - [ ] `EL2MCGA3`: the span filler, flat triangles, quadrilaterals and lines ported; the rest of the renderer
-- [ ] The random number generator and the galaxy generation
+- [x] The random number generators: `random(n)` `1000:069b`, `random32` `1000:0645`, `mix` `1000:066a`, ported and verified ([RNG.md](RNG.md))
+- [ ] The galaxy and star-system generation (`EL2M02:2537`, `EL2M06:3eb9` traced; the procedural generator not found yet, [RNG.md](RNG.md))
 - [ ] The data files: `EL2G.GRF`, the models, saves
 
 ## Systems
