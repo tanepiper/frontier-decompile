@@ -41,7 +41,8 @@ original on the runtime). Keep it short. Details belong in the topic documents.
 - [x] Text: the expander `1000:e969` and ten modules' string handlers, ported and verified ([TEXT.md](TEXT.md))
 - [ ] The text dispatcher `1000:e89d` and the formatters ([TEXT.md](TEXT.md))
 - [x] Per-system data: `EL2M06:3eb9`, hand-made records and distance templates ([ECONOMY.md](ECONOMY.md))
-- [ ] The market on arrival, `EL2M07:0949` and helpers ([ECONOMY.md](ECONOMY.md))
+- [x] Bulletin-board adverts `EL2M07:0b03` and station lists `EL2M07:101a`, against the original ([ECONOMY.md](ECONOMY.md))
+- [ ] The market on arrival `EL2M07:0949`, its events (`0923`) and the daily update (`0e1a`) ([ECONOMY.md](ECONOMY.md))
 - [ ] `EL2M00`–`EL2M19`, the demand-loaded modules ([OVERLAYS.md](OVERLAYS.md), section 4)
 - [ ] The main program's game logic in `FRONTIER.EXE`
 - [ ] Coverage runs still to add: combat, docking, buying and selling, missions, the system map

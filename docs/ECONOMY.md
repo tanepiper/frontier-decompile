@@ -4,7 +4,7 @@ This covers what makes each star system different in trade terms: the per-system
 and, as it is traced, the market built in `EL2M07` when the player arrives. Evidence: the Ghidra
 12.1.4 disassembly listings, the coverage of a hyperspace jump ([COVERAGE.md](COVERAGE.md)), and
 execution on the reference runtime (fuzzed calls against the original). The market builder itself
-(`EL2M07:0949`) is traced below but not ported yet.
+(`EL2M07:0949`) is traced below but not ported yet. Its bulletin-board adverts are ported.
 
 ## Per-system data: `EL2M06:3eb9` (module 6, handler `+20`)
 
@@ -79,9 +79,73 @@ Q15 (`IMUL` then doubled).
 Parity (`market_formulas_match_original`): 10,000 calls of each with random commodity blocks,
 flags, factor indices and generator states, compared with the original. **0 mismatches.**
 
+## Bulletin-board adverts: `EL2M07:0b03` (ported)
+
+After the markets, the builder fills the bulletin board. It sets `DS:43a1` = 8·`DS:07c4` + 8 (from
+the system data, `AL` = 2), `DS:43a5` = `DS:07d4` and `DS:43a3` = `DS:07d8`, and calls
+`EL2M07:0b03` `DS:43a1` + 1 times. Each call makes at most one advert (`market::advert_port`,
+*observed*):
+
+1. `random32` picks one of 16 entries of the jump table at `EL2M07:059b`.
+2. `DS:07d8` = `DS:43a3` − `DS:43a5`, or 0 when negative. Each kind needs it above a threshold
+   (the "room", meaning *unknown*).
+
+| Entries | Routine | Needs `DS:07d8` above | Advert |
+|---|---|---|---|
+| 0–7 | `0ce9` | – | string 9853h: one of 8 strings from 9957h |
+| 8, 9 | `0cf4` | 10h | 9853h: one of 4 from 995Fh |
+| 10, 11 | `0d0d` | 51h | 9853h: one of 4 from 9963h |
+| 12, 13 | `0bb0` | 100h | 9856h: string 99A5h + 0–7, reward from `EL2M07:067b`; the target's record byte `+4` at least 3 |
+| 14 | `0c19` | 271h | 9854h: 994Fh + 0–7, reward from `068b` |
+| 15 | `0c81` | 510h | 9855h: 994Fh + 0–7, reward from `069b` |
+
+- **Delivery and passenger adverts** (`EL2M07:0d1d`, *inferred* from the strings). The
+  destination comes from module 2's nearby-system routine: a system within `random(3)` sectors
+  of the current one (`DS:208b`). Its record (module 6, `AL` = 1) must have byte `+4` at least 3,
+  and its allegiance (byte `+0Ah` >> 6) must equal the current system's (`DS:2243`). The deadline
+  is the date `DS:1fc5` + 10 + `random(14)` days. The reward is
+  50·(2·`r3` + the chosen string − 9957h + 3), with `r3` the sector range.
+- **Military adverts** (`EL2M07:0b28`, *inferred*). The target is a system within `random(3)`
+  sectors of the capital of allegiance `DS:2243`, from the three ids at `EL2M07:066f`. The deadline
+  is `DS:1fc5` + 14 + (a `random32` draw & 3Fh) days. The reward comes from three 8-word tables
+  (4,000–10,000, 10,000–17,000 and 15,000–25,000).
+- **The record** (`EL2M07:0dd3`). The first free slot of the 25 slots of 18h bytes from `DS:43a7`
+  (first dword 0) gets the string word, then the dwords `DS:07c0` (the system), `07c4` (the
+  deadline), `07c8` (the reward), `07cc` (the text) and `07dc` (a `random32` draw). A zero dword
+  follows (the next slot's first). When all 25 slots are used, nothing is written.
+
+Parity (`crates/hooks/tests/market_parity.rs`, `adverts_match_original`). The test plays into
+the cockpit, then loads modules 2, 6, 7 and 19. It makes 3,000 calls with random generator
+states, room values, allegiances, partly filled tables, and the current system or a random one.
+360 calls stored an advert of each of the four kinds. All were compared with the original:
+**0 mismatches.** A port with one instruction miscounted fails the test.
+
+## Station lists: `EL2M07:101a` (ported)
+
+Each station has a record of 1DAh bytes from `DS:224d`. Its list of up to 14 entries of 4 bytes
+starts at `+1A0h`, with the count at `+1D8h` (*observed*). The builder calls `EL2M07:101a` with
+`DS:07d0` = the list's kind: (`DS:2247` − 1)/2 + 1 times for kind 9 (none when `DS:2247` is 0),
+then 2·`DS:223d` + 1 times for kind 0 and 2·`DS:223f` + 1 times for kind 1. The daily update (`EL2M07:0e1a`) adds at most one of each. What
+the lists hold is *unknown*; ships at the station (*inferred*) would fit.
+
+1. A `random32` draw with bit 3 of `AL` set adds nothing. A full list (14 entries) adds nothing.
+2. Otherwise `EL2M07:103c` picks the entry's first word. For kinds 0 and 1 the allegiance
+   selects the row: `EL2M07:0567` + 4·(2·`DS:2243` + kind). For other kinds the row is
+   `0567` + 4·kind. The row holds a scale and a table offset.
+3. A `random32` draw gives `r` (`DS:07bc`). Kind 12 takes `DS:07cc` instead. For kind 1 with
+   `DS:2239` below 4, `r` = `r`/2 + high(`DS:2239` · (`DS:07c0`/8)).
+4. The entry is the table's word at 2·high(scale·`r`), and the second word is `r`.
+
+Parity (`station_lists_match_original`). The test makes 4,000 calls for kinds 0, 1, 9 and 12, with
+random allegiances, `DS:2239` values, list lengths and generator states. 1,734 calls added an
+entry. All matched the original: **0 mismatches.**
+
 ## Open questions
 
 - The meaning of each byte of the system record (economy, government, population, tech level are
   likely, *inferred*), and of the commodity tables in `EL2M07`.
-- The rest of the market builder: random events (`EL2M07:0923`), the per-station lists
-  (`EL2M07:101a`), `EL2M07:0b03`, and the builder `EL2M07:0949` itself.
+- The rest of the market builder: random events (`EL2M07:0923`, the jump table at `03a1`), the
+  builder `EL2M07:0949` itself, and the daily update `EL2M07:0e1a`. The daily update ages the
+  adverts, moves each price and stock a quarter of the way to a new draw, and adds events and
+  list entries (*observed*, not ported).
+- What `DS:43a3` and `DS:43a5` (the "room" that gates each advert kind) measure.

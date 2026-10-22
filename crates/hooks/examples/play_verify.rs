@@ -88,7 +88,11 @@ fn main() {
         ("EL2M09.OVL", frontier_game::names::PORTS_M09),
         ("EL2M00.OVL", frontier_game::system::PORTS_M00),
     ];
-    let stats: Vec<_> = tables.iter().map(|(module, ports)| (*module, frontier_hooks::verify_ports(&mut m, module, ports))).collect();
+    let mut stats: Vec<_> = tables.iter().map(|(module, ports)| (*module, frontier_hooks::verify_ports(&mut m, module, ports))).collect();
+    stats.push(("FRONTIER.EXE text", frontier_hooks::verify_ports(&mut m, "FRONTIER.EXE", frontier_game::text::MAIN_TEXT)));
+    for &(module, table) in frontier_game::text::MODULE_TEXT {
+        stats.push((module, frontier_hooks::verify_ports(&mut m, module, table)));
+    }
     let slice = (m.dev.ips / 100.0) as u64;
     while m.now() < secs {
         while let Some(&(t, ev)) = events.first() {
