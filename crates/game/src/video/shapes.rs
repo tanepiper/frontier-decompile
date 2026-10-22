@@ -26,7 +26,7 @@ fn small_span(x: &mut Ctx, len: u16, save: bool) {
 
 /// The steps of one small disc (`EL2MCGA3:2e5a` … `2f15`).
 #[derive(Clone, Copy)]
-enum Op {
+enum SmallOp {
     /// `SUB DI,n` / `DEC DI` (n = 1), `INC DI`.
     Up(u16),
     Down,
@@ -40,8 +40,8 @@ enum Op {
 
 /// The small discs, by diameter `DX` (the jump table at `CS:2e4e`): rows of 1, 2–2, 1–3–1,
 /// 3–3–3, 2–4–4–2 and 1–3–5–3–1 pixels around (`BX`, `CX`).
-const SMALL: [&[Op]; 6] = {
-    use Op::*;
+const SMALL: [&[SmallOp]; 6] = {
+    use SmallOp::*;
     [
         &[Last(1)],
         &[Up(1), Left, Span(2), Down, Last(2)],
@@ -360,24 +360,24 @@ fn small_disc(x: &mut Ctx) -> Result<(), Decline> {
     x.steps += 7;
     for &op in SMALL[size as usize] {
         match op {
-            Op::Up(n) => {
+            SmallOp::Up(n) => {
                 x.set(EDI, x.di().wrapping_sub(n));
                 x.steps += 1;
             }
-            Op::Down => {
+            SmallOp::Down => {
                 x.set(EDI, x.di().wrapping_add(1));
                 x.steps += 1;
             }
-            Op::Left => {
+            SmallOp::Left => {
                 x.set(EBX, x.bx().wrapping_sub(1));
                 x.steps += 1;
             }
-            Op::Right => {
+            SmallOp::Right => {
                 x.set(EBX, x.bx().wrapping_add(1));
                 x.steps += 1;
             }
-            Op::Span(n) => small_span(x, n, true),
-            Op::Last(n) => small_span(x, n, false),
+            SmallOp::Span(n) => small_span(x, n, true),
+            SmallOp::Last(n) => small_span(x, n, false),
         }
     }
     x.retf();

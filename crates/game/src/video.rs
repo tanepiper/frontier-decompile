@@ -21,12 +21,15 @@ mod driver;
 mod palette;
 mod shapes;
 mod sprite;
+mod texture;
+mod texture_cases;
 pub use raster::*;
 pub use screen::*;
 pub use driver::*;
 pub use palette::*;
 pub use shapes::*;
 pub use sprite::*;
+pub use texture::*;
 
 pub use crate::math3::{lin, lin32, Bus, Cpu, DIVIDE_HANDLER_STEPS, DIVIDE_RESUME, EAX, EBP, EBX, ECX, EDI, EDX, ESI, ESP};
 
@@ -289,6 +292,10 @@ pub const EXPORTS: &[(u16, u16, &str, Port)] = &[
     (0x1432, 0, "load_high_colours@1432", high_after_reset),
     (0x34e7, 0x0250, "load_colours", load_colours),
     (0x34f0, 0, "load_colours@34f0", colours_after_reset),
+    (0x3635, 0x0208, "textured_triangle", textured_triangle),
+    (0x36c0, 0, "textured_triangle@36c0", textured_triangle_after_lookup),
+    (0x44d1, 0x0204, "textured_quad", textured_quad),
+    (0x45b3, 0, "textured_quad@45b3", textured_quad_after_lookup),
     (0x0796, 0x025c, "flip", flip),
     (0x079a, 0, "flip@079a", flip_after_shape),
     (0x07ab, 0, "flip@07ab", flip_after_position),

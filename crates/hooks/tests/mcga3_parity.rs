@@ -325,6 +325,33 @@ fn setup(m: &mut Machine, rng: &mut Rng, name: &str, ds: u16) -> bool {
             }
             true
         }
+        "textured_triangle" | "textured_quad" => {
+            // A cached bitmap (a valid header), so the fill runs to the end.
+            let cache = m.cpu.mem.rw(lin(ds, video::CACHE_SEGMENT as u32));
+            let cached: Vec<u16> = (0..0x400u16)
+                .filter(|&i| {
+                    let slot = m.cpu.mem.rw(lin(cache, 0xf000 + 2 * i as u32));
+                    slot != 0xffff && m.cpu.mem.rb(lin(cache, slot as u32)) <= 3 && m.cpu.mem.rb(lin(cache, slot as u32 + 1)) > 0
+                })
+                .collect();
+            if cached.is_empty() {
+                return false;
+            }
+            let id = cached[rng.below(cached.len() as u16) as usize];
+            let (w, h) = (video::WIDTH, video::VIEW_HEIGHT);
+            let small = rng.below(3) == 0;
+            let c = |r: &mut Rng, s: u16| if small { r.below(s) } else if r.below(6) == 0 { r.coord(s) } else { r.below(s) };
+            let v = [c(rng, w), c(rng, h), c(rng, w), c(rng, h), c(rng, w), c(rng, h)];
+            for (r, val) in [EAX, EBX, ECX, EDX, ESI, EBP].into_iter().zip(v) {
+                m.cpu.r[r] = (rng.dword() & 0xFFFF_0000) | val as u32;
+            }
+            m.cpu.mem.ww(lin(ds, video::QUAD_X3 as u32), c(rng, w));
+            m.cpu.mem.ww(lin(ds, video::QUAD_Y3 as u32), c(rng, h));
+            let turn = if name == "textured_quad" { rng.below(8) << 12 } else { rng.next() & 0xf000 };
+            m.cpu.r[EDI] = (rng.dword() & 0xFFFF_0000) | (id | turn) as u32;
+            m.cpu.mem.ww(lin(ds, video::TARGET as u32), target);
+            true
+        }
         _ if name.starts_with("flip") || name.starts_with("init") => {
             for r in [EAX, EBX, ECX, EDX, ESI, EDI, EBP] {
                 m.cpu.r[r] = rng.dword();
@@ -400,6 +427,20 @@ fn mcga3_ports_match_original() {
                 None => Some(format!("the original did not return; the port claims {} steps", out.steps)),
             };
             if let Some(d) = diff {
+                if std::env::var_os("MCGA3_DIFF").is_some() {
+                    let staged: std::collections::BTreeMap<u32, u8> = shadow.writes().collect();
+                    let mut diffs = Vec::new();
+                    for (&a, &(before, after)) in &orig_writes {
+                        let got = staged.get(&a).copied().unwrap_or(before);
+                        if got != after { diffs.push((a, after, got)); }
+                    }
+                    for (&a, &v) in &staged {
+                        if !orig_writes.contains_key(&a) && v != m.cpu.mem.rb(a) && !(a >= 0x90000 && a < 0x90000 + 0xff00) { diffs.push((a, m.cpu.mem.rb(a), v)); }
+                    }
+                    let seg = m.image_segment("EL2MCGA3.OVL").unwrap();
+                    let cs = |o: u32| m.cpu.mem.rw(lin(seg, o));
+                    eprintln!("DIFF {name}: {} bytes {:x?} | cs 357a {:x} 357c {:x} 357f {:x} 3581 {:x} 353c {:x} 353e {:x} 1fb1 {:x}", diffs.len(), &diffs[..diffs.len().min(12)], cs(0x357a), m.cpu.mem.rb(lin(seg, 0x357c)), cs(0x357f), cs(0x3581), cs(0x353c), cs(0x353e), m.cpu.mem.rb(lin(ds, 0x1fb1)));
+                }
                 if mismatches == 0 && std::env::var_os("MCGA3_DEBUG").is_some() {
                     let mut ws: Vec<(u32, u8)> = shadow.writes().filter(|w| w.0 >= 0xA0000 && w.0 < 0xB0000 || w.0 >= 0xE0000).collect();
                     ws.sort();
@@ -448,7 +489,7 @@ fn run_to(m: &mut Machine, seg: u16, off: u16) {
         }
         m.run(1);
     }
-    panic!("did not reach {seg:04x}:{off:04x}");
+    panic!("did not reach {seg:04x}:{off:04x}, at {:04x}:{:04x}", m.cpu.s[frontier_dos::cpu::CS], m.cpu.ip);
 }
 
 /// The bitmap path end to end: the blitter, the cache lookup, and on a miss the three pieces
@@ -497,7 +538,7 @@ fn sprite_chain_matches_original() {
         m.cpu.r[ESP] = 0xE000;
         m.cpu.s[DS] = ds;
         m.cpu.s[SS] = STACK;
-        m.cpu.flags &= !frontier_dos::cpu::DF;
+        m.cpu.flags &= !(frontier_dos::cpu::DF | frontier_dos::cpu::IF);
         m.enter(seg, 0x02d3);
         let mut step = |m: &mut Machine, name: &str| compare_here(m, &mut shadow, name);
         let r = (|| -> Result<(), String> {
@@ -522,5 +563,66 @@ fn sprite_chain_matches_original() {
         }
     }
     eprintln!("sprite chain: {cases} blits, {misses} cache misses, {} failures", failures.len());
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}
+
+/// The textured fills with bitmaps not yet cached: the fill up to the cache's first `int 67h`,
+/// the original's cache code run on the machine, then the fill's code after the lookup.
+#[test]
+fn textured_miss_chain_matches_original() {
+    let Some(mut m) = booted() else { return };
+    let seg = m.image_segment("EL2MCGA3.OVL").unwrap();
+    let ds = m.images().iter().find(|i| i.name == "FRONTIER.EXE").unwrap().seg + 0x1615;
+    let cases: usize = std::env::var("MCGA3_CASES").ok().and_then(|n| n.parse().ok()).unwrap_or(200);
+    let mut rng = Rng(0x1234_5678_9ABC_DEF1);
+    let mut shadow = Shadow::default();
+    let cache = m.cpu.mem.rw(lin(ds, video::CACHE_SEGMENT as u32));
+    let ids: Vec<u16> = (0..0x400u16)
+        .filter(|&i| {
+            let page = m.cpu.mem.rw(lin(ds, 0x5813 + 4 * i as u32 + 2));
+            page < 0x30 && m.cpu.mem.rw(lin(cache, 0xf000 + 2 * i as u32)) == 0xffff
+        })
+        .collect();
+    let (mut misses, mut failures) = (0, Vec::new());
+    for case in 0..cases {
+        if ids.is_empty() {
+            break;
+        }
+        let id = ids[rng.below(ids.len() as u16) as usize];
+        let quad = case % 2 == 1;
+        let (entry, resume, name) = if quad { (0x44d1, 0x45b3, "textured_quad") } else { (0x3635, 0x36c0, "textured_triangle") };
+        let v = [rng.below(320), rng.below(168), rng.below(320), rng.below(168), rng.below(320), rng.below(168)];
+        for (r, val) in [EAX, EBX, ECX, EDX, ESI, EBP].into_iter().zip(v) {
+            m.cpu.r[r] = (rng.dword() & 0xFFFF_0000) | val as u32;
+        }
+        m.cpu.mem.ww(lin(ds, video::QUAD_X3 as u32), rng.below(320));
+        m.cpu.mem.ww(lin(ds, video::QUAD_Y3 as u32), rng.below(168));
+        m.cpu.r[EDI] = (rng.dword() & 0xFFFF_0000) | (id | rng.below(8) << 12) as u32;
+        m.cpu.r[ESP] = 0xFF00;
+        m.cpu.s[DS] = ds;
+        m.cpu.s[SS] = STACK;
+        // Interrupts off: the game's timer handler must not run on this scratch stack.
+        m.cpu.flags &= !(frontier_dos::cpu::DF | frontier_dos::cpu::IF);
+        m.enter(seg, entry);
+        let r = (|| -> Result<(), String> {
+            let end = compare_here(&mut m, &mut shadow, name)?;
+            let ems = (m.cpu.mem.rw(0x67 * 4 + 2), m.cpu.mem.rw(0x67 * 4));
+            if (end.0, end.1) != ems {
+                // Drawn from the cache, or (a directory entry that is no bitmap) the texel
+                // buffer overran the return address: nothing more to compare.
+                return Ok(());
+            }
+            misses += 1;
+            run_to(&mut m, seg, resume);
+            compare_here(&mut m, &mut shadow, &format!("{name}@{resume:04x}"))?;
+            Ok(())
+        })();
+        if let Err(e) = r {
+            if failures.len() < 4 {
+                failures.push(e);
+            }
+        }
+    }
+    eprintln!("textured miss chain: {cases} fills, {misses} cache misses, {} failures", failures.len());
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
