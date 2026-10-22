@@ -130,6 +130,16 @@ fn galaxy_ports_match_original() {
                 m.cpu.mem.wd(lin(ds, 0x2025), x.next());
                 m.cpu.r[0] = (m.cpu.r[0] & 0xFFFF_0000) | (x.next() % 16);
                 m.cpu.flags &= !0x0400;
+                // Body counters: count of bodies (some at the limit of 18), the running index
+                // and the parent index, so [204b] - [202d] points back into the records.
+                let made = (x.next() % 0x13) as u8;
+                m.cpu.mem.wb(lin(ds, 0x204d), made);
+                let idx = (x.next() % 8) as u16;
+                m.cpu.mem.ww(lin(ds, 0x202d), idx);
+                m.cpu.mem.ww(lin(ds, 0x204b), idx + (x.next() % 3) as u16);
+                if name == "big_body" {
+                    m.cpu.r[0] = (m.cpu.r[0] & 0xFFFF_0000) | (x.next() % 4);
+                }
             }
             m.cpu.s[CS] = seg;
             m.cpu.ip = off as u32;
