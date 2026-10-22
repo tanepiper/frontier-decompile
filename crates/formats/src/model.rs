@@ -364,6 +364,9 @@ pub enum Prim {
         at: u8,
         /// `1B`: added to the sub-object's scale (`1000:7be9`).
         scale: i8,
+        /// The sub-object's orientation in the parent's space (rows: the images of its x, y and
+        /// z axes): [`Paint::placement`] of the operand.
+        matrix: [[f32; 3]; 3],
     },
     /// `0A`: text drawn with a font model of the second table ([`text_table`]) at vertex `at`,
     /// oriented by `matrix` (rows, the images of the font's x, y and z axes), at `scale` (the
@@ -512,6 +515,21 @@ impl Paint {
             (true, true) => self.frame[n],
             (true, false) => self.object[n],
         }
+    }
+
+    /// The orientation a word kept in `[DS:07d8]` gives a sub-object or text (`1000:75fb`): bits
+    /// 8–10 pick a row of `DS:5749` (row 6: the matrix the last `1C` built), bits 13, 12 and 11
+    /// negate the x, y and z axes. The same permutation and signs as `1C`'s first part, from the
+    /// word shifted right by one (`1C` keeps its command doubled there). `0E` and `1B` keep their
+    /// first operand there (`1000:7c0f`, `7b6e`), `0A` its second word (`1000:797e`). *Observed*;
+    /// the Hawk's second wing (`0E` operand `2003h`) is the first mirrored.
+    pub fn placement(&self, word: u16) -> [[f32; 3]; 3] {
+        if (word >> 8) & 7 == 6 {
+            return self.matrix;
+        }
+        let mut p = self.clone();
+        p.orient((word >> 1) & 0x7fff, 0);
+        p.matrix
     }
 
     /// The frame variables a sub-object starts with (`1000:7d9e`): the first is the parent's
@@ -754,7 +772,7 @@ pub fn walk_with(image: &[u8], start: usize, branches: Branches, paint: &mut Pai
                     }
                     0x09 => m.prims.push((Prim::Thruster { from: ops[0] as u8, to: (ops[0] >> 8) as u8, size: ops[1] }, c)),
                     0x0e => {
-                        m.prims.push((Prim::Sub { model: word >> 5, at: ops[0] as u8, scale: 0 }, c));
+                        m.prims.push((Prim::Sub { model: word >> 5, at: ops[0] as u8, scale: 0, matrix: paint.placement(ops[0]) }, c));
                         m.sub_paints.push(paint.child());
                     }
                     0x1b => {
@@ -772,7 +790,7 @@ pub fn walk_with(image: &[u8], start: usize, branches: Branches, paint: &mut Pai
                             raw & 0xefe
                         };
                         let scale = if ops[1] & 0x0800 == 0 { ((ops[1] as i16) >> 12) as i8 } else { 0 };
-                        m.prims.push((Prim::Sub { model: word >> 5, at: ops[0] as u8, scale }, c));
+                        m.prims.push((Prim::Sub { model: word >> 5, at: ops[0] as u8, scale, matrix: paint.placement(ops[0]) }, c));
                         let mut child = paint.child();
                         child.colour = colour;
                         m.sub_paints.push(child);
@@ -783,16 +801,7 @@ pub fn walk_with(image: &[u8], start: usize, branches: Branches, paint: &mut Pai
                         // low byte the origin vertex (1000:797c), bits 8–10 the orientation
                         // (`DS:5749` row; 6 = the 1C matrix) and 11–13 negations (1000:75fb);
                         // word 3 the text number (the text expander, slot DS:0014).
-                        let orient = (ops[1] >> 8) & 7;
-                        // Rows 0–5: the same permutation and signs as 1C's first part, from word 2
-                        // shifted right by one (1C keeps the command doubled in [DS:07d8]).
-                        let matrix = if orient == 6 {
-                            paint.matrix
-                        } else {
-                            let mut p2 = paint.clone();
-                            p2.orient((ops[1] >> 1) & 0x7fff, 0);
-                            p2.matrix
-                        };
+                        let matrix = paint.placement(ops[1]);
                         m.prims.push((
                             Prim::Text {
                                 at: ops[1] as u8,

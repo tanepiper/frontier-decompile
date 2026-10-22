@@ -135,7 +135,7 @@ the handlers.
 | `0A` | `78d8` | 4 | text: word 1 the normal (low byte), the font (bits 12–15, a model of the second table, `1000:190a`: segment `[DS:07f8]`, offset `8106h`) and scale (bits 8–11); word 2 the origin vertex (low byte) and orientation (bits 8–13); word 3 a text number (below) |
 | `0B` / `0C` | `7dff` / `7e85` | 2 | distance test; on failure skip `(word >> 5) × 2` bytes, or end the model if that is 0 |
 | `0D`, `1D` | `7f82` | 2 | arithmetic on model variables (below) |
-| `0E` | `7c0c` | 2, or 4 when the operand has bit 15 set | draws model `word >> 5` at the vertex in the operand's low byte, with the parent's colour |
+| `0E` | `7c0c` | 2, or 4 when the operand has bit 15 set | draws model `word >> 5` at the vertex in the operand's low byte, with the parent's colour, oriented by the operand's bits 8–13 as text is (`1000:75fb`: a permutation, bits 13–11 negate x, y, z; the Hawk's second wing is `2003h`, mirrored in x) |
 | `0F`, `15`, `19`, `1E` | | 1 | not traced |
 | `10` / `11` | `81ab` / `812a` | 4 / 6 | not traced |
 | `12` | `8da6` | 2 | not traced |

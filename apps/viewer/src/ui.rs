@@ -440,8 +440,9 @@ impl Ui {
             Some(r) => format!("Model {} · {}", self.model, r.group()),
             None => format!("Model {}", self.model),
         };
-        ui.horizontal(|ui| {
-            ui.heading(title);
+        ui.heading(title);
+        // The controls wrap onto more lines, so the panel never grows wider than the window.
+        ui.horizontal_wrapped(|ui| {
             ui.checkbox(&mut self.filled, "flat shaded");
             ui.checkbox(&mut self.spin, "spin");
             ui.checkbox(&mut self.thrusters, "thruster flames");
@@ -463,9 +464,12 @@ impl Ui {
             )),
             Some(why) => ui.colored_label(Color32::from_rgb(230, 180, 90), format!("Partial: {why}. {} shapes drawn.", mesh.prims.len())),
         };
+        // The drawing fills the visible width of the panel (not any wider content), so the model
+        // is centred in what can be seen.
         let avail = ui.available_size();
+        let width = avail.x.min(ui.clip_rect().right() - ui.cursor().left()).max(100.0);
         let view_h = (avail.y * 0.6).max(200.0);
-        let (rect, resp) = ui.allocate_exact_size(Vec2::new(avail.x, view_h), Sense::drag());
+        let (rect, resp) = ui.allocate_exact_size(Vec2::new(width, view_h), Sense::drag());
         if resp.dragged() {
             let d = resp.drag_delta();
             self.yaw += d.x * 0.01;

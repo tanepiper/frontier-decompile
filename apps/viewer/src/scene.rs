@@ -70,22 +70,36 @@ pub struct Context<'a> {
 /// state the walk gives it (`model::Mesh::sub_paints`).
 pub fn build(cx: &Context, n: usize) -> Scene {
     let mut s = Scene::default();
-    add(cx, cx.set, n, [0.0; 3], 1.0, 0, cx.paint.clone(), &mut s);
+    add(cx, cx.set, n, [0.0; 3], IDENTITY, 0, cx.paint.clone(), &mut s);
     s
 }
 
+const IDENTITY: [[f32; 3]; 3] = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]];
+
+/// `Σ v[i] · basis[i]`: a model-space vector in the world, with `basis` the images of the
+/// model's x, y and z axes (scale included).
+fn apply(basis: &[[f32; 3]; 3], v: [f32; 3]) -> [f32; 3] {
+    std::array::from_fn(|j| v[0] * basis[0][j] + v[1] * basis[1][j] + v[2] * basis[2][j])
+}
+
+/// A child's basis: its orientation `m` (rows in the parent's space) scaled by `k`, in the world.
+fn compose(m: &[[f32; 3]; 3], k: f32, basis: &[[f32; 3]; 3]) -> [[f32; 3]; 3] {
+    std::array::from_fn(|i| apply(basis, m[i]).map(|x| x * k))
+}
+
+/// Add model `n` with its origin at `origin` and its axes at `basis` (rows, scale included).
 #[allow(clippy::too_many_arguments)]
-fn add(cx: &Context, set: &ModelSet, n: usize, origin: [f32; 3], scale: f32, depth: u32, mut paint: Paint, s: &mut Scene) {
+fn add(cx: &Context, set: &ModelSet, n: usize, origin: [f32; 3], basis: [[f32; 3]; 3], depth: u32, mut paint: Paint, s: &mut Scene) {
     let Some(Some(off)) = set.table.models.get(n).copied() else { return };
     let Ok(h) = model::header(&set.image, off) else { return };
     let defs = model::vertex_defs(&set.image, &h).unwrap_or_default();
     let pos = model::resolve(&defs);
     let normals = model::normals(&set.image, &h);
     let at = |v: u8| -> Option<[f32; 3]> {
-        let p = pos.get(v as usize).copied().flatten()?;
-        Some([origin[0] + p[0] * scale, origin[1] + p[1] * scale, origin[2] + p[2] * scale])
+        let p = apply(&basis, pos.get(v as usize).copied().flatten()?);
+        Some([origin[0] + p[0], origin[1] + p[1], origin[2] + p[2]])
     };
-    let normal = |k: u8| normals.get(k as usize).copied().flatten();
+    let normal = |k: u8| normals.get(k as usize).copied().flatten().map(|n| apply(&basis, n));
     if depth == 0 {
         s.points.extend((0..pos.len()).filter_map(|v| at(v as u8)));
     }
@@ -93,7 +107,7 @@ fn add(cx: &Context, set: &ModelSet, n: usize, origin: [f32; 3], scale: f32, dep
     let mut subs = mesh.sub_paints.iter();
     for (prim, c) in mesh.prims {
         match prim {
-            Prim::Sub { model: m, at: v, scale: step } => {
+            Prim::Sub { model: m, at: v, scale: step, matrix } => {
                 let child = subs.next().cloned().unwrap_or_else(|| paint.child());
                 let Some(o) = at(v) else { continue };
                 s.parts.push(m);
@@ -110,7 +124,7 @@ fn add(cx: &Context, set: &ModelSet, n: usize, origin: [f32; 3], scale: f32, dep
                         (Some(a), Some(b)) => 2f32.powi(a as i32 + step as i32 - b as i32),
                         _ => 1.0,
                     };
-                    add(cx, set, m as usize, o, scale * k.clamp(1.0 / 64.0, 64.0), depth + 1, child, s);
+                    add(cx, set, m as usize, o, compose(&matrix, k.clamp(1.0 / 64.0, 64.0), &basis), depth + 1, child, s);
                 } else {
                     s.shapes.push(Shape::Label(o, format!("model {m}")));
                 }
@@ -122,11 +136,11 @@ fn add(cx: &Context, set: &ModelSet, n: usize, origin: [f32; 3], scale: f32, dep
                     0x4000..=0x7fff => cx.texts.get((text & 0x3fff) as usize).cloned().unwrap_or_default(),
                     _ => String::new(),
                 };
-                let k = scale * 2f32.powi(fs as i32 - h.scale().unwrap_or(fs as u16) as i32);
+                let k = 2f32.powi(fs as i32 - h.scale().unwrap_or(fs as u16) as i32);
                 // The 0A command's colour is the text's model colour (1000:7978, 79cc).
                 let mut tp = paint.child();
                 tp.colour = c;
-                text_shapes(cx, fonts, font as usize, &string, o, k, matrix, &tp, normal(tn), s);
+                text_shapes(cx, fonts, font as usize, &string, o, compose(&matrix, k, &basis), &tp, normal(tn), s);
             }
             other => draw_prim(other, c, &at, &normal, s),
         }
@@ -192,8 +206,8 @@ fn draw_prim(prim: Prim, c: u16, at: &dyn Fn(u8) -> Option<[f32; 3]>, normal: &d
 /// glyph is the command list at the font's `+20h + 2·(char − 20h)` offset, drawn at the cursor;
 /// the vertex named by the glyph's end word (`>> 6`) is where the next character starts
 /// (`1000:7ac6`); a control character returns to the line start moved by the vertex in header
-/// word `+1Eh` (`1000:7b14`). Points are `origin + scale · (x·row0 + y·row1 + z·row2)`
-/// (*inferred* reading of the matrix).
+/// word `+1Eh` (`1000:7b14`). Points are `origin + x·row0 + y·row1 + z·row2` of the font's
+/// world basis (*measured*: the text frame's matrix is R·P with R constant, docs/FORMATS.md §4).
 #[allow(clippy::too_many_arguments)]
 fn text_shapes(
     cx: &Context,
@@ -201,7 +215,6 @@ fn text_shapes(
     font: usize,
     text: &str,
     origin: [f32; 3],
-    k: f32,
     m: [[f32; 3]; 3],
     paint: &Paint,
     normal: Option<[f32; 3]>,
@@ -210,9 +223,8 @@ fn text_shapes(
     let Some(Some(f)) = fonts.table.models.get(font).copied() else { return };
     let Ok(fh) = model::header(&fonts.image, f) else { return };
     let fpos = model::resolve(&model::vertex_defs(&fonts.image, &fh).unwrap_or_default());
-    let place = |base: [f32; 3], v: [f32; 3]| -> [f32; 3] {
-        std::array::from_fn(|i| base[i] + k * (v[0] * m[0][i] + v[1] * m[1][i] + v[2] * m[2][i]))
-    };
+    let place =
+        |base: [f32; 3], v: [f32; 3]| -> [f32; 3] { std::array::from_fn(|i| base[i] + v[0] * m[0][i] + v[1] * m[1][i] + v[2] * m[2][i]) };
     let word = |o: usize| fonts.image.get(o..o + 2).map(|b| u16::from_le_bytes([b[0], b[1]]));
     let (mut cursor, mut line) = (origin, origin);
     let first = s.shapes.len();
