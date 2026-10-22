@@ -73,12 +73,31 @@ caller's frame at `SS:BP`.
   declines the empty catalogue sectors that name an extra model (`EL2M02:1cf2`), which the
   original then draws through `DS:00f4`.
 
+## A random nearby system: `EL2M02:3ddd` (module 2, handler `+20`)
+
+Ported as `galaxy::nearby_port`, for `AX` = 0 and 1. Missions and the bulletin board choose their
+destinations through it.
+
+- **`AX` = 0** returns the current system's cached fields: `DS:2177`, `2189`, `2192` and
+  `2181`–`2188`, with `ES:SI` = `SS:FD08h`.
+- **`AX` = 1** picks a random system near id `DS:07c0`:
+  1. With `DS:07c4` = 1 or 2, the sector moves by one of 12 offsets, picked with `random(12)`. The
+     offsets come from `EL2M02:20c8` (one sector away) or `EL2M02:20e0` (two). Each is a ±1 or ±2
+     step in `x`, `y` or both, in id units.
+  2. The star count of that sector comes from the catalogue ranges or from the density.
+  3. `random(count)` picks the star.
+
+  The new id goes to `DS:07bc`. `AX` = 1 on success. `DS:07bc` = 0 (`EAX` = 0) when the sector is
+  empty or the pick is the starting system. The zero test (`SUB`, `SBB`, `OR CX,BX`) leaves
+  `CX` = the difference's high word OR'd with its low word.
+
 ## How parity was proven
 
 1. **Fuzzing** (`crates/hooks/tests/galaxy_parity.rs`). In the booted game, with `EL2M02` and
    `EL2M19` loaded through the game's own module thunks: 20,000 calls of `seed_step` and
    `sector_density`, and 5,000 of `sector_stars`. A third of the `sector_stars` sectors come
-   from the catalogue, and half have the renderer flag set. Every register, every byte written
+   from the catalogue, and half have the renderer flag set. `nearby` gets 20,000 calls with `AX`
+   0 or 1, ranges 0–2 and random ids. Every register, every byte written
    and the instruction count are compared, up to where the port stops (its return, or its entry
    into the renderer). All match.
 2. **Shadow verification in play**

@@ -444,9 +444,195 @@ pub fn star_name_syllables(x: u16, y: u16, i: u16) -> [u16; 3] {
     [(bx & 0x7c) >> 2, (b2 & 0x7c) >> 2, (b3 & 0x7c) >> 2]
 }
 
+fn push(c: &mut Cpu, bus: &mut dyn Bus, v: u16) {
+    let sp = c.x(ESP).wrapping_sub(2);
+    bus.write16(lin(c.ss, sp), v);
+    c.set_x(ESP, sp);
+}
+
+fn pop(c: &mut Cpu, bus: &mut dyn Bus) -> u16 {
+    let sp = c.x(ESP);
+    let v = bus.read16(lin(c.ss, sp));
+    c.set_x(ESP, sp.wrapping_add(2));
+    v
+}
+
+/// `CALLF [DS:0124]` (`random(AX)`) through the native port, as from `ret_ip`.
+fn call_random(c: &mut Cpu, bus: &mut dyn Bus, ret_ip: u16) -> u64 {
+    push(c, bus, c.cs);
+    push(c, bus, ret_ip);
+    let (cs, ip) = (c.cs, c.ip);
+    let n = crate::rng::random_port(c, bus);
+    c.cs = cs;
+    c.ip = ip;
+    1 + n
+}
+
+/// Port of `EL2M02:3ddd` (module 2, handler `+20`), *observed*, for `AX` = 0 and 1 (others
+/// decline).
+///
+/// - 0: the current system's cached fields: `DS:07c8` = `DS:2177` & 7, `DS:07d4` = `DS:2189`,
+///   `DS:07d8` = byte `DS:2192`, `DX:AX`/`CX:BX` = `DS:2181`–`2188`, `ES:SI` = `SS:FD08h`.
+/// - 1: a random system near id `DS:07c0` (procedural destinations). With `DS:07c4` = 1 or 2 the
+///   sector moves by one of 12 offsets (`EL2M02:20c8`: one sector; `EL2M02:20e0`: two), picked
+///   with `random(12)`; the star count comes from the catalogue (`EL2M02:0162`) or the density
+///   ([`sector_density_port`]), and `random(count)` picks the star. The id goes to `DS:07bc`; `AX`
+///   = 1, or `DS:07bc` = 0 when the sector is empty or the pick is the same system.
+pub fn nearby_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    match nearby(c, bus) {
+        Some(n) => {
+            c.retf(bus);
+            n
+        }
+        None => DECLINE,
+    }
+}
+
+fn nearby(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let ds = c.ds;
+    let cs = c.cs;
+    let ax0 = c.x(EAX);
+    let r16 = |bus: &mut dyn Bus, o: u16| bus.read16(lin(ds, o));
+    if ax0 == 0 {
+        let a = bus.read8(lin(ds, 0x2177)) as u16 & 7;
+        bus.write16(lin(ds, 0x07c8), a);
+        let v = bus.read32(lin(ds, 0x2189));
+        bus.write32(lin(ds, 0x07d4), v);
+        let b = bus.read8(lin(ds, 0x2192));
+        bus.write8(lin(ds, 0x07d8), b);
+        c.set_x(EAX, r16(bus, 0x2181));
+        c.set_x(EDX, r16(bus, 0x2183));
+        c.set_x(EBX, r16(bus, 0x2185));
+        c.set_x(ECX, r16(bus, 0x2187));
+        c.set_x(ESI, 0xfd08);
+        c.es = c.ss;
+        // EAX's high word comes from MOV EAX,[2189].
+        c.r[EAX] = (v & 0xffff_0000) | r16(bus, 0x2181) as u32;
+        return Some(17);
+    }
+    if ax0 != 1 {
+        return None;
+    }
+    let mut n: u64 = 2 + 2 + 4;
+    let mut ax = r16(bus, 0x07c0);
+    let mut dx = r16(bus, 0x07c2);
+    let range = r16(bus, 0x07c4);
+    if range != 0 {
+        c.set_x(EAX, 0x0c);
+        n += 1 + call_random(c, bus, 0x3e2b); // MOV AX,0Ch; CALLF
+        let bx = c.x(EAX) << 1;
+        c.set_x(EBX, bx);
+        let tbl = if range == 1 { 0x20c8u16 } else { 0x20e0 };
+        n += 4 + if range == 1 { 1 } else { 2 }; // SHL; MOV BX; CMP; JZ; MOV (+JMP)
+        let off = bus.read16(lin(cs, tbl.wrapping_add(bx)));
+        let v = ((off as i16 as i32) << 6) as u32;
+        let id = ((r16(bus, 0x07c2) as u32) << 16 | r16(bus, 0x07c0) as u32).wrapping_add(v);
+        ax = id as u16;
+        dx = (id >> 16) as u16;
+        n += 15;
+    }
+    // AND AL,C0h; PUSH dword [7c0]; PUSH DX; PUSH AX
+    ax &= 0xffc0;
+    let orig = bus.read32(lin(ds, 0x07c0));
+    push(c, bus, (orig >> 16) as u16);
+    push(c, bus, orig as u16);
+    push(c, bus, dx);
+    push(c, bus, ax);
+    // (DX:AX) >>= 6; CX:BX = that; BL=BH; BH=CL; CL=CH; (CX:BX) >>= 5; AND AX,1FFFh
+    let v = ((dx as u32) << 16 | ax as u32) >> 6;
+    let (sdx, sax) = ((v >> 16) as u16, v as u16);
+    let mut bx = (sax >> 8) | ((sdx & 0xff) << 8);
+    let mut cx = (sdx & 0xff00) | (sdx >> 8);
+    for _ in 0..5 {
+        let c0 = cx & 1;
+        cx >>= 1;
+        bx = (bx >> 1) | (c0 << 15);
+    }
+    let x = sax & 0x1fff;
+    c.set_x(EAX, x);
+    c.set_x(EBX, bx);
+    c.set_x(ECX, cx);
+    c.set_x(EDX, sdx);
+    n += 34;
+    // The catalogue of hand-made sectors.
+    let mut di: u16 = 0x2e;
+    let mut si: u16 = 0x015e;
+    let mut hit = false;
+    loop {
+        si = si.wrapping_sub(4);
+        if x != bus.read16(lin(cs, si)) {
+            n += 3;
+        } else if bx != bus.read16(lin(cs, si.wrapping_add(2))) {
+            n += 5;
+        } else {
+            n += 5;
+            hit = true;
+            break;
+        }
+        n += 2;
+        di = di.wrapping_sub(1);
+        if di & 0x8000 != 0 {
+            break;
+        }
+    }
+    c.set_x(ESI, si);
+    let count;
+    if hit {
+        let d2 = di << 1;
+        c.set_x(EDI, d2);
+        let start = bus.read16(lin(cs, 0x0162u16.wrapping_add(d2)));
+        let end = bus.read16(lin(cs, 0x0164u16.wrapping_add(d2)));
+        c.set_x(EBX, start);
+        count = end.wrapping_sub(start) >> 1;
+        n += 6;
+    } else {
+        c.set_x(EDI, di);
+        c.set_x(ECX, 0);
+        push(c, bus, 0x3ec1);
+        let m = sector_density_port(c, bus);
+        if m == DECLINE {
+            return None;
+        }
+        n += 2 + m;
+        count = (c.x(EAX) >> 8) >> 2;
+        n += 4;
+    }
+    c.set_x(EAX, count);
+    if count == 0 {
+        // ADD SP,8; XOR EAX,EAX; MOV [7bc],EAX; RETF
+        c.set_x(ESP, c.x(ESP).wrapping_add(8));
+        c.r[EAX] = 0;
+        bus.write32(lin(ds, 0x07bc), 0);
+        return Some(n + 4);
+    }
+    n += call_random(c, bus, 0x3ece);
+    let idx = c.x(EAX);
+    let bx2 = pop(c, bus);
+    let cx2 = pop(c, bus);
+    let new = ((cx2 as u32) << 16 | bx2 as u32).wrapping_add(idx as i16 as i32 as u32);
+    bus.write32(lin(ds, 0x07bc), new);
+    let ob = pop(c, bus);
+    let oc = pop(c, bus);
+    let diff = ((oc as u32) << 16 | ob as u32).wrapping_sub(new);
+    c.set_x(EBX, diff as u16);
+    // SUB BX,AX; SBB CX,DX; OR CX,BX (the zero test leaves CX = high | low).
+    c.set_x(ECX, (diff >> 16) as u16 | diff as u16);
+    c.set_x(EAX, new as u16);
+    c.set_x(EDX, (new >> 16) as u16);
+    n += 13;
+    if diff == 0 {
+        c.r[EAX] = 0;
+        bus.write32(lin(ds, 0x07bc), 0);
+        return Some(n + 3);
+    }
+    c.set_x(EAX, 1);
+    Some(n + 2)
+}
+
 /// Every ported galaxy routine: (`EL2M02` offset, 0 for a near routine with no vector slot, name, port).
 pub const PORTS_M02: &[(u16, u16, &str, Port)] = &[
     (0x3abe, 0, "seed_step", seed_step_port),
     (0x3b34, 0, "sector_density", sector_density_port),
     (0x3c2f, 0, "sector_stars", sector_stars_port),
+    (0x3ddd, 0, "nearby", nearby_port),
 ];

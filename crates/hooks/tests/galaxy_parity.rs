@@ -104,6 +104,12 @@ fn galaxy_ports_match_original() {
             if i % 4 != 0 {
                 m.cpu.r[ECX] = (m.cpu.r[ECX] & 0xFFFF_0000) | (x.next() % 0x14);
             }
+            if name == "nearby" {
+                // AX 0 or 1, a range of 0-2 sectors, a random system id.
+                m.cpu.r[0] = (m.cpu.r[0] & 0xffff_0000) | (i % 2) as u32;
+                m.cpu.mem.ww(lin(ds, 0x07c4), (x.next() % 3) as u16);
+                m.cpu.mem.wd(lin(ds, 0x07c0), x.next());
+            }
             if name == "sector_stars" {
                 // A frame for the star list, sectors (some from the catalogue at EL2M02:00a2),
                 // and the renderer flag DS:215b mostly clear.
@@ -200,6 +206,9 @@ fn galaxy_ports_match_original() {
             m.cpu.s[CS] = seg;
             m.cpu.ip = off as u32;
             let input = regs_from(&m.cpu);
+            let id_in = m.cpu.mem.rd(lin(ds, 0x07c0));
+            let full_in = format!("r {:x?} s {:x?} rng {:08x} {:08x}", m.cpu.r, m.cpu.s, m.cpu.mem.rd(lin(ds, 0x1fd9)), m.cpu.mem.rd(lin(ds, 0x1fdd)));
+            let range_in = m.cpu.mem.rw(lin(ds, 0x07c4));
             let out = run_port(&m.cpu, port);
             if out.steps == DECLINE {
                 declined += 1;
@@ -219,7 +228,7 @@ fn galaxy_ports_match_original() {
             };
             if let Some(d) = diff {
                 if mismatches == 0 {
-                    failures.push(format!("{name} ({off:04x}): input {input:x?}\n  {d}"));
+                    failures.push(format!("{name} ({off:04x}): input {input:x?} [07c0]={id_in:08x} [07c4]={range_in} {full_in}\n  {d}"));
                 }
                 mismatches += 1;
             }
