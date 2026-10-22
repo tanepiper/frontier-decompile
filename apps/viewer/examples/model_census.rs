@@ -7,7 +7,9 @@
 //! replacing it, and every second writes the frame to
 //! `game-data/derived/captures/models-NN.png` and prints the models looked up in that second
 //! (`main:n` for the default table in `FRONTIER.EXE`, `seg:base:n` for a module's table).
-//! `keys` are `T:SC` pairs: at virtual second T press and release set-1 scancode SC (hex).
+//! Objects drawn through `1000:3810` are printed first, as `obj:n` (their model number at `+5Ah`).
+//! `keys` are `T:SC` pairs: at virtual second T press and release set-1 scancode SC (hex), or
+//! `T:@X,Y` to move the mouse to X,Y (driver coordinates) and click the left button.
 
 use std::cell::RefCell;
 use std::collections::BTreeMap;
@@ -16,6 +18,12 @@ use std::rc::Rc;
 
 use frontier_dos::{Machine, Stop, Vfs};
 
+#[derive(Clone, Copy)]
+enum Input {
+    Key(u8),
+    Click(i32, i32),
+}
+
 /// Lookups per (table segment, base, model number) in the current second.
 type Seen = Rc<RefCell<BTreeMap<(u16, u16, u16), u32>>>;
 
@@ -23,12 +31,20 @@ fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let dir = args.first().cloned().unwrap_or_else(|| "game-data/original".into());
     let secs: f64 = args.get(1).and_then(|s| s.parse().ok()).unwrap_or(60.0);
-    let mut keys: Vec<(f64, u8)> = args
+    // `T:SC` presses scancode SC (hex); `T:@X,Y` clicks the left button at driver X,Y.
+    let mut keys: Vec<(f64, Input)> = args
         .iter()
         .skip(2)
         .filter_map(|k| {
-            let (t, sc) = k.split_once(':')?;
-            Some((t.parse().ok()?, u8::from_str_radix(sc, 16).ok()?))
+            let (t, what) = k.split_once(':')?;
+            let input = match what.strip_prefix('@') {
+                Some(xy) => {
+                    let (x, y) = xy.split_once(',')?;
+                    Input::Click(x.parse().ok()?, y.parse().ok()?)
+                }
+                None => Input::Key(u8::from_str_radix(what, 16).ok()?),
+            };
+            Some((t.parse().ok()?, input))
         })
         .collect();
     keys.sort_by(|a, b| a.0.total_cmp(&b.0));
@@ -69,18 +85,43 @@ fn main() {
             }),
         );
     }
+    // Objects drawn by `1000:3810` (slot `DS:00d8`): ES:SI is the object, its model number × 2
+    // is the word at `+5Ah`. Printed as `obj:n` beside the lookups.
+    let objects: Seen = Rc::default();
+    let o2 = objects.clone();
+    m.hook(
+        "FRONTIER.EXE",
+        0x3810,
+        Box::new(move |cpu, _| {
+            let es = cpu.s[0] as u32;
+            let si = cpu.r[6] as u16 as u32;
+            let n = cpu.mem.rw((es << 4) + si + 0x5a);
+            *o2.borrow_mut().entry((0, 0, n / 2)).or_default() += 1;
+            false
+        }),
+    );
     let out = Path::new("game-data/derived/captures");
     std::fs::create_dir_all(out).unwrap();
     let slice = (m.dev.ips / 100.0) as u64;
     let (mut next, mut shot) = (1.0, 0);
     loop {
         let st = m.run(slice);
-        while let Some(&(t, sc)) = keys.first() {
+        while let Some(&(t, input)) = keys.first() {
             if m.now() < t {
                 break;
             }
-            m.key(sc);
-            m.key(sc | 0x80);
+            match input {
+                Input::Key(sc) => {
+                    m.key(sc);
+                    m.key(sc | 0x80);
+                }
+                Input::Click(x, y) => {
+                    let (dx, dy) = (x - m.mouse.x, y - m.mouse.y);
+                    m.mouse_move(dx, dy);
+                    m.mouse_button(1, true);
+                    m.mouse_button(1, false);
+                }
+            }
             keys.remove(0);
         }
         if m.now() >= next {
@@ -97,8 +138,10 @@ fn main() {
                     format!("{table}:{n}×{c}")
                 })
                 .collect();
-            println!("{shot:3} {:6.1}s  {}", m.now(), list.join(" "));
+            let objs: Vec<String> = objects.borrow().iter().map(|(&(_, _, n), c)| format!("obj:{n}×{c}")).collect();
+            println!("{shot:3} {:6.1}s  {}  |  {}", m.now(), objs.join(" "), list.join(" "));
             seen.borrow_mut().clear();
+            objects.borrow_mut().clear();
             shot += 1;
             next += 1.0;
         }

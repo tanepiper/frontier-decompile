@@ -458,7 +458,7 @@ impl Ui {
         let default = h.colour().unwrap_or(0x666);
         scene::draw(&ui.painter_at(rect), rect, &scene, default, self.yaw, self.pitch, self.zoom, self.filled, self.thrusters);
         if matches!(set.roles.get(self.model), Some(Some(model::Role::Named(_)))) {
-            ui.label("Names: the list in FRONTIER.EXE read in order from model 3 (inferred, docs/FORMATS.md §4). Groups other than names are inferred from the header scale and sub-object use.");
+            ui.label("Name: from the ship's data block in FRONTIER.EXE (checked in the game for the Eagle, Constrictor, Tiger Trader and Puma Clipper; docs/FORMATS.md §4). Other groups are inferred.");
         }
         egui::ScrollArea::vertical().auto_shrink(false).show(ui, |ui| {
             ui.collapsing("Header", |ui| {

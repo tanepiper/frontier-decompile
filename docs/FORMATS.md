@@ -167,16 +167,37 @@ with `model_census`): models 2–3 with the GameTek + Konami card, 6–16 with t
 103 and 105–107 with a ship in flight, 67–93 with the starport, its buildings and the mountain,
 25, 39 and 41–45 with a ship over water. For the main table:
 
+**Ship names, measured.** A ship's name is in its own model: the header word `+1Ah` points
+at a ship data block (`1ee8:63e3` reads it). The block starts with tagged items (`8080h` with
+2 words, `80A0h` with 3; `8010h`, `8050h` and `80D0h` with byte pairs up to a word below
+100h; a zero word ends the list). Then come a double word, a word, four words that begin with
+the mass and the internal capacity in tonnes, and the name as text `4000h + n` in the list at
+`1ea9:0788` ("CORE", "SYSTEMS", "IMPERIAL / SYSTEMS", "YOU ARE HERE", "Mine", …,
+"Long-range Cruiser"). `crates/formats::model::ship_name` reads it.
+
+Checked in the game with `model_census` on the runtime (Escape at 3 s, space at 5 s, start
+option 1 at 8 s; landed at Merlin, Ross 154):
+
+| Screen | Name on screen | Models the game drew | Text in the model's block |
+|---|---|---|---|
+| F3, ship equipment status | Eagle long range fighter | 16 (with parts 2 and 111) | `4012h`: 18, "Eagle long range fighter" |
+| F4, Shipyard, New and Reconditioned Ships | Constrictor, Puma Clipper, Constrictor, Tiger Trader | 27 twice, 31, 36 | 27: "Constrictor"; 31: "Tiger Trader"; 36: "Puma Clipper" |
+| the same, View on the Tiger Trader | Tiger Trader, 400 t, 320 t | 31 (with parts 2, 111, 120–127) | "Tiger Trader"; block words 400 and 320 |
+
+The names do not follow the order of the list: Puma Clipper (text 33) is model 36 and Tiger
+Trader (text 34) model 31. The blocks name one model each for every ship of the list from
+Escape Capsule (9) to Long-range Cruiser (41), and also 60 and 92 (Long-range Cruiser) and
+110 (Lynx Bulk Carrier), whose roles are not known. No block names ". IXI ." (text 17).
+
+Other groups, for the main table:
+
 | Models | What | Evidence |
 |---|---|---|
-| 3–41 | the object names in `FRONTIER.EXE` (`1ea9:07b3`, "Mine" … "Long-range Cruiser"), in order from model 3, without the one entry of `__` panel text | *inferred*: models 5–8 all draw model 2, matching the four missiles; 14 and 15 are jet fighters sharing parts, matching Hawk and Kestrel airfighter; 40 is a hull with cargo pods (Lynx Bulk Carrier) and 41 a long hull (Long-range Cruiser) |
+| 2–8 | missile and mine bodies, and the missiles and mines drawn with them (5–8 draw model 2, 4 draws model 3; no ship data block) | *inferred* |
 | 42–44 | orbital stations (42 a polyhedron, 43 a ring, 44 three pods) | *inferred* from drawing them |
-| 45–58 | surface starports, cities and buildings | *inferred* from drawing them |
+| 45–58 | surface starports, cities and buildings; 49 is drawn as an object at Merlin | *inferred*; 49 *measured* |
 | header scale 19 and up | planets, stars and terrain (most use `1F`) | *inferred* |
 | the rest | parts drawn by other models through `0E`, and others | *observed* in the mesh lists |
-
-No table ties a name to a model number. The next check is in the game: a ship's model number
-(object `+5Ah`) with its name on the screen.
 
 The viewer follows every conditional (it draws every level of detail at once), places
 sub-objects at their vertex scaled by 2^(their scale − the parent's), and draws with its own
@@ -212,7 +233,8 @@ trace that read.
 - **`PIC000.GRF`:** the screenshot and its palette.
 - **The `.ROL` songs:** tracks and events. They can be played on the OPL2 with one generic FM
   voice: a deviation for listening, since the game plays them only on an MT-32.
-- **3D models:** both tables, grouped by what the models are (ships and craft with their names,
+- **3D models:** both tables, grouped by what the models are (ships and craft named from their
+  data blocks,
   missiles, stations and starports, planets, parts), each drawn with its sub-objects (flat
   shaded or wireframe, thruster flames on request, turn with the mouse), with its header, vertex
   definitions and mesh commands.
@@ -225,7 +247,7 @@ with `tools/dev-web.sh --app viewer`.
 
 - What opcodes `0F`–`12`, `15`–`19`, `1A`–`1C` and `1E` draw (their lengths are known), and
   the second model table `0A` uses (`1000:190a`): the intro's ships draw their hulls through it.
-- A ship's model number and its name seen together in the game, to confirm the naming.
+- Which of models 2–8 is which missile or mine, and what models 39, 60, 92 and 110 are.
 - The palette the game sets for the GRF pictures (`EL2MCGA3:0234` and the colour allocator).
 - The font used by `EL2MCGA3:1a1b` (slot `DS:0218`): not in `EL2G.GRF`.
 - How the `EL2M18` message tables index their strings.

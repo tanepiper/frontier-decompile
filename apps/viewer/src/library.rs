@@ -69,8 +69,8 @@ impl Library {
         let mut models = Vec::new();
         if let Some(exe) = files.iter().find(|f| f.kind == Kind::Program) {
             if let Ok((image, table)) = model::main_table(&exe.data) {
-                let names = model::names(&exe.data);
-                models.push(ModelSet::new(format!("{} (in game)", exe.name), image, table, &names));
+                let texts = model::texts(&exe.data);
+                models.push(ModelSet::new(format!("{} (in game)", exe.name), image, table, &texts));
             }
         }
         if let Some(m08) = files.iter().find(|f| f.name.eq_ignore_ascii_case("EL2M08.OVL")) {

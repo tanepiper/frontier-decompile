@@ -476,37 +476,31 @@ pub fn walk(image: &[u8], start: usize) -> Mesh {
     m
 }
 
-/// `1ea9:07b3` (second data segment): the list of object names, `00h`-separated, from "Mine" to
-/// "Long-range Cruiser" (*observed* in the file). No table points at the entries; the code that
-/// reads them is not traced.
-pub const NAMES_AT: usize = 0x1ea9 * 16 + 0x07b3;
-/// The model number of the first name. *Inferred*: models 5–8 all draw the same body (model 2),
-/// and the list has its four missiles at positions 2–5; the two airfighters (Hawk, Kestrel)
-/// then fall on 14 and 15, which are jet fighters and share their parts; the Lynx Bulk Carrier
-/// on 40, a hull with cargo pods; the Long-range Cruiser on 41, a long hull. The entry of `__`
-/// panel text in the list is skipped: model 42 is a station. Not yet confirmed in the game (a
-/// ship's model number and its name on screen).
-pub const NAME_BASE: usize = 3;
+/// `1ea9:0788` (second data segment): a list of `00h`-separated texts, "CORE", "SYSTEMS",
+/// "IMPERIAL\rSYSTEMS", "YOU ARE HERE", then the object names "Mine" … "Long-range Cruiser"
+/// (*observed* in the file). A ship's data block names its entry as text `4000h + index`
+/// ([`ship_name`]).
+pub const TEXTS_AT: usize = 0x1ea9 * 16 + 0x0788;
+/// Models 2–8 of the main table: missile and mine bodies and the missiles and mines drawn with
+/// them (*inferred*: 5–8 all draw model 2, 4 draws model 3; they have no ship data block).
+pub const WEAPONS: std::ops::RangeInclusive<usize> = 2..=8;
 /// Models 42–58 of the main table: orbital stations (42–44) and surface starports, cities and
 /// buildings (45–58). *Inferred* from drawing them (docs/FORMATS.md §4).
 pub const STRUCTURES: std::ops::RangeInclusive<usize> = 42..=58;
 
-/// The names in `FRONTIER.EXE`'s list, in order, without the one entry of panel text in the
-/// same list (`__Max Laden Wt_1000t` and `__ONLY DISCONNECT IN DRY DOCK`, separated by `0Dh`).
-pub fn names(exe: &[u8]) -> Vec<String> {
+/// The texts of `FRONTIER.EXE`'s list at [`TEXTS_AT`], in order, up to "Long-range Cruiser".
+pub fn texts(exe: &[u8]) -> Vec<String> {
     let Ok(h) = mz::parse(exe) else { return Vec::new() };
     let image = &exe[h.header_size().min(exe.len())..];
-    let Some(list) = image.get(NAMES_AT..) else { return Vec::new() };
-    if !list.starts_with(b"Mine\0") {
+    let Some(list) = image.get(TEXTS_AT..) else { return Vec::new() };
+    if !list.starts_with(b"CORE\0") {
         return Vec::new();
     }
     let mut out = Vec::new();
     for s in list.split(|&b| b == 0) {
         let s = String::from_utf8_lossy(s).into_owned();
         let last = s == "Long-range Cruiser";
-        if !s.contains("__") {
-            out.push(s);
-        }
+        out.push(s);
         if last || out.len() > 64 {
             break;
         }
@@ -514,11 +508,64 @@ pub fn names(exe: &[u8]) -> Vec<String> {
     out
 }
 
+/// The text number of a ship's name, from its data block (the header word `+1Ah`, relative to
+/// the header; *observed*: `1ee8:63e3` reads it). The block starts with a list of tagged items:
+/// `8080h` with 2 words, `80A0h` with 3, and `8010h`, `8050h` or `80D0h` with byte pairs up to a
+/// word below 100h; a zero word (or a zero word ending a pair list) ends the list. Then come a
+/// double word, a word, four words (mass in tonnes and internal capacity first) and the name as
+/// text `4000h + n`.
+///
+/// *Measured* on the runtime: the game drew model 16 on the F3 status screen of the player's
+/// "Eagle long range fighter" (text 18), and models 27 (twice), 31 and 36 for a shipyard list of
+/// two Constrictors, a Tiger Trader and a Puma Clipper (texts 29, 34, 33), with model 31 drawn
+/// in the Tiger Trader's view; the Tiger Trader's page shows 400 t and 320 t, the two words
+/// before its name (docs/FORMATS.md §4).
+pub fn ship_name(image: &[u8], h: &Header) -> Option<u8> {
+    let rel = *h.words.get(13)? as usize;
+    if rel == 0 || rel >= 0x8000 {
+        return None;
+    }
+    let w = |p: usize| le16(image, p).ok();
+    let mut p = h.offset + rel;
+    let mut ended = false;
+    for _ in 0..64 {
+        let tag = w(p)?;
+        p += 2;
+        match tag {
+            0 => {
+                ended = true;
+                break;
+            }
+            0x8080 => p += 4,
+            0x80a0 => p += 6,
+            0x8010 | 0x8050 | 0x80d0 => loop {
+                let v = w(p)?;
+                p += 2;
+                if v < 0x100 {
+                    ended = v == 0;
+                    break;
+                }
+            },
+            _ => return None,
+        }
+        if ended {
+            break;
+        }
+    }
+    if !ended {
+        return None;
+    }
+    let name = w(p + 14)?;
+    (name >> 8 == 0x40).then_some(name as u8)
+}
+
 /// What a model is in the game, as far as the files tell.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Role {
-    /// A ship, missile or mine, with its name from [`names`] (*inferred* numbering).
+    /// A ship or craft named by its data block ([`ship_name`]).
     Named(String),
+    /// Missiles and mines ([`WEAPONS`], *inferred*).
+    Weapon,
     /// Planets, stars and terrain: header scale 19 or more (*inferred*).
     World,
     /// Stations, starports, cities and buildings: [`STRUCTURES`] (*inferred*).
@@ -531,8 +578,8 @@ pub enum Role {
 impl Role {
     pub fn group(&self) -> &'static str {
         match self {
-            Role::Named(n) if n.contains("Missile") || n.starts_with("Mine") => "Missiles and mines",
             Role::Named(_) => "Ships and craft",
+            Role::Weapon => "Missiles and mines",
             Role::World => "Planets, stars and terrain",
             Role::Structure => "Stations, starports and buildings",
             Role::Part => "Parts",
@@ -541,9 +588,9 @@ impl Role {
     }
 }
 
-/// The role of every model of a table. `names` with [`NAME_BASE`] applies to the main table
-/// only; pass an empty list for a module's table.
-pub fn roles(image: &[u8], table: &Table, names: &[String]) -> Vec<Option<Role>> {
+/// The role of every model of a table. `texts` ([`texts`]) is given for the main table only;
+/// pass an empty list for a module's table.
+pub fn roles(image: &[u8], table: &Table, texts: &[String]) -> Vec<Option<Role>> {
     let mut used_as_part = vec![false; table.models.len()];
     for off in table.models.iter().flatten() {
         let Ok(h) = header(image, *off) else { continue };
@@ -562,11 +609,12 @@ pub fn roles(image: &[u8], table: &Table, names: &[String]) -> Vec<Option<Role>>
         .map(|(n, off)| {
             let off = (*off)?;
             let h = header(image, off).ok()?;
-            let main = !names.is_empty();
-            let name = n.checked_sub(NAME_BASE).and_then(|i| names.get(i));
+            let main = !texts.is_empty();
+            let name = ship_name(image, &h).and_then(|i| texts.get(i as usize)).filter(|_| main);
             let scale = h.scale().unwrap_or(0);
             Some(match name {
                 Some(s) => Role::Named(s.clone()),
+                None if main && WEAPONS.contains(&n) => Role::Weapon,
                 None if main && STRUCTURES.contains(&n) => Role::Structure,
                 None if scale >= 19 => Role::World,
                 None if used_as_part[n] => Role::Part,

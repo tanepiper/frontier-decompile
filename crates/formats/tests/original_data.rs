@@ -92,12 +92,26 @@ fn model_tables_resolve() {
     eprintln!("{complete} of {present} models walk to their end; stops: {stops:?}");
     assert_eq!(complete, present, "every model walks to its end: stops {stops:?}");
 
-    let names = model::names(&exe);
-    assert_eq!(names.first().map(String::as_str), Some("Mine"));
-    assert_eq!(names.last().map(String::as_str), Some("Long-range Cruiser"));
-    let roles = model::roles(&image, &table, &names);
-    assert_eq!(roles[17], Some(model::Role::Named("Eagle long range fighter".into())));
-    assert_eq!(roles[41], Some(model::Role::Named("Long-range Cruiser".into())));
+    let texts = model::texts(&exe);
+    assert_eq!(texts.get(4).map(String::as_str), Some("Mine"));
+    assert_eq!(texts.last().map(String::as_str), Some("Long-range Cruiser"));
+    let roles = model::roles(&image, &table, &texts);
+    // Measured in the game (docs/FORMATS.md §4): the F3 status screen and a shipyard list.
+    let named = |n: usize| match &roles[n] {
+        Some(model::Role::Named(s)) => s.as_str(),
+        _ => "",
+    };
+    assert_eq!(named(16), "Eagle long range fighter");
+    assert_eq!(named(27), "Constrictor");
+    assert_eq!(named(31), "Tiger Trader");
+    assert_eq!(named(36), "Puma Clipper");
+    // Every ship name in the list names one model of 9–41, except ". IXI ." (text 17), which no
+    // model's data block names.
+    for t in &texts[10..] {
+        if !t.contains("__") && t != ". IXI ." {
+            assert!((9..=41).any(|n| named(n) == t), "no model of 9–41 is named {t}");
+        }
+    }
     assert_eq!(roles[42], Some(model::Role::Structure));
     let mut groups = std::collections::BTreeMap::new();
     for r in roles.iter().flatten() {
