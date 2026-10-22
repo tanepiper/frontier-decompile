@@ -1,0 +1,3 @@
+# Labels made from the port's citations by tools/triage/cite_labels.py: address, the item that cites
+# it, and where it is cited. Do not edit: label by hand in names.tsv, which wins over this file.
+1000:093c	m11_text	crates/game/src/text.rs

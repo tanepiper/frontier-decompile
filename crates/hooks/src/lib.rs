@@ -390,6 +390,9 @@ pub fn install_all(m: &mut Machine) {
     install_ports(m, "EL2M02.OVL", frontier_game::galaxy::PORTS_M02);
     install_ports(m, "EL2M09.OVL", frontier_game::names::PORTS_M09);
     install_ports(m, "EL2M00.OVL", frontier_game::system::PORTS_M00);
+    for &(module, table) in frontier_game::text::MODULE_TEXT {
+        install_ports(m, module, table);
+    }
     adlib::install(m);
     video::install(m);
 }

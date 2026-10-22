@@ -1,0 +1,83 @@
+# Text
+
+This covers how the game stores and expands its text: the text ids, the main dispatcher, the
+expander and its byte codes, and the modules' string handlers. Evidence: the Ghidra 12.1.4
+disassembly listings, and execution on the reference runtime: every string of ten modules compared
+with the original. The formatters (`3000h`–`3FFFh`) are not traced beyond the one that names use.
+
+## Text ids and the dispatcher: `1000:e89d` (slot `DS:0014`)
+
+A text id in `AX` is expanded to `SS:DI`. The dispatcher saves `SI` and `ES` and doubles `AX`, then
+branches (*observed*):
+
+| Id | Source |
+|---|---|
+| below `3000h` | The main program's table at `1000:e4dd` (`ES` = the main code segment) |
+| `3000h`–`3FFFh` | A formatter, `CALL CS:[8915h + 2·id]`, with `DS:07c0`–`07cb` saved around it (numbers, dates, names, *inferred*). `3016h` (`1000:eaf3`) copies the string at the far pointer `[DS:07e4]` |
+| `4000h`–`7FFFh` | The table at the far pointer `[DS:5703]` |
+| `8000h` and up | A module's own strings: module slot `(id >> 9) & 3Fh` (from the doubled id), handler `+28`, with the module's lock count held around the call |
+
+## The expander: `1000:e969` (slot `DS:005c`)
+
+`ES:SI` points at a table of word offsets relative to the table, and `AX` is twice the string's
+index. The string is copied to `SS:DI`, and `DI` ends just past its terminating 0.
+
+| Byte | Effect |
+|---|---|
+| 01h–7Fh, 80h–FCh | copied |
+| 00h | copied, then return |
+| FDh | `1Eh` and the next byte: a one-byte control code |
+| FEh | `1Fh` and the next word: a two-byte control code |
+| FFh | the next word (big-endian) is a text id, expanded in place through the dispatcher |
+
+## The modules' string handlers (handler `+28`)
+
+Most modules use one shape: `AND AX,3FEh`, point `ES:SI` at the module's own table, `CALLF [DS:005c]`,
+`RETF`. They differ in the table and in the register that loads `ES`: those loading it through `DX`
+leave `DX` holding the module's segment. Ported in `frontier_game::text`:
+
+| Handler | Table | `ES` loaded through |
+|---|---|---|
+| `EL2M00:4e19` | `0241` | `SI` |
+| `EL2M03:3dd6` | `0255` | `DX` |
+| `EL2M05:0170` | `00a3` | `DX` |
+| `EL2M07:06ec` | `00a3` | `SI`; string 1Fh (`AX` = 3Eh) runs a formatter instead (not ported) |
+| `EL2M10:0e17` | `00a3` | `DX` |
+| `EL2M11:093c` | none: a lone `RETF` | |
+| `EL2M14:2d84` | `030b` | `SI` |
+| `EL2M15:0d1b` | `00a3` | `DX` |
+| `EL2M17:0b60` | `014e` | `DX` |
+| `EL2M18:4cfa` | `00a3` | `SI` |
+
+Other shapes, not ported yet:
+- `EL2M02:23f2` has extra logic for string 0.
+- `EL2M09:11d1` makes a generated name from the far pointer `[DS:07e4]`, through `EL2M09:0f92`
+  ([NAMES.md](NAMES.md)).
+- `EL2M12:4c26` forwards to module 18's handler.
+
+## How parity was proven
+
+`crates/hooks/tests/text_parity.rs` loads every module through its own thunk and asks each ported
+handler for strings 0–1FFh. Each request runs the port and the original and compares registers,
+every byte written and the instruction count. A string with an `FFh` escape other than `3016h` is
+declined (the original runs it).
+
+| Module | Compared | Declined | Mismatches |
+|---|---|---|---|
+| `EL2M00` | 508 | 4 | 0 |
+| `EL2M03` | 411 | 101 | 0 |
+| `EL2M05` | 406 | 106 | 0 |
+| `EL2M07` | 486 | 26 | 0 |
+| `EL2M10` | 495 | 17 | 0 |
+| `EL2M11` | 512 | 0 | 0 |
+| `EL2M14` | 408 | 104 | 0 |
+| `EL2M15` | 459 | 53 | 0 |
+| `EL2M17` | 449 | 63 | 0 |
+| `EL2M18` | 374 | 138 | 0 |
+
+## Open questions
+
+- The dispatcher itself (`1000:e89d`) and its other sources: the main table, `[DS:5703]` and
+  module recursion. These would remove most of the declines.
+- The formatters `3000h`–`3FFFh` (the jump table at `1000:8915 + 6000h`): numbers, credits, dates.
+- The control codes `1Eh` and `1Fh`: the renderer interprets them (colour, position, *inferred*).
