@@ -57,8 +57,31 @@ On a hyperspace arrival, module 7's handler `+0c` with `AX` = 2 does the followi
    generator's state. The builder then makes random events (`EL2M07:0923`, a jump table at
    `EL2M07:03a1`) and the per-station lists (`EL2M07:101a`).
 
+## Price and stock: `EL2M07:0855`, `EL2M07:08c0` (ported)
+
+Each commodity has an 8-byte block of coefficients at `CS:BP` (`EL2M07:02a9` + 8·k) and a flag
+byte in `CL` (from the system record's `+0Ch` block). The system factors are word tables in
+`EL2M07`, indexed by `DS:07bc`, `07c8` and `07c0` (set from the system data). All products are
+Q15 (`IMUL` then doubled).
+
+- **Price** (`market::price_port`):
+  1. `p = [BP+2] · F[0261][07bc] · F[0251][07c8]`, negated if `CL` bit 3.
+  2. `+ [BP+0]`, doubled if `CL` bit 7.
+  3. `· F[0275][07c0]`, doubled with saturation to 7FFFh.
+  4. `· (3E00h + random32 & 3FFh)`: a random factor of about 0.97–1.0.
+  5. Doubled twice, saturating to `7FFF:FFFF`. The result is in `DX:AX`.
+- **Stock** (`market::stock_port`):
+  1. `s = [BP+6] · F[0251][07c8]`, negated unless `CL` bit 3.
+  2. `+ [BP+4]`, `· F[0285][07bc]`, divided by 8 if `CL` bit 7.
+  3. `· F[0299][07c0]` into `BX`.
+  4. `DX = BX + |BX| · (4000h + random32 & 3FFFh)`, or 0 if that is negative.
+
+Parity (`market_formulas_match_original`): 10,000 calls of each with random commodity blocks,
+flags, factor indices and generator states, compared with the original. **0 mismatches.**
+
 ## Open questions
 
 - The meaning of each byte of the system record (economy, government, population, tech level are
   likely, *inferred*), and of the commodity tables in `EL2M07`.
-- The market builder and its helpers, to be ported next.
+- The rest of the market builder: random events (`EL2M07:0923`), the per-station lists
+  (`EL2M07:101a`), `EL2M07:0b03`, and the builder `EL2M07:0949` itself.

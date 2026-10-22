@@ -391,6 +391,7 @@ pub fn install_all(m: &mut Machine) {
     install_ports(m, "EL2M09.OVL", frontier_game::names::PORTS_M09);
     install_ports(m, "EL2M00.OVL", frontier_game::system::PORTS_M00);
     install_ports(m, "EL2M06.OVL", frontier_game::sysdata::PORTS_M06);
+    install_ports(m, "EL2M07.OVL", frontier_game::market::PORTS_M07);
     install_ports(m, "FRONTIER.EXE", frontier_game::text::MAIN_TEXT);
     for &(module, table) in frontier_game::text::MODULE_TEXT {
         install_ports(m, module, table);

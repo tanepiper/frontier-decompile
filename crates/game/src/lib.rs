@@ -7,6 +7,7 @@
 //! (see the `frontier-emulate` skill).
 pub mod adlib;
 pub mod galaxy;
+pub mod market;
 pub mod math3;
 pub mod names;
 pub mod rng;

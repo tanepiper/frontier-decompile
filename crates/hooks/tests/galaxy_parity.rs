@@ -434,3 +434,57 @@ fn system_data_matches_original() {
     eprintln!("system_data: {compared} compared ({} hand-made ids), {} mismatches", hand.len(), failures.len());
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
+
+/// The market's per-commodity price and stock (`EL2M07:0855`, `08c0`) with the commodity blocks
+/// the builder uses (`EL2M07:02a9` + 8·k), random flags, factor indices and generator states.
+#[test]
+fn market_formulas_match_original() {
+    let Some(mut m) = booted() else { return };
+    let ds = m.images().iter().find(|i| i.name == "FRONTIER.EXE").unwrap().seg + 0x1615;
+    if m.image_segment("EL2M07.OVL").is_none() {
+        let si = 7 * 8u16;
+        let hdr_off = m.cpu.mem.rw(lin(ds, 0x0396 + si as u32));
+        let hdr_seg = m.cpu.mem.rw(lin(ds, 0x0398 + si as u32));
+        let off = m.cpu.mem.rw(lin(hdr_seg, hdr_off as u32 + 4));
+        let seg = m.cpu.mem.rw(lin(hdr_seg, hdr_off as u32 + 6));
+        m.cpu.s[DS] = ds;
+        m.cpu.r[ESI] = si as u32;
+        m.call(seg, off, 50_000_000).expect("load EL2M07");
+    }
+    let m07 = m.image_segment("EL2M07.OVL").expect("EL2M07 resident");
+    let mut x = X(0x0707_0707_8765_4321);
+    let mut failures = Vec::new();
+    let mut compared = 0;
+    for &(off, _, name, port) in frontier_game::market::PORTS_M07 {
+        for _ in 0..10_000 {
+            for r in 0..8 {
+                m.cpu.r[r] = x.next();
+            }
+            m.cpu.r[5] = 0x02a9 + 8 * (x.next() % 32);
+            m.cpu.mem.ww(lin(ds, 0x07bc), (2 * (x.next() % 8)) as u16);
+            m.cpu.mem.ww(lin(ds, 0x07c8), (2 * (x.next() % 8)) as u16);
+            m.cpu.mem.ww(lin(ds, 0x07c0), (2 * (x.next() % 8)) as u16);
+            m.cpu.mem.wd(lin(ds, 0x1fd9), x.next());
+            m.cpu.mem.wd(lin(ds, 0x1fdd), x.next());
+            m.cpu.r[ESP] = 0xFFF0;
+            m.cpu.s[SS] = 0xA000;
+            m.cpu.s[DS] = ds;
+            m.cpu.push16(0x1234);
+            m.cpu.s[CS] = m07;
+            m.cpu.ip = off as u32;
+            let out = run_port(&m.cpu, port);
+            compared += 1;
+            let diff = match record_original_until(&mut m.cpu, 100_000, out.cpu.cs, out.cpu.ip, out.cpu.r[4] as u16) {
+                Some(orig) => compare(&out, &orig, &m.cpu.mem),
+                None => Some("the original did not return".into()),
+            };
+            if let Some(d) = diff {
+                if failures.len() < 4 {
+                    failures.push(format!("{name}: {d}"));
+                }
+            }
+        }
+    }
+    eprintln!("market: {compared} compared, {} mismatches", failures.len());
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}
