@@ -61,6 +61,23 @@ functions. `tools/ghidra/DisasmAt.java` makes them.
 | `EL2M00:468a` | `setup_body_port` | Set up a body from its mass `DS:07bc`: the class is the first threshold in `EL2M00:00ff` above the mass (1, 5, 12, 50, 200, …, `0103_6640h` for stars, …). It selects `+18h`, `+0Ah`, the temperature, `DS:07e4`, the classifier `DS:07e8` and the type `+0Ch` from the tables at `01b7`, `00a3`, `0189`, `015b`, `0213`, `00d1`. Type 0 returns with ZF set. Stars are named after the system (`[DS:2029]`), with a letter for a companion. Other bodies get their own kind-10 name when the parent is named, otherwise the parent's name plus a number or letter (`DS:2031`–`2033` by `DS:2034`). Then `47d8` |
 | `EL2M00:47d8` | `finish_body_port` | Mass `DS:07c0` × `DS:07c8` as a float, radius from the mass and the parent, seed, parent index, orbit `DS:07bc` as a float, fields from the seed. Below a temperature of 3E8h, it adds the heat of every body up the parent chain (records at `[DS:2041]:[DS:203f]`, their `+18h`, summed in float) to the temperature. Then `DS:204b` = `DS:202d` and `CALL [DS:07e8]` (one of the classifiers above). Returns `AX` = FFFFh, ZF clear |
 
+## The system builder: `EL2M00:3f20` (module 0, handler `+20`)
+
+Ported as `system_port`, which is the entry the game calls. It stores the seed (`DX:AX`, `CX:BX`)
+as `s0`/`s1` and the system name and id, clears the counters, and builds one of the following:
+
+- **A hand-made system**, when `s0`'s high word is 0. The id `DS:07d4` is looked up in
+  `EL2M00:3ed9` (6-byte entries: id, record pointer; default `EL2M00:3a51`). Its 40h-byte
+  records are copied with masses and radii made into floats. Entries with type 46h are copied
+  raw. Names are included. The end marker sets `DS:202f`/`204d`.
+- **A procedural system** by the number of stars `DS:07c8`:
+  - 0: one star through `468a`, then the orbit builder.
+  - 1: a binary at an eighth of the mass scale.
+  - 2 or more: a binary, then the orbit builder with the mass scale `s1 + 081B_3200h`
+    (FFFF_FFFFh above two).
+
+  The record after the last body is zeroed.
+
 ## The orbit builder: `EL2M00:4e3f` and binaries: `EL2M00:50d6`
 
 Ported as `orbits_port` and `binary_port`. `4e3f` builds the bodies around the current one, from
@@ -101,6 +118,10 @@ original, so the port gives up after 256 links and leaves such a call to the ori
   [COVERAGE.md](COVERAGE.md)). The start at Ross 154 and the jump to Barnard's Star give **8
   calls of the orbit builder (each with its whole recursion), 0 mismatches**, and 67 system calls
   in all with 0 mismatches.
+- The whole system builder `3f20`: the hand-made system (Barnard's Star) was shadow-verified in
+  play. 200 procedural systems with 0–3 stars and random seeds, built on the game's own record
+  block in the cockpit (`system_builder_matches_original_in_game`), all match, including their
+  orbit-builder recursion and binaries.
 - Neither system has a binary, so `50d6` was tested in the system the game generated at Ross 154
   (`binary_matches_original_in_a_generated_system`). The game is played into the cockpit,
   `EL2M00` is reloaded through its own module thunk, and 400 calls with masses across every band
@@ -108,5 +129,7 @@ original, so the port gives up after 256 links and leaves such a call to the ori
 
 ## Open questions
 
-- The handler that starts a system on arrival and calls the orbit builder.
+- Handler `+20`'s other path (`EL2M00:4275`, when `DS:07c4` ≠ 0). It makes a body record into a
+  flight object through main-program routines (slots `00ac`, `0148`, `02e4`). Not ported: the
+  port declines it.
 - What `+02h`, `+0Ah`, `+12h` and `+1Eh` hold. The renderer and the system map read them.

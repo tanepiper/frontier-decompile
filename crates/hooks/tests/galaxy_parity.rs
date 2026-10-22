@@ -236,13 +236,14 @@ fn galaxy_ports_match_original() {
 /// system the game generates at the start (Ross 154): the game is driven into the cockpit, then
 /// the routine is called with masses across its bands (single star plus a quarter-mass companion,
 /// and the barycentre pair) against the original.
-#[test]
-fn binary_matches_original_in_a_generated_system() {
-    // A plain boot: the game is only played, never interrupted by test calls, until the cockpit.
+/// Boot without test calls, play into the cockpit at Ross 154, and make sure the modules the
+/// system generator uses (`EL2M00`, `EL2M09`) are resident, loading them through their own module
+/// thunks with the game's registers saved around the calls.
+fn in_cockpit() -> Option<(Machine, u16)> {
     let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../game-data/original");
     let Ok(entries) = std::fs::read_dir(&dir) else {
         eprintln!("skipping: {} missing (run tools/extract-assets.sh)", dir.display());
-        return;
+        return None;
     };
     let mut vfs = Vfs::new();
     for e in entries.flatten() {
@@ -265,18 +266,30 @@ fn binary_matches_original_in_a_generated_system() {
     let ds = m.images().iter().find(|i| i.name == "FRONTIER.EXE").unwrap().seg + 0x1615;
     // EL2M00 may have been evicted after generating the system: load it through its own thunk
     // (handler +04 of slot 0), with the game's registers saved around the call.
-    if m.image_segment("EL2M00.OVL").is_none() {
+    for (slot, name) in [(9u16, "EL2M09.OVL"), (0, "EL2M00.OVL")] {
+        if m.image_segment(name).is_some() {
+            continue;
+        }
         let (r, sg, ip, fl) = (m.cpu.r, m.cpu.s, m.cpu.ip, m.cpu.flags);
-        let hdr_off = m.cpu.mem.rw(lin(ds, 0x0396));
-        let hdr_seg = m.cpu.mem.rw(lin(ds, 0x0398));
+        let si = slot * 8;
+        let hdr_off = m.cpu.mem.rw(lin(ds, 0x0396 + si as u32));
+        let hdr_seg = m.cpu.mem.rw(lin(ds, 0x0398 + si as u32));
         let off = m.cpu.mem.rw(lin(hdr_seg, hdr_off as u32 + 4));
         let seg = m.cpu.mem.rw(lin(hdr_seg, hdr_off as u32 + 6));
         m.cpu.s[DS] = ds;
-        m.cpu.r[ESI] = 0;
-        m.call(seg, off, 50_000_000).expect("load EL2M00");
+        m.cpu.r[ESI] = si as u32;
+        m.cpu.r[0] = 0;
+        m.call(seg, off, 50_000_000).expect("load module");
         (m.cpu.r, m.cpu.s, m.cpu.ip, m.cpu.flags) = (r, sg, ip, fl);
     }
     let m00 = m.image_segment("EL2M00.OVL").expect("EL2M00 resident");
+    Some((m, ds))
+}
+
+#[test]
+fn binary_matches_original_in_a_generated_system() {
+    let Some((mut m, ds)) = in_cockpit() else { return };
+    let m00 = m.image_segment("EL2M00.OVL").unwrap();
     let port = frontier_game::system::PORTS_M00.iter().find(|p| p.2 == "binary").unwrap().3;
     let mut x = X(0x0BAD_5EED_1234_5678);
     let (mut compared, mut failures) = (0, Vec::new());
@@ -316,6 +329,57 @@ fn binary_matches_original_in_a_generated_system() {
         }
     }
     eprintln!("binary: {compared} compared, {} mismatches", failures.len());
+    assert!(compared > 100, "too few cases compared");
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}
+
+/// `EL2M00:3f20` (module 0, handler `+20`), the system builder, called on the game's own record
+/// block with random seeds and star counts, against the original.
+#[test]
+fn system_builder_matches_original_in_game() {
+    let Some((mut m, ds)) = in_cockpit() else { return };
+    let m00 = m.image_segment("EL2M00.OVL").unwrap();
+    let port = frontier_game::system::PORTS_M00.iter().find(|p| p.2 == "system").unwrap().3;
+    let (blk_off, blk_seg) = (m.cpu.mem.rw(lin(ds, 0x203f)), m.cpu.mem.rw(lin(ds, 0x2041)));
+    let mut x = X(0x5157_E3B0_1DE2_0001);
+    let (mut compared, mut declined, mut failures) = (0, 0, Vec::new());
+    for i in 0..200 {
+        // A procedural system: seed with a non-zero high word, 0-3 stars, the generator's inputs.
+        m.cpu.r[0] = x.next() & 0xffff;
+        m.cpu.r[2] = 1 + x.next() % 0xfffe;
+        m.cpu.r[3] = x.next() & 0xffff;
+        m.cpu.r[1] = x.next() & 0xffff;
+        m.cpu.mem.ww(lin(ds, 0x07c4), 0);
+        m.cpu.mem.wb(lin(ds, 0x07c8), (i % 4) as u8);
+        m.cpu.mem.wd(lin(ds, 0x07d4), x.next());
+        m.cpu.mem.wb(lin(ds, 0x07d8), (x.next() % 0x100) as u8);
+        m.cpu.mem.ww(lin(ds, 0x07dc), blk_off);
+        m.cpu.mem.ww(lin(ds, 0x07de), blk_seg);
+        m.cpu.r[ESP] = 0xFFF0;
+        m.cpu.s[SS] = 0xA000;
+        m.cpu.s[DS] = ds;
+        m.cpu.flags &= !0x0400;
+        m.cpu.push16(m.cpu.s[CS]);
+        m.cpu.push16(0x1234);
+        m.cpu.s[CS] = m00;
+        m.cpu.ip = 0x3f20;
+        let out = run_port(&m.cpu, port);
+        if out.steps == DECLINE {
+            declined += 1;
+            continue;
+        }
+        compared += 1;
+        let diff = match record_original_until(&mut m.cpu, 50_000_000, out.cpu.cs, out.cpu.ip, out.cpu.r[4] as u16) {
+            Some(orig) => compare(&out, &orig, &m.cpu.mem),
+            None => Some("the original did not return".into()),
+        };
+        if let Some(d) = diff {
+            if failures.len() < 3 {
+                failures.push(format!("case {i}: {d}"));
+            }
+        }
+    }
+    eprintln!("system: {compared} compared, {declined} declined, {} mismatches", failures.len());
     assert!(compared > 100, "too few cases compared");
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }

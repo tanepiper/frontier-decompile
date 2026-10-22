@@ -28,7 +28,8 @@ original on the runtime). Keep it short. Details belong in the topic documents.
   - [x] Bodies: seed step, classifiers, small- and large-body adders, naming (`EL2M00:4990`–`4e29`), ported and verified ([SYSTEM.md](SYSTEM.md))
   - [x] Body set-up and finishing `EL2M00:468a`, `47d8` and every classifier in the table ([SYSTEM.md](SYSTEM.md))
   - [x] The orbit builder `EL2M00:4e3f` and binary stars `EL2M00:50d6` ([SYSTEM.md](SYSTEM.md))
-  - [ ] The handler that starts a system on arrival
+  - [x] The system builder, handler `+20` `EL2M00:3f20`: hand-made and procedural systems ([SYSTEM.md](SYSTEM.md))
+  - [ ] Its flight-object path `EL2M00:4275` (main-program object routines)
 - [x] `EL2G.GRF` (`1000:e2ba`, `EL2MCGA3:02d3`) and the `PICnnn.GRF` screenshots (`1000:db9f`) decoded, every byte of the shipped files ([FORMATS.md](FORMATS.md))
 - [x] The `.ROL` songs read as Standard MIDI Files ([FORMATS.md](FORMATS.md) §3)
 - [ ] The models: tables (`1000:18b5`), header, vertices; every command's length measured, every model walks to its end; ships named from their data blocks (four checked in the game), stations and starports grouped (*inferred*); what opcodes `0A`, `0F`–`12`, `15`–`1C`, `1E` draw, not traced ([FORMATS.md](FORMATS.md) §4)

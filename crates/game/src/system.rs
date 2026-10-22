@@ -2124,8 +2124,434 @@ pub fn classify_4c2c_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
     n + 1
 }
 
+/// `EL2M00:3f20` (module 0, handler `+20`), *observed*: build a star system, or (with
+/// `DS:07c4` ≠ 0) make a body into a flight object, which is not ported (the port declines).
+///
+/// In: `DX:AX` and `CX:BX` the system seed (`s0`, `s1`), `DS:07c8` (low byte) the number of stars,
+/// `DS:07d4` the system id, `[DS:07dc]` the record block, `[DS:07e4]` the system name, `DS:07d8`
+/// (low byte) the parent value. The counters are cleared, then:
+/// - `s0` high word 0: a hand-made system, looked up by id in `EL2M00:3ed9` (6-byte entries, id and
+///   record pointer; default `EL2M00:3a51`), its 40h-byte records copied with masses and radii
+///   made into floats (entries with `+0Ah` = 46h copied raw), names included;
+/// - one star: set up with `468a`, then the orbit builder;
+/// - two or more: a binary through `50d6` (mass `s1`), orbit spacing from the seed, the orbit
+///   builder with the mass scale `s1 + 081B_3200h` (FFFF_FFFFh beyond two);
+/// - 1 (or negative): one binary at an eighth of the mass scale.
+///
+/// The record after the last body is zeroed (generated systems) or gets the end marker and
+/// `DS:202f`/`204d` from the table (hand-made ones).
+pub fn system_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    match system(c, bus) {
+        Some(n) => {
+            c.retf(bus);
+            n
+        }
+        None => DECLINE,
+    }
+}
+
+fn system(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    if r16(c, bus, 0x07c4) != 0 {
+        // The flight-object path (EL2M00:4275) is not ported.
+        return None;
+    }
+    let (ax, dx, bx, cx) = (c.x(EAX), c.x(EDX), c.x(EBX), c.x(ECX));
+    w16(c, bus, 0x07bc, ax);
+    w16(c, bus, 0x07be, dx);
+    w16(c, bus, 0x07c0, bx);
+    w16(c, bus, 0x07c2, cx);
+    let v = r32(c, bus, 0x07e4);
+    w32(c, bus, 0x2029, v);
+    let v = r32(c, bus, 0x07dc);
+    w32(c, bus, 0x203f, v);
+    w16(c, bus, 0x203b, bx);
+    w16(c, bus, 0x203d, cx);
+    let v = r32(c, bus, 0x07d4);
+    w32(c, bus, 0x2045, v);
+    let pv = bus.read8(lin(c.ds, 0x07d8)) as u16;
+    w16(c, bus, 0x2049, pv);
+    w16(c, bus, 0x2043, 0);
+    let mut n: u64 = 18;
+    // 3f63: clear the counters.
+    bus.write8(lin(c.ds, 0x204d), 0);
+    bus.write8(lin(c.ds, 0x204e), 0);
+    w32(c, bus, 0x07cc, 0);
+    for off in [0x202du16, 0x202f, 0x2037, 0x2031, 0x2033] {
+        w16(c, bus, off, 0);
+    }
+    c.r[EAX] = r16(c, bus, 0x07bc) as u32;
+    n += 12;
+    let ret = |c: &mut Cpu, bus: &mut dyn Bus, n: u64| {
+        let (off, seg) = (r16(c, bus, 0x07dc), r16(c, bus, 0x07de));
+        c.set_x(ESI, off);
+        c.es = seg;
+        bus.write32(lin(seg, off), 0);
+        Some(n + 3)
+    };
+    if r16(c, bus, 0x07be) == 0 {
+        return handmade(c, bus, n);
+    }
+    let s0 = r32(c, bus, 0x07bc);
+    w32(c, bus, SYS_S0, s0);
+    let s1 = r32(c, bus, 0x07c0);
+    w32(c, bus, SYS_S1, s1);
+    w32(c, bus, 0x07cc, s1);
+    w32(c, bus, 0x07bc, s1);
+    c.r[EAX] = s1;
+    let stars = bus.read8(lin(c.ds, 0x07c8));
+    bus.write8(lin(c.ds, 0x2039), stars);
+    bus.write8(lin(c.ds, 0x203a), stars);
+    c.set_x(EAX, (c.x(EAX) & 0xff00) | stars as u16);
+    n += 11;
+    if stars == 0 {
+        // 4037: one star.
+        let (off, seg) = (r16(c, bus, 0x07dc), r16(c, bus, 0x07de));
+        c.set_x(ESI, off);
+        c.es = seg;
+        n += 1;
+        let (m, zf) = call_setup(c, bus, 0x403e)?;
+        n += m + 1;
+        if !zf {
+            let a = r16(c, bus, 0x07e4);
+            c.set_x(EAX, a);
+            w16(c, bus, 0x07d8, a);
+            let k = r16(c, bus, 0x2037).wrapping_add(1);
+            w16(c, bus, 0x2037, k);
+            let si = c.x(ESI);
+            w16(c, bus, 0x07e0, si);
+            w16(c, bus, 0x07e2, c.es);
+            let si = si.wrapping_add(0x40);
+            c.set_x(ESI, si);
+            w16(c, bus, 0x07dc, si);
+            let v = r32(c, bus, 0x07cc);
+            w32(c, bus, 0x07c8, v);
+            w32(c, bus, 0x07cc, v >> 8);
+            c.r[EAX] = v >> 8;
+            n += 11;
+            n += step(c, bus);
+            let a = c.x(EAX);
+            w16(c, bus, 0x07bc, a);
+            n += 1;
+            push16(c, bus, 0x4072);
+            let m = orbits(c, bus)?;
+            let sp = c.x(ESP);
+            c.set_x(ESP, sp.wrapping_add(2));
+            n += 1 + m + 1;
+        }
+        return ret(c, bus, n);
+    }
+    n += 2; // CMP AL,2; JL
+    if (stars as i8) < 2 {
+        // 407f: one binary at an eighth of the mass scale.
+        let k = bus.read8(lin(c.ds, 0x203a)).wrapping_sub(1);
+        bus.write8(lin(c.ds, 0x203a), k);
+        let v = r32(c, bus, 0x07bc);
+        w32(c, bus, 0x07cc, v);
+        n += 3;
+        n += step(c, bus);
+        let b = c.x(EBX) >> 3;
+        c.set_x(EBX, b);
+        w16(c, bus, 0x07c4, b);
+        push16(c, bus, b);
+        let mut e = r32(c, bus, 0x07cc);
+        n += 4;
+        let mut sat = false;
+        for k in 0..3 {
+            let carry = e & 0x8000_0000 != 0;
+            e <<= 1;
+            n += 2;
+            if carry {
+                sat = true;
+                break;
+            }
+            let _ = k;
+        }
+        if sat {
+            e = 0xffff_ffff;
+            n += 1;
+        }
+        c.r[EAX] = e;
+        w32(c, bus, 0x07c8, e);
+        let v = r32(c, bus, 0x07dc);
+        w32(c, bus, 0x07e0, v);
+        let (a, d) = (r16(c, bus, 0x07bc), r16(c, bus, 0x07be));
+        c.set_x(EAX, a);
+        c.set_x(EDX, d);
+        w16(c, bus, 0x07c0, 0);
+        w16(c, bus, 0x07c2, 0);
+        n += 7;
+        push16(c, bus, 0x40d1);
+        let m = binary(c, bus)?;
+        let sp = c.x(ESP);
+        c.set_x(ESP, sp.wrapping_add(2));
+        n += 1 + m + 1;
+        let k = r16(c, bus, 0x2037).wrapping_add(1);
+        w16(c, bus, 0x2037, k);
+        let a = pop16(c, bus) << 3;
+        c.set_x(EAX, a);
+        w16(c, bus, 0x07d8, a);
+        let v = r32(c, bus, 0x07cc) >> 6;
+        w32(c, bus, 0x07cc, v);
+        n += 5;
+        n += step(c, bus);
+        let e = c.r[EAX];
+        w32(c, bus, 0x07bc, e);
+        n += 1;
+        push16(c, bus, 0x40ec);
+        let m = orbits(c, bus)?;
+        let sp = c.x(ESP);
+        c.set_x(ESP, sp.wrapping_add(2));
+        n += 1 + m + 1;
+        return ret(c, bus, n);
+    }
+    // 3fb8: two or more stars.
+    let v = r32(c, bus, 0x07bc);
+    w32(c, bus, 0x07cc, v);
+    n += 2;
+    n += step(c, bus);
+    let a = c.x(EBX) >> 8;
+    c.set_x(EAX, a);
+    w16(c, bus, 0x07c4, a);
+    push16(c, bus, a);
+    w32(c, bus, 0x07c8, 0xffff_ffff);
+    let v = r32(c, bus, 0x07dc);
+    w32(c, bus, 0x07e0, v);
+    c.r[EAX] = v;
+    let (a, d) = (r16(c, bus, 0x07cc), r16(c, bus, 0x07ce));
+    c.set_x(EAX, a);
+    c.set_x(EDX, d);
+    w32(c, bus, 0x07c0, 0);
+    n += 9;
+    push16(c, bus, 0x3fee);
+    let m = binary(c, bus)?;
+    let sp = c.x(ESP);
+    c.set_x(ESP, sp.wrapping_add(2));
+    n += 1 + m + 1;
+    let k = r16(c, bus, 0x2037).wrapping_add(1);
+    w16(c, bus, 0x2037, k);
+    let a = pop16(c, bus) << 4;
+    w16(c, bus, 0x07d8, a);
+    let k = bus.read8(lin(c.ds, 0x203a)).wrapping_sub(1);
+    bus.write8(lin(c.ds, 0x203a), k);
+    c.set_x(EAX, (a & 0xff00) | k as u16);
+    let mut ebx = r32(c, bus, 0x07cc).wrapping_add(0x081b_3200);
+    n += 10;
+    if (k as i8) > 2 {
+        ebx = 0xffff_ffff;
+        n += 1;
+    }
+    c.r[EBX] = ebx;
+    w32(c, bus, 0x07cc, ebx);
+    n += 1;
+    n += step(c, bus);
+    let a = (((c.x(EAX) | 0x8000) as i16) >> 2) as u16;
+    c.set_x(EAX, a);
+    w16(c, bus, 0x07bc, a);
+    n += 3;
+    push16(c, bus, 0x402a);
+    let m = orbits(c, bus)?;
+    let sp = c.x(ESP);
+    c.set_x(ESP, sp.wrapping_add(2));
+    n += 1 + m + 1;
+    ret(c, bus, n)
+}
+
+/// `EL2M00:40f9`: a hand-made system (see [`system_port`]).
+fn handmade(c: &mut Cpu, bus: &mut dyn Bus, mut n: u64) -> Option<u64> {
+    let cs = c.cs;
+    let id = r32(c, bus, 0x07d4);
+    let mut bp: u16 = 0x3ed9;
+    let mut di;
+    n += 1;
+    loop {
+        let e = bus.read32(lin(cs, bp));
+        di = bus.read16(lin(cs, bp.wrapping_add(4)));
+        c.r[EAX] = e;
+        n += 4;
+        if e == id {
+            break;
+        }
+        bp = bp.wrapping_add(6);
+        n += 3;
+        if e == 0 {
+            di = 0x3a51;
+            n += 1;
+            break;
+        }
+    }
+    c.set_x(EBP, bp);
+    let (mut si, es) = (r16(c, bus, 0x07dc), r16(c, bus, 0x07de));
+    c.es = es;
+    let mut ax = bus.read16(lin(cs, di));
+    let mut dx = bus.read16(lin(cs, di.wrapping_add(2)));
+    n += 3;
+    loop {
+        // 4122
+        c.set_x(ESI, si);
+        c.set_x(EDI, di);
+        n += 2;
+        if bus.read16(lin(cs, di.wrapping_add(0x0a))) == 0x46 {
+            // 4262: a raw 40h-byte copy.
+            for k in 0..0x20u16 {
+                let w = bus.read16(lin(cs, di.wrapping_add(2 * k)));
+                bus.write16(lin(es, si.wrapping_add(2 * k)), w);
+                c.set_x(EAX, w);
+            }
+            si = si.wrapping_add(0x40);
+            di = di.wrapping_add(0x40);
+            c.set_x(ECX, 0);
+            n += 1 + 5 * 0x20 + 1;
+        } else {
+            let v = ((dx as u32) << 16 | ax as u32).wrapping_sub(1);
+            c.set_x(EAX, v as u16);
+            c.set_x(EDX, (v >> 16) as u16);
+            n += 2;
+            n += m3(c, bus, 0x02c4, 0x4135)?;
+            let b = c.x(EBX).wrapping_add(0x3f);
+            c.set_x(EBX, b);
+            bus.write16(lin(es, si), c.x(EDX));
+            bus.write16(lin(es, si.wrapping_add(2)), b);
+            let copy32 = |bus: &mut dyn Bus, o: u16| {
+                let v = bus.read32(lin(cs, di.wrapping_add(o)));
+                bus.write32(lin(es, si.wrapping_add(o)), v);
+                v
+            };
+            let copy16 = |bus: &mut dyn Bus, o: u16| {
+                let v = bus.read16(lin(cs, di.wrapping_add(o)));
+                bus.write16(lin(es, si.wrapping_add(o)), v);
+                v
+            };
+            copy32(bus, 4);
+            copy16(bus, 8);
+            copy16(bus, 0x0a);
+            copy16(bus, 0x0c);
+            c.set_x(EAX, bus.read16(lin(cs, di.wrapping_add(0x0e))));
+            c.set_x(EDX, bus.read16(lin(cs, di.wrapping_add(0x10))));
+            n += 3 + 2 + 2 + 2 + 2 + 2;
+            n += m3(c, bus, 0x02c4, 0x416d)?;
+            let b = c.x(EBX).wrapping_add(0x19);
+            c.set_x(EBX, b);
+            bus.write16(lin(es, si.wrapping_add(0x0e)), c.x(EDX));
+            bus.write16(lin(es, si.wrapping_add(0x10)), b);
+            let a = copy16(bus, 0x12);
+            copy32(bus, 0x1c);
+            copy32(bus, 0x20);
+            let e = copy32(bus, 0x38);
+            c.r[EAX] = e;
+            let a2 = copy16(bus, 0x3e);
+            c.set_x(EAX, a2);
+            let _ = a;
+            let parent = bus.read16(lin(es, si.wrapping_add(8)));
+            c.set_x(EBX, parent);
+            w16(c, bus, 0x07bc, parent);
+            w16(c, bus, 0x07c0, parent);
+            n += 18; // ADD BX; 2 MOV; 5 copies (2 each); MOV BX,[+8]; MOV [7bc]; MOV [7c0]; OR; JZ
+            if parent != 0 {
+                let mut a = bus.read16(lin(es, si.wrapping_add(0x0e)));
+                let mut d = bus.read16(lin(es, si.wrapping_add(0x10)));
+                let bpv = r16(c, bus, 0x07dc).wrapping_add(parent << 6);
+                c.set_x(EBP, bpv);
+                n += 7;
+                if bus.read16(lin(es, bpv.wrapping_sub(0x36))) == 0 {
+                    let diff = bpv.wrapping_sub(0x40).wrapping_sub(si);
+                    n += 6;
+                    if (diff as i16) >= -0x80 {
+                        d = d.wrapping_add(1);
+                        n += 1;
+                    }
+                }
+                // 41db
+                c.set_x(EBX, d);
+                c.set_x(EDX, a);
+                c.set_x(ECX, d);
+                push16(c, bus, d);
+                push16(c, bus, a);
+                c.set_x(EAX, a);
+                n += 5;
+                n += m3(c, bus, 0x02b4, 0x41e7)?;
+                let dd = c.x(EDX);
+                c.set_x(EAX, dd);
+                let p = pop16(c, bus);
+                c.set_x(EDX, p);
+                let p = pop16(c, bus);
+                c.set_x(ECX, p);
+                n += 3;
+                n += m3(c, bus, 0x02b4, 0x41ef)?;
+                let b = c.x(EBX);
+                c.set_x(ECX, b);
+                c.set_x(EBX, bus.read16(lin(es, bpv.wrapping_sub(0x40))));
+                c.set_x(EAX, bus.read16(lin(es, bpv.wrapping_sub(0x3e))));
+                n += 3;
+                n += m3(c, bus, 0x0288, 0x41fd)?;
+                let cc = c.x(ECX);
+                c.set_x(EDX, cc);
+                n += 1;
+                n += m3(c, bus, 0x02c8, 0x4203)?;
+                let d = c.x(EDX);
+                w16(c, bus, 0x07c0, d);
+                let p = (c.x(EAX) as i16 as i32).wrapping_mul(0x5edb);
+                let p = (p as u32) << 1;
+                a = p as u16;
+                let hi = (p >> 16) as u16;
+                c.set_x(EAX, a);
+                c.set_x(EDX, hi);
+                w16(c, bus, 0x07bc, hi);
+                n += 6;
+            }
+            // 4214
+            let a = r16(c, bus, 0x07bc);
+            bus.write16(lin(es, si.wrapping_add(0x14)), a);
+            let a = r16(c, bus, 0x07c0);
+            bus.write16(lin(es, si.wrapping_add(0x16)), a);
+            c.set_x(EAX, a);
+            let mut bx = si.wrapping_add(0x22);
+            let mut bpn = di.wrapping_add(0x22);
+            n += 6;
+            loop {
+                let al = bus.read8(lin(cs, bpn));
+                bus.write8(lin(es, bx), al);
+                bpn = bpn.wrapping_add(1);
+                bx = bx.wrapping_add(1);
+                c.set_x(EAX, (c.x(EAX) & 0xff00) | al as u16);
+                n += 6;
+                if al == 0 {
+                    break;
+                }
+            }
+            c.set_x(EBX, bx);
+            c.set_x(EBP, bpn);
+            si = si.wrapping_add(0x40);
+            di = di.wrapping_add(0x40);
+            n += 2;
+        }
+        // 423b
+        ax = bus.read16(lin(cs, di));
+        dx = bus.read16(lin(cs, di.wrapping_add(2)));
+        c.set_x(EAX, ax);
+        c.set_x(EDX, dx);
+        c.set_x(EBX, ax | dx);
+        c.set_x(ESI, si);
+        c.set_x(EDI, di);
+        n += 5;
+        if ax | dx == 0 {
+            break;
+        }
+    }
+    bus.write16(lin(es, si), ax);
+    bus.write16(lin(es, si.wrapping_add(2)), dx);
+    let e = bus.read32(lin(cs, di.wrapping_add(4)));
+    c.r[EAX] = e;
+    w32(c, bus, 0x202f, e);
+    let a = bus.read16(lin(cs, di.wrapping_add(8)));
+    c.set_x(EAX, a);
+    w16(c, bus, 0x204d, a);
+    n += 7;
+    Some(n)
+}
+
 /// Every ported routine of `EL2M00` (near routines: slot 0).
 pub const PORTS_M00: &[(u16, u16, &str, Port)] = &[
+    (0x3f20, 0, "system", system_port),
     (0x4990, 0, "classify_4990", classify_4990_port),
     (0x4e3f, 0, "orbits", orbits_port),
     (0x50d6, 0, "binary", binary_port),
