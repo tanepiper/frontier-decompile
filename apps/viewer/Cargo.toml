@@ -23,6 +23,9 @@ egui-winit = { version = "0.37", default-features = false }
 web-time = "1"
 log = "0.4"
 
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+frontier-dos = { path = "../../crates/dos" }
+
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 env_logger = "0.11"
 pollster = "1"

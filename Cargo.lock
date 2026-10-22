@@ -873,6 +873,7 @@ dependencies = [
  "egui-wgpu",
  "egui-winit",
  "env_logger",
+ "frontier-dos",
  "frontier-formats",
  "frontier-game",
  "frontier-opl",

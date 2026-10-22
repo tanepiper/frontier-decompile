@@ -91,8 +91,8 @@ See [docs/FINDINGS.md](docs/FINDINGS.md) for what is known about the binaries an
 - [ ] M1: function discovery across `FRONTIER.EXE` and the overlays; overlay loader traced
   (loader and seeding done, see [docs/OVERLAYS.md](docs/OVERLAYS.md); indirect calls and names remain)
 - [ ] M2: data formats. `EL2G.GRF` and the screenshot format, the MIDI songs, the model tables,
-  headers and vertices decoded and shown in the resource viewer; 178 of 230 models' command lists
-  walked; saved commanders and the position files remain ([docs/FORMATS.md](docs/FORMATS.md))
+  headers and vertices decoded, and every model's command list walked (lengths measured on the
+  runtime); ships, stations and starports named and drawn in the resource viewer; saved commanders and the position files remain ([docs/FORMATS.md](docs/FORMATS.md))
 - [ ] M3: boot flow and intro rendered by the reimplementation
 - [ ] M4: maths core (fixed point, RNG) and galaxy/system generation, bit-exact. All 47 `EL2MATH3`
   routines (float arithmetic, square roots, rotation matrices, frame set-up, perspective projection,

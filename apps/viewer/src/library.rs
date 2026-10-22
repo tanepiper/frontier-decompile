@@ -26,6 +26,15 @@ pub struct ModelSet {
     pub label: String,
     pub image: Vec<u8>,
     pub table: model::Table,
+    /// What each model is (`model::roles`), by model number.
+    pub roles: Vec<Option<model::Role>>,
+}
+
+impl ModelSet {
+    fn new(label: String, image: Vec<u8>, table: model::Table, names: &[String]) -> ModelSet {
+        let roles = model::roles(&image, &table, names);
+        ModelSet { label, image, table, roles }
+    }
 }
 
 pub struct Library {
@@ -60,13 +69,14 @@ impl Library {
         let mut models = Vec::new();
         if let Some(exe) = files.iter().find(|f| f.kind == Kind::Program) {
             if let Ok((image, table)) = model::main_table(&exe.data) {
-                models.push(ModelSet { label: format!("{} default table", exe.name), image, table });
+                let names = model::names(&exe.data);
+                models.push(ModelSet::new(format!("{} (in game)", exe.name), image, table, &names));
             }
         }
         if let Some(m08) = files.iter().find(|f| f.name.eq_ignore_ascii_case("EL2M08.OVL")) {
             if let Ok(img) = overlay::image(&m08.data) {
                 if let Ok(table) = model::table(img, model::EL2M08_BASE) {
-                    models.push(ModelSet { label: format!("{} title-sequence table", m08.name), image: img.to_vec(), table });
+                    models.push(ModelSet::new(format!("{} (title sequence)", m08.name), img.to_vec(), table, &[]));
                 }
             }
         }

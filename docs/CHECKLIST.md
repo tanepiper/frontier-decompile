@@ -30,7 +30,7 @@ original on the runtime). Keep it short. Details belong in the topic documents.
   - [ ] The orbit builder `EL2M00:4e3f` ([SYSTEM.md](SYSTEM.md))
 - [x] `EL2G.GRF` (`1000:e2ba`, `EL2MCGA3:02d3`) and the `PICnnn.GRF` screenshots (`1000:db9f`) decoded, every byte of the shipped files ([FORMATS.md](FORMATS.md))
 - [x] The `.ROL` songs read as Standard MIDI Files ([FORMATS.md](FORMATS.md) §3)
-- [ ] The models: tables (`1000:18b5`), header, vertices and mesh walk read; opcodes `15`, `16`, `18`, `19`, `1E` and several drawing ops not traced ([FORMATS.md](FORMATS.md) §4)
+- [ ] The models: tables (`1000:18b5`), header, vertices; every command's length measured, every model walks to its end; ships, stations and starports named and grouped (*inferred*); what opcodes `0A`, `0F`–`12`, `15`–`1C`, `1E` draw, not traced ([FORMATS.md](FORMATS.md) §4)
 - [ ] Saves and the position files (`11 00 C6`, packed) ([FORMATS.md](FORMATS.md) §6)
 - [x] Resource viewer (`apps/viewer`): every file, native and browser
 

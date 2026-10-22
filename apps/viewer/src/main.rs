@@ -9,6 +9,7 @@
 
 mod gpu;
 mod library;
+mod scene;
 mod sound;
 mod ui;
 

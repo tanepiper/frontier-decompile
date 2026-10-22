@@ -113,44 +113,74 @@ for the screen-midpoint types, the base point for the random type, t = ½ for in
 
 **Mesh commands.** A list of words interpreted by `1000:b207`: opcode = the low 5 bits, through
 the 32-entry near table at `CS:2864`; the other bits are the command's parameter, for drawing
-commands a 12-bit colour `(word >> 4) & FFFh` with two flag bits (`1000:51c2`). Operand words
-per opcode, counted from each handler's reads (*observed*):
+commands a 12-bit colour `(word >> 4) & FFFh` with two flag bits (`1000:51c2`).
 
-| Op | Handler | Operands | What it does |
+**Command lengths, measured.** `apps/viewer/examples/model_census.rs` runs the original on the
+runtime and watches the interpreter's three command fetches (`LODSW` at `1000:b21e`, `b243`,
+`b268`). Over 120 s of the intro it saw 2,196 distinct commands. The 1,247 that run straight
+on to the next command all have the lengths below (`crates/formats::model::length`); the rest
+are skips, calls and ends. `10`, `12` and `17` did not run; their counts are *observed* from
+the handlers.
+
+| Op | Handler | Length in words, with the command | What it does |
 |---|---|---|---|
-| `00` | `7e62` | 0 | end |
-| `01` | `492d` | 2 | not traced |
-| `02` | `51bc` | 1 | line: vertices in the two bytes |
-| `03` | `54c4` | 2 | triangle: vertices `CL`, `CH`, `DH`; normal `DL` |
-| `04` | `5c6f` | 3 | quad: vertices `CL`, `CH`, `DL`, `DH`; normal in the third word |
-| `05` | `67e7` | 1 + sub-commands | polygon (below) |
-| `06` | `4265` | 0 | starts a depth group at vertex `word >> 5` (*inferred*) |
-| `07` / `08` | `549c` / `5c42` | 2 / 3 | triangle / quad, then again with every vertex and the normal xor 1 (the mirror) |
-| `09` | `71ed` | 2 | not traced |
-| `0A` | `78d8` | 3 | draws another model (sub-object) |
-| `0B` / `0C` | `7dff` / `7e85` | 1 | distance test; on failure skip `(word >> 5) × 2` bytes, or end the model if that is 0 |
-| `0D`, `1D` | `7f82` | 1 | arithmetic on model variables |
-| `0E` | `7c0c` | 3 | draws model `word >> 5` at the vertex in the first operand |
-| `0F` | `80d0` | 0 | nothing |
-| `10` / `11` | `81ab` / `812a` | 3 / 5 | not traced |
-| `12`, `1C` | `8da6`, `76dd` | 1 | not traced |
-| `13` / `14` | `7ec4` / `7f23` | 1 | flag tests with the same skip as `0B` |
-| `17`, `1B` | `8ec1`, `7b6b` | 2 | not traced |
-| `1A` | `8c8b` | 8 | not traced |
-| `1F` | `93d5` | 2 + `(word >> 5)` words | a block the handler reads |
-| `15`, `16`, `18`, `19`, `1E` | | ? | operands not traced: a walk stops here |
+| `00` | `7e62` | 1 | end |
+| `01` | `492d` | 3 | a disc at one vertex (*inferred*: projects one vertex, `1000:4991`) |
+| `02` | `51bc` | 2 | line: vertices in the two bytes |
+| `03` / `07` | `54c4` / `549c` | 3 | triangle: corners `CL`, `CH`, `DH`, normal `DL`; `07` then again mirrored (every byte xor 1) |
+| `04` / `08` | `5c6f` / `5c42` | 4 | quad: corners in the order `CL`, `DL`, `CH`, `DH`, normal in the third word; `08` then mirrored |
+| `05` | `67e7` | 2 + sub-commands | polygon (below) |
+| `06` | `4265` | 1, or 2 when `word >> 5` is 700h–7FDh | depth group (*inferred*) |
+| `09` | `71ed` | 3 | a thruster flame between two vertices with a size (*inferred*: projects both, `1000:726e`, `729c`; points along all six axes from each hull) |
+| `0A` | `78d8` | 4 | a sub-object from a second table, `1000:190a` (slot `DS:0054`: segment `[DS:07f8]`, table at `8106h`); not decoded |
+| `0B` / `0C` | `7dff` / `7e85` | 2 | distance test; on failure skip `(word >> 5) × 2` bytes, or end the model if that is 0 |
+| `0D`, `1D` | `7f82` | 2 | arithmetic on model variables |
+| `0E` | `7c0c` | 2, or 4 when the operand has bit 15 set | draws model `word >> 5` at the vertex in the operand's low byte |
+| `0F`, `15`, `19`, `1E` | | 1 | not traced |
+| `10` / `11` | `81ab` / `812a` | 4 / 6 | not traced |
+| `12`, `1C` | `8da6`, `76dd` | 2 | not traced |
+| `13` / `14` | `7ec4` / `7f23` | 2 | flag tests with the same skip as `0B` |
+| `16` | | 4 | not traced |
+| `17`, `1B` | `8ec1`, `7b6b` | 3 | not traced |
+| `18` | `8f60` | words up to and including `7F7Fh` | not traced |
+| `1A` | `8c8b` | 2, or 9 when the operand has bit 15 set | not traced |
+| `1F` | `93d5` | 3 + `(word >> 5)` | a block the handler reads (the planets use it) |
 
 A polygon (`05`) is followed by sub-command words until one with sub-command 0; the sub-command
 is bits 9–11 (`1000:6968`, table `CS:28a4`). The skip table `CS:2902` gives the extra words:
-sub-command 1 two, 2, 4 and 6 one, 3 and 5 none (*observed*). Sub-commands 2 and 3 name a vertex
-in their low byte (`1000:6a05`, `6b91`); sub-command 1 is *inferred* to be a curve whose four
-control vertices are the bytes of its two extra words.
+sub-command 1 two, 2, 4 and 6 one, 3 and 5 none (*observed*, and *measured* with the lengths
+above). Sub-commands 2 and 3 name a vertex in their low byte (`1000:6a05`, `6b91`); sub-command 1
+is *inferred* to be a curve whose four control vertices are the bytes of its two extra words.
 
-**Measured over the shipped tables:** the main table has 230 models (10 slots are empty); 178
-walk to their end with the operand counts above. The others stop at an opcode whose operands are
-not traced (`15` ×20, `18` ×10, `1E` ×9, `16` ×7, `19` ×5), and one walk runs off the end of the
-image, so an operand count above is wrong somewhere on its path. The viewer follows every conditional (it draws every level of
-detail at once) and draws with its own flat shading: a viewer's picture, not the game's renderer.
+**Corner order and normals, checked against the data.** A face's normal (at `normals + (k >> 1)
+× 4 − 4` for normal k, odd k mirrored; bytes `[nx, a vertex on the face, nz, ny]`,
+`EL2MATH3:1bcd`) names one of the face's own corners in 153 of 200 triangles with the layout
+above, and in at most 87 with any other. With the quad corners in the order `CL`, `DL`, `CH`,
+`DH`, 324 of the 325 quads with four distinct plain corners are flat and uncrossed; in the byte
+order, 142.
+
+**Measured over the shipped tables:** every model of both tables (230 in `FRONTIER.EXE`, 10
+slots empty, and `EL2M08`'s) walks to its end.
+
+**What the models are.** In the intro, the original looks up only `EL2M08`'s table (*measured*
+with `model_census`): models 2–3 with the GameTek + Konami card, 6–16 with the title, 17, 38,
+103 and 105–107 with a ship in flight, 67–93 with the starport, its buildings and the mountain,
+25, 39 and 41–45 with a ship over water. For the main table:
+
+| Models | What | Evidence |
+|---|---|---|
+| 3–41 | the object names in `FRONTIER.EXE` (`1ea9:07b3`, "Mine" … "Long-range Cruiser"), in order from model 3, without the one entry of `__` panel text | *inferred*: models 5–8 all draw model 2, matching the four missiles; 14 and 15 are jet fighters sharing parts, matching Hawk and Kestrel airfighter; 40 is a hull with cargo pods (Lynx Bulk Carrier) and 41 a long hull (Long-range Cruiser) |
+| 42–44 | orbital stations (42 a polyhedron, 43 a ring, 44 three pods) | *inferred* from drawing them |
+| 45–58 | surface starports, cities and buildings | *inferred* from drawing them |
+| header scale 19 and up | planets, stars and terrain (most use `1F`) | *inferred* |
+| the rest | parts drawn by other models through `0E`, and others | *observed* in the mesh lists |
+
+No table ties a name to a model number. The next check is in the game: a ship's model number
+(object `+5Ah`) with its name on the screen.
+
+The viewer follows every conditional (it draws every level of detail at once), places
+sub-objects at their vertex scaled by 2^(their scale − the parent's), and draws with its own
+flat shading: a viewer's picture, not the game's renderer.
 
 ## 5. Text
 
@@ -182,8 +212,10 @@ trace that read.
 - **`PIC000.GRF`:** the screenshot and its palette.
 - **The `.ROL` songs:** tracks and events. They can be played on the OPL2 with one generic FM
   voice: a deviation for listening, since the game plays them only on an MT-32.
-- **3D models:** both tables, each model drawn (flat shaded or wireframe, turn with the mouse),
-  its header, vertex definitions and mesh commands, and where a walk stopped.
+- **3D models:** both tables, grouped by what the models are (ships and craft with their names,
+  missiles, stations and starports, planets, parts), each drawn with its sub-objects (flat
+  shaded or wireframe, thruster flames on request, turn with the mouse), with its header, vertex
+  definitions and mesh commands.
 - **Position files and anything unknown:** a hex view.
 
 Run it natively with `cargo run -p frontier-viewer --release [-- path/to/game]` or in the browser
@@ -191,8 +223,9 @@ with `tools/dev-web.sh --app viewer`.
 
 ## Open questions
 
-- The operands of mesh opcodes `15`, `16`, `18`, `19`, `1E`, and what `01`, `09`, `10`–`12`,
-  `17`, `1A`–`1C` draw.
+- What opcodes `0F`–`12`, `15`–`19`, `1A`–`1C` and `1E` draw (their lengths are known), and
+  the second model table `0A` uses (`1000:190a`): the intro's ships draw their hulls through it.
+- A ship's model number and its name seen together in the game, to confirm the naming.
 - The palette the game sets for the GRF pictures (`EL2MCGA3:0234` and the colour allocator).
 - The font used by `EL2MCGA3:1a1b` (slot `DS:0218`): not in `EL2G.GRF`.
 - How the `EL2M18` message tables index their strings.

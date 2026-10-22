@@ -90,13 +90,29 @@ fn model_tables_resolve() {
     }
     let present = table.models.iter().flatten().count();
     eprintln!("{complete} of {present} models walk to their end; stops: {stops:?}");
-    // Opcodes whose operands are not traced stop a walk; most models finish.
-    assert!(complete >= 170, "{complete} complete mesh walks");
+    assert_eq!(complete, present, "every model walks to its end: stops {stops:?}");
+
+    let names = model::names(&exe);
+    assert_eq!(names.first().map(String::as_str), Some("Mine"));
+    assert_eq!(names.last().map(String::as_str), Some("Long-range Cruiser"));
+    let roles = model::roles(&image, &table, &names);
+    assert_eq!(roles[17], Some(model::Role::Named("Eagle long range fighter".into())));
+    assert_eq!(roles[41], Some(model::Role::Named("Long-range Cruiser".into())));
+    assert_eq!(roles[42], Some(model::Role::Structure));
+    let mut groups = std::collections::BTreeMap::new();
+    for r in roles.iter().flatten() {
+        *groups.entry(r.group()).or_insert(0) += 1;
+    }
+    eprintln!("groups: {groups:?}");
 
     let m08 = std::fs::read(d.join("EL2M08.OVL")).unwrap();
     let img = overlay::image(&m08).unwrap();
     let t = model::table(img, model::EL2M08_BASE).unwrap();
     assert_eq!(t.models.len(), 240);
+    for off in t.models.iter().flatten() {
+        let h = model::header(img, *off).unwrap();
+        assert_eq!(model::walk(img, off + h.mesh as usize).stopped, None, "EL2M08 model at {off:05x}");
+    }
 }
 
 #[test]

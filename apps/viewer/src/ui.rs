@@ -2,11 +2,12 @@
 
 use std::collections::HashMap;
 
-use egui::{Color32, Pos2, RichText, Sense, Stroke, TextureHandle, TextureOptions, Vec2};
+use egui::{Color32, RichText, Sense, Stroke, TextureHandle, TextureOptions, Vec2};
 use frontier_formats::identify::Kind;
 use frontier_formats::{grf, model, overlay, smf};
 
 use crate::library::{Library, Parsed};
+use crate::scene;
 use crate::sound::{self, Player};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -36,10 +37,15 @@ pub struct Ui {
     zoom: f32,
     filled: bool,
     spin: bool,
+    thrusters: bool,
     message: String,
 }
 
 const MONO: f32 = 13.0;
+
+/// The model list's groups, in order (`model::Role::group`).
+const GROUPS: [&str; 6] =
+    ["Ships and craft", "Missiles and mines", "Stations, starports and buildings", "Planets, stars and terrain", "Parts", "Other"];
 
 impl Ui {
     pub fn new(lib: Library) -> Ui {
@@ -49,7 +55,7 @@ impl Ui {
             sel: None,
             tab: Tab::Content,
             entry: 0,
-            model: 2,
+            model: 17,
             textures: HashMap::new(),
             scale: 3.0,
             yaw: 0.6,
@@ -57,6 +63,7 @@ impl Ui {
             zoom: 1.0,
             filled: true,
             spin: false,
+            thrusters: false,
             message: String::new(),
         }
     }
@@ -363,16 +370,35 @@ impl Ui {
 
     fn models_view(&mut self, ui: &mut egui::Ui, s: usize) {
         let n = self.lib.models[s].table.models.len();
-        egui::Panel::left("model list").resizable(true).default_size(200.0).show(ui, |ui| {
+        egui::Panel::left("model list").resizable(true).default_size(240.0).show(ui, |ui| {
             egui::ScrollArea::vertical().auto_shrink(false).show(ui, |ui| {
                 let set = &self.lib.models[s];
-                for (k, m) in set.table.models.iter().enumerate() {
-                    let Some(off) = m else { continue };
-                    let h = model::header(&set.image, *off);
-                    let verts = h.as_ref().map(|h| h.vertex_count()).unwrap_or(0);
-                    if ui.selectable_label(self.model == k, format!("{k:3}  @{off:05x}  {verts} v")).clicked() {
-                        self.model = k;
+                for group in GROUPS {
+                    let members: Vec<usize> =
+                        (0..set.roles.len()).filter(|&k| set.roles[k].as_ref().is_some_and(|r| r.group() == group)).collect();
+                    if members.is_empty() {
+                        continue;
                     }
+                    let open = group != "Parts" && group != "Other";
+                    egui::CollapsingHeader::new(format!("{group} ({})", members.len())).id_salt((s, group)).default_open(open).show(
+                        ui,
+                        |ui| {
+                            for k in members {
+                                let label = match &set.roles[k] {
+                                    Some(model::Role::Named(n)) => format!("{k:3}  {n}"),
+                                    _ => {
+                                        let v = set.table.models[k]
+                                            .and_then(|o| model::header(&set.image, o).ok())
+                                            .map_or(0, |h| h.vertex_count());
+                                        format!("{k:3}  ({v} vertices)")
+                                    }
+                                };
+                                if ui.selectable_label(self.model == k, label).clicked() {
+                                    self.model = k;
+                                }
+                            }
+                        },
+                    );
                 }
             });
         });
@@ -391,14 +417,27 @@ impl Ui {
         let defs = model::vertex_defs(&set.image, &h).unwrap_or_default();
         let pos = model::resolve(&defs);
         let mesh = model::walk(&set.image, off + h.mesh as usize);
+        let scene = scene::build(set, self.model);
+        let title = match set.roles.get(self.model).cloned().flatten() {
+            Some(model::Role::Named(n)) => format!("{n} (model {})", self.model),
+            Some(r) => format!("Model {} · {}", self.model, r.group()),
+            None => format!("Model {}", self.model),
+        };
         ui.horizontal(|ui| {
-            ui.heading(format!("Model {} of {}", self.model, set.label));
+            ui.heading(title);
             ui.checkbox(&mut self.filled, "flat shaded");
             ui.checkbox(&mut self.spin, "spin");
+            ui.checkbox(&mut self.thrusters, "thruster flames");
             ui.add(egui::Slider::new(&mut self.zoom, 0.2..=5.0).text("zoom"));
         });
         match &mesh.stopped {
-            None => ui.label(format!("{} commands, {} shapes; drag to turn, scroll to zoom.", mesh.commands.len(), mesh.prims.len())),
+            None => ui.label(format!(
+                "{} commands, {} shapes, {} sub-objects ({}); drag to turn, scroll to zoom.",
+                mesh.commands.len(),
+                scene.shapes.len(),
+                scene.parts.len(),
+                set.label
+            )),
             Some(why) => ui.colored_label(Color32::from_rgb(230, 180, 90), format!("Partial: {why}. {} shapes drawn.", mesh.prims.len())),
         };
         let avail = ui.available_size();
@@ -417,7 +456,10 @@ impl Ui {
             self.yaw += ui.input(|i| i.stable_dt).min(0.1) * 0.6;
         }
         let default = h.colour().unwrap_or(0x666);
-        draw_model(ui.painter_at(rect), rect, &pos, &mesh, default, self.yaw, self.pitch, self.zoom, self.filled);
+        scene::draw(&ui.painter_at(rect), rect, &scene, default, self.yaw, self.pitch, self.zoom, self.filled, self.thrusters);
+        if matches!(set.roles.get(self.model), Some(Some(model::Role::Named(_)))) {
+            ui.label("Names: the list in FRONTIER.EXE read in order from model 3 (inferred, docs/FORMATS.md §4). Groups other than names are inferred from the header scale and sub-object use.");
+        }
         egui::ScrollArea::vertical().auto_shrink(false).show(ui, |ui| {
             ui.collapsing("Header", |ui| {
                 ui.monospace(format!(
@@ -459,111 +501,6 @@ impl Ui {
                 }
             });
         });
-    }
-}
-
-/// Draw a model with a simple orthographic camera. Deviation: the game's renderer (perspective,
-/// its own shading and depth sorting) is not used; this is a viewer's picture of the geometry.
-#[allow(clippy::too_many_arguments)]
-fn draw_model(
-    p: egui::Painter,
-    rect: egui::Rect,
-    pos: &[Option<[f32; 3]>],
-    mesh: &model::Mesh,
-    default: u16,
-    yaw: f32,
-    pitch: f32,
-    zoom: f32,
-    filled: bool,
-) {
-    p.rect_filled(rect, 0.0, Color32::from_rgb(8, 10, 16));
-    let pts: Vec<[f32; 3]> = pos.iter().flatten().copied().collect();
-    // Fit the view to the vertices the shapes use; markers (lights, exhausts) can lie far out.
-    let used: Vec<[f32; 3]> = mesh
-        .prims
-        .iter()
-        .flat_map(|(prim, _)| match prim {
-            model::Prim::Line(v) => v.to_vec(),
-            model::Prim::Tri(v) => v.to_vec(),
-            model::Prim::Quad(v) => v.to_vec(),
-            model::Prim::Polygon(v) => v.clone(),
-            model::Prim::Sub { at, .. } => vec![*at],
-        })
-        .filter_map(|i| pos.get(i as usize).copied().flatten())
-        .collect();
-    let fit = if used.is_empty() { &pts } else { &used };
-    let radius = fit.iter().map(|v| (v[0] * v[0] + v[1] * v[1] + v[2] * v[2]).sqrt()).fold(1.0f32, f32::max);
-    let s = rect.width().min(rect.height()) * 0.45 / radius * zoom;
-    let (cy, sy, cp, sp) = (yaw.cos(), yaw.sin(), pitch.cos(), pitch.sin());
-    // Model space: x right, y up, z away from the viewer.
-    let xf = |v: [f32; 3]| -> [f32; 3] {
-        let x = v[0] * cy - v[2] * sy;
-        let z = v[0] * sy + v[2] * cy;
-        let y = v[1] * cp - z * sp;
-        let z = v[1] * sp + z * cp;
-        [x, y, z]
-    };
-    let scr = |v: [f32; 3]| Pos2::new(rect.center().x + v[0] * s, rect.center().y - v[1] * s);
-    let get = |i: u8| pos.get(i as usize).copied().flatten().map(xf);
-    let colour = |c: u16| {
-        let c = if c & 0xeee == 0 { default } else { c };
-        let [r, g, b] = model::rgb12(c);
-        Color32::from_rgb(r, g, b)
-    };
-    let mut faces: Vec<(f32, Vec<[f32; 3]>, Color32)> = Vec::new();
-    for (prim, c) in &mesh.prims {
-        let col = colour(*c);
-        let poly: Vec<u8> = match prim {
-            model::Prim::Line(v) => {
-                if let (Some(a), Some(b)) = (get(v[0]), get(v[1])) {
-                    p.line_segment([scr(a), scr(b)], Stroke::new(1.5, col));
-                }
-                continue;
-            }
-            model::Prim::Tri(v) => v.to_vec(),
-            model::Prim::Quad(v) => v.to_vec(),
-            model::Prim::Polygon(v) => v.clone(),
-            model::Prim::Sub { model, at } => {
-                if let Some(a) = get(*at) {
-                    p.circle_stroke(scr(a), 4.0, Stroke::new(1.0, Color32::LIGHT_BLUE));
-                    p.text(
-                        scr(a) + Vec2::new(5.0, -5.0),
-                        egui::Align2::LEFT_BOTTOM,
-                        format!("model {model}"),
-                        egui::FontId::monospace(10.0),
-                        Color32::LIGHT_BLUE,
-                    );
-                }
-                continue;
-            }
-        };
-        let vs: Vec<[f32; 3]> = poly.iter().filter_map(|&i| get(i)).collect();
-        if vs.len() >= 3 {
-            let depth = vs.iter().map(|v| v[2]).sum::<f32>() / vs.len() as f32;
-            faces.push((depth, vs, col));
-        }
-    }
-    // Painter's order: farthest first.
-    faces.sort_by(|a, b| b.0.total_cmp(&a.0));
-    for (_, vs, col) in faces {
-        let pts2: Vec<Pos2> = vs.iter().map(|&v| scr(v)).collect();
-        if filled {
-            let (a, b, c) = (vs[0], vs[1], vs[2]);
-            let u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
-            let w = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
-            let n = [u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]];
-            let len = (n[0] * n[0] + n[1] * n[1] + n[2] * n[2]).sqrt().max(1e-6);
-            let light = (0.35 + 0.65 * ((n[0] * 0.3 + n[1] * 0.6 - n[2] * 0.75) / len).abs()).min(1.0);
-            let shade = Color32::from_rgb((col.r() as f32 * light) as u8, (col.g() as f32 * light) as u8, (col.b() as f32 * light) as u8);
-            p.add(egui::Shape::convex_polygon(pts2, shade, Stroke::new(0.5, Color32::from_black_alpha(120))));
-        } else {
-            let mut closed = pts2.clone();
-            closed.push(pts2[0]);
-            p.add(egui::Shape::line(closed, Stroke::new(1.0, col)));
-        }
-    }
-    for v in pts.iter().map(|&v| xf(v)) {
-        p.circle_filled(scr(v), 1.5, Color32::from_gray(160));
     }
 }
 

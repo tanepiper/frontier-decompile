@@ -239,18 +239,79 @@ pub fn op_name(op: u8) -> &'static str {
     }
 }
 
-/// Operand words after the command word, for the opcodes whose handlers fetch a fixed number
-/// (counted `LODSW ES:SI` / `ADD SI` in each handler from the table at `CS:2864`). `None` for
-/// the variable or not yet traced ones (`05` and `1F` are handled by [`walk`]).
+/// Operand words after the command word, for the opcodes with a fixed count. *Measured*: the
+/// lengths of 1,247 consecutive commands the original fetched (`1000:b21e`, `b243`, `b268`)
+/// while it drew the intro (`apps/viewer/examples/model_census.rs`, docs/FORMATS.md §4) agree
+/// with this table and with [`length`]. `10`, `12` and `17` were not reached; their counts are
+/// *observed* from the handlers' reads. The variable opcodes are in [`length`].
 pub fn operands(op: u8) -> Option<usize> {
     Some(match op {
-        0x00 | 0x06 | 0x0f => 0,
+        0x00 | 0x0f | 0x15 | 0x19 | 0x1e => 0,
         0x02 | 0x0b | 0x0c | 0x0d | 0x12 | 0x13 | 0x14 | 0x1c | 0x1d => 1,
         0x01 | 0x03 | 0x07 | 0x09 | 0x17 | 0x1b => 2,
-        0x04 | 0x08 | 0x0a | 0x0e | 0x10 => 3,
+        0x04 | 0x08 | 0x0a | 0x10 | 0x16 => 3,
         0x11 => 5,
-        0x1a => 8,
         _ => return None,
+    })
+}
+
+/// The length in bytes of the command at `p`, the command word included, or `None` past the
+/// end of the image. *Measured* for every opcode the intro uses (see [`operands`]):
+/// `05` a polygon (sub-commands until sub-command 0); `06` one extra word when its parameter
+/// (`word >> 5`) is 700h–7FDh; `0E` and `1A` one operand, plus 2 and 7 words when that
+/// operand has bit 15 set; `18` words up to and including `7F7Fh`; `1F` two words and a block
+/// of `word >> 5` words.
+pub fn length(image: &[u8], p: usize) -> Option<usize> {
+    let w = |p: usize| le16(image, p).ok();
+    let word = w(p)?;
+    let op = (word & 0x1f) as u8;
+    let mut q = p + 2;
+    Some(match op {
+        0x05 => {
+            q += 2;
+            for _ in 0..512 {
+                let s = w(q)?;
+                q += 2;
+                let sub = ((s >> 9) & 7) as u8;
+                if sub == 0 {
+                    break;
+                }
+                q += 2 * polygon_extra(sub);
+            }
+            q - p
+        }
+        0x06 => {
+            if (0x700..=0x7fd).contains(&(word >> 5)) {
+                4
+            } else {
+                2
+            }
+        }
+        0x0e => {
+            if w(q)? & 0x8000 != 0 {
+                8
+            } else {
+                4
+            }
+        }
+        0x1a => {
+            if w(q)? & 0x8000 != 0 {
+                18
+            } else {
+                4
+            }
+        }
+        0x18 => {
+            for _ in 0..512 {
+                if w(q)? == 0x7f7f {
+                    break;
+                }
+                q += 2;
+            }
+            q + 2 - p
+        }
+        0x1f => 6 + ((word >> 4) & !1) as usize,
+        _ => 2 + 2 * operands(op)?,
     })
 }
 
@@ -273,10 +334,25 @@ pub enum Prim {
     /// Outline of a polygon (*inferred*: the vertex bytes of sub-commands 2 and 3, and the
     /// four bytes of a sub-command 1 as curve control points).
     Polygon(Vec<u8>),
-    /// Another model drawn at a vertex (`0E`: model number = command >> 5).
+    /// Another model drawn at a vertex (`0E`: model number = command >> 5, vertex = the low
+    /// byte of its operand, `1000:7c0d`).
     Sub {
         model: u16,
         at: u8,
+    },
+    /// `01`: a disc at a vertex (*inferred*: the handler projects one vertex, `1000:4991`), with
+    /// the size word.
+    Disc {
+        at: u8,
+        size: u16,
+    },
+    /// `09`: a thruster flame from one vertex towards another, with a size (*inferred*: the
+    /// handler projects both vertices, `1000:726e`, `729c`; on the ships they point along all
+    /// six axes from the hull, in colour `1EEh`).
+    Thruster {
+        from: u8,
+        to: u8,
+        size: u16,
     },
 }
 
@@ -348,28 +424,24 @@ pub fn walk(image: &[u8], start: usize) -> Mesh {
                 }
                 m.prims.push((Prim::Polygon(outline), (word >> 4) & 0xfff));
             }
-            0x1f => {
-                // 1000:93db: two words, then a block of (word >> 5) words the handler reads.
-                let skip = ((word >> 4) & !1) as usize;
-                ops.extend([w(p).unwrap_or(0), w(p + 2).unwrap_or(0)]);
-                p += 4 + skip;
-            }
             _ => {
-                let Some(n) = operands(op) else {
+                let Some(len) = length(image, at) else {
                     m.commands.push(Command { offset: at, word, operands: ops });
                     m.stopped = Some(format!("opcode {op:02X} at {at:05x}: operand layout not traced"));
                     return m;
                 };
-                for i in 0..n {
+                for i in 0..(len - 2) / 2 {
                     ops.push(w(p + i * 2).unwrap_or(0));
                 }
-                p += n * 2;
+                p = at + len;
                 let c = (word >> 4) & 0xfff;
                 let b = |w: u16| [w as u8, (w >> 8) as u8];
                 match op {
+                    0x01 => m.prims.push((Prim::Disc { at: ops[0] as u8, size: ops[1] }, c)),
                     0x02 => m.prims.push((Prim::Line(b(ops[0])), c)),
                     0x03 | 0x07 => {
-                        // 1000:54c4: CX = (v1, v2), DX = (normal, v3).
+                        // 1000:54c4: CX = (v1, v2), DX = (normal, v3). *Checked*: the vertex a
+                        // face's normal names is one of these corners in 153 of 200 triangles.
                         let t = [ops[0] as u8, (ops[0] >> 8) as u8, (ops[1] >> 8) as u8];
                         m.prims.push((Prim::Tri(t), c));
                         if op == 0x07 {
@@ -377,13 +449,17 @@ pub fn walk(image: &[u8], start: usize) -> Mesh {
                         }
                     }
                     0x04 | 0x08 => {
-                        // 1000:5c6f: CX = (v1, v2), DX = (v3, v4), AX = normal.
-                        let q = [ops[0] as u8, (ops[0] >> 8) as u8, ops[1] as u8, (ops[1] >> 8) as u8];
+                        // 1000:5c6f: CX = (a, c), DX = (b, d), AX = normal. The corners go
+                        // round as CL, DL, CH, DH (*measured* over the shipped models: 324 of
+                        // 325 quads with four distinct plain corners are then flat and uncrossed,
+                        // 142 in the byte order).
+                        let q = [ops[0] as u8, ops[1] as u8, (ops[0] >> 8) as u8, (ops[1] >> 8) as u8];
                         m.prims.push((Prim::Quad(q), c));
                         if op == 0x08 {
                             m.prims.push((Prim::Quad(q.map(|v| v ^ 1)), c));
                         }
                     }
+                    0x09 => m.prims.push((Prim::Thruster { from: ops[0] as u8, to: (ops[0] >> 8) as u8, size: ops[1] }, c)),
                     0x0e => m.prims.push((Prim::Sub { model: word >> 5, at: ops[0] as u8 }, c)),
                     _ => {}
                 }
@@ -398,6 +474,106 @@ pub fn walk(image: &[u8], start: usize) -> Mesh {
         m.stopped = Some("more than 4096 commands".into());
     }
     m
+}
+
+/// `1ea9:07b3` (second data segment): the list of object names, `00h`-separated, from "Mine" to
+/// "Long-range Cruiser" (*observed* in the file). No table points at the entries; the code that
+/// reads them is not traced.
+pub const NAMES_AT: usize = 0x1ea9 * 16 + 0x07b3;
+/// The model number of the first name. *Inferred*: models 5–8 all draw the same body (model 2),
+/// and the list has its four missiles at positions 2–5; the two airfighters (Hawk, Kestrel)
+/// then fall on 14 and 15, which are jet fighters and share their parts; the Lynx Bulk Carrier
+/// on 40, a hull with cargo pods; the Long-range Cruiser on 41, a long hull. The entry of `__`
+/// panel text in the list is skipped: model 42 is a station. Not yet confirmed in the game (a
+/// ship's model number and its name on screen).
+pub const NAME_BASE: usize = 3;
+/// Models 42–58 of the main table: orbital stations (42–44) and surface starports, cities and
+/// buildings (45–58). *Inferred* from drawing them (docs/FORMATS.md §4).
+pub const STRUCTURES: std::ops::RangeInclusive<usize> = 42..=58;
+
+/// The names in `FRONTIER.EXE`'s list, in order, without the one entry of panel text in the
+/// same list (`__Max Laden Wt_1000t` and `__ONLY DISCONNECT IN DRY DOCK`, separated by `0Dh`).
+pub fn names(exe: &[u8]) -> Vec<String> {
+    let Ok(h) = mz::parse(exe) else { return Vec::new() };
+    let image = &exe[h.header_size().min(exe.len())..];
+    let Some(list) = image.get(NAMES_AT..) else { return Vec::new() };
+    if !list.starts_with(b"Mine\0") {
+        return Vec::new();
+    }
+    let mut out = Vec::new();
+    for s in list.split(|&b| b == 0) {
+        let s = String::from_utf8_lossy(s).into_owned();
+        let last = s == "Long-range Cruiser";
+        if !s.contains("__") {
+            out.push(s);
+        }
+        if last || out.len() > 64 {
+            break;
+        }
+    }
+    out
+}
+
+/// What a model is in the game, as far as the files tell.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Role {
+    /// A ship, missile or mine, with its name from [`names`] (*inferred* numbering).
+    Named(String),
+    /// Planets, stars and terrain: header scale 19 or more (*inferred*).
+    World,
+    /// Stations, starports, cities and buildings: [`STRUCTURES`] (*inferred*).
+    Structure,
+    /// Only drawn as part of other models (`0E` sub-objects; *observed* in the mesh lists).
+    Part,
+    Other,
+}
+
+impl Role {
+    pub fn group(&self) -> &'static str {
+        match self {
+            Role::Named(n) if n.contains("Missile") || n.starts_with("Mine") => "Missiles and mines",
+            Role::Named(_) => "Ships and craft",
+            Role::World => "Planets, stars and terrain",
+            Role::Structure => "Stations, starports and buildings",
+            Role::Part => "Parts",
+            Role::Other => "Other",
+        }
+    }
+}
+
+/// The role of every model of a table. `names` with [`NAME_BASE`] applies to the main table
+/// only; pass an empty list for a module's table.
+pub fn roles(image: &[u8], table: &Table, names: &[String]) -> Vec<Option<Role>> {
+    let mut used_as_part = vec![false; table.models.len()];
+    for off in table.models.iter().flatten() {
+        let Ok(h) = header(image, *off) else { continue };
+        for (prim, _) in walk(image, off + h.mesh as usize).prims {
+            if let Prim::Sub { model, .. } = prim {
+                if let Some(u) = used_as_part.get_mut(model as usize) {
+                    *u = true;
+                }
+            }
+        }
+    }
+    table
+        .models
+        .iter()
+        .enumerate()
+        .map(|(n, off)| {
+            let off = (*off)?;
+            let h = header(image, off).ok()?;
+            let main = !names.is_empty();
+            let name = n.checked_sub(NAME_BASE).and_then(|i| names.get(i));
+            let scale = h.scale().unwrap_or(0);
+            Some(match name {
+                Some(s) => Role::Named(s.clone()),
+                None if main && STRUCTURES.contains(&n) => Role::Structure,
+                None if scale >= 19 => Role::World,
+                None if used_as_part[n] => Role::Part,
+                None => Role::Other,
+            })
+        })
+        .collect()
 }
 
 /// The 12-bit colour field as 8-bit RGB (*inferred*: 4 bits per channel, `0RGB`).

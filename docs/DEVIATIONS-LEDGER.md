@@ -14,15 +14,15 @@ Deviation: 9, Not ported: 9.
 
 - [Deviation] [line 1](../apps/game/src/render.rs#L1): Presents the game's 320×200 frame. The frame is produced in software exactly as the original writes it to `A000:0000` (palette indices through the VGA DAC), uploaded as an RGBA texture and scaled with nearest filtering into the largest 4:3 rectangle that fits the window. Deviation (DEVIATIONS.md): VGA scan-out is replaced by a GPU blit; pixels are unchanged.
 
+## `apps/viewer/src/scene.rs`
+
+- [Deviation] [line 1](../apps/viewer/src/scene.rs#L1): A model and its sub-objects as one list of shapes in the model's space, and drawing it. Deviation: this is the viewer's picture of the geometry with its own orthographic camera, flat shading and depth sort. Thruster flames are drawn only when asked for. The game's renderer (`1000:b207` and EL2MCGA3) is not used: conditional commands are all followed (every level of detail at once), sub-objects keep the parent's orientation, and discs and thruster flames get a fixed screen size.
+
 ## `apps/viewer/src/sound.rs`
 
 - [Deviation] [line 1](../apps/viewer/src/sound.rs#L1): Sound in the viewer, on the shared audio output (`frontier-platform`). - The AdLib music and effects are played by the original driver's port (`frontier_game::adlib`) running alone on the user's `EL2ADLIB.OVL` image, ticked at the game's 202.27 Hz into the OPL2 model: the same notes the game plays. - The `.ROL` MIDI songs were written for a Roland MT-32 (`EL2ROL`, docs/AUDIO.md §4). There is no MT-32 model here, so they are played on the OPL2 chip with one generic instrument. Deviation: an approximation for listening only; the original never plays them on an AdLib.
 - [Deviation] [line 43](../apps/viewer/src/sound.rs#L43): Deviation: writes land at the tick they are made in, not at their instruction count.
 - [Deviation] [line 179](../apps/viewer/src/sound.rs#L179): MIDI on the OPL2: nine voices, one organ-like two-operator patch, notes allocated to the oldest free voice. Deviation: see the module comment.
-
-## `apps/viewer/src/ui.rs`
-
-- [Deviation] [line 465](../apps/viewer/src/ui.rs#L465): Draw a model with a simple orthographic camera. Deviation: the game's renderer (perspective, its own shading and depth sorting) is not used; this is a viewer's picture of the geometry. [allow(clippy::too_many_arguments)]
 
 ## `crates/dos/src/machine.rs`
 
