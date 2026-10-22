@@ -80,7 +80,10 @@ fn galaxy_ports_match_original() {
         // (binary_matches_original_in_a_generated_system): in random states the original itself
         // crashes, e.g. a saturated mass walks the class table into data and calls a garbage
         // classifier address.
-        if name == "binary" {
+        // The system builder EL2M00:3f20 likewise needs the game's record block, and with random
+        // state it nearly always takes the unported flight-object path:
+        // system_builder_matches_original_in_game covers it.
+        if name == "binary" || name == "system" {
             continue;
         }
         let (mut mismatches, mut declined, mut compared, mut nonzero) = (0, 0, 0, 0);
