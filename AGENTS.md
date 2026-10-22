@@ -2,11 +2,11 @@
 
 Rules for every agent (Claude Code, Codex, Cursor and others) and every person working here.
 The method and the tools come from [GameFrame](https://github.com/tanepiper/game-frame), an
-agentic framework for reverse engineering games. Its skills are in `.claude/skills/` (agents
-without skill support: read each `SKILL.md`). Its stage and task agents are in `.claude/agents/`:
-each does one step and hands off to the next (`re-start`, "Stage agents"). Its gates
-(`.claude/settings.json`, `scripts/hooks/gate.py`) stop a commit or a written file that would add
-game material or decompiled code. The `frontier-*` skills are this game's own versions of the
+agentic framework for reverse engineering games. Its skills, its stage and task agents, its gates
+and its MCP servers come from GameFrame's Claude Code plugin, enabled in `.claude/settings.json`.
+Each agent does one step and hands off to the next (`re-start`, "Stage agents"). The gates stop
+a commit or a written file that would add game material or decompiled code. `./gameframe` runs
+GameFrame's toolkit on this project (`./gameframe root` prints where GameFrame is). The `frontier-*` skills are this game's own versions of the
 steps: use them first, and GameFrame's `re-*` skills for anything they do not cover.
 
 ## The goal
@@ -34,7 +34,7 @@ against the original running beside it.
    runtime, register for register and write for write (`frontier-verify`, [MATH3.md](docs/MATH3.md)).
 5. **Mark every intentional difference** in a code comment containing `Deviation:` (and a piece
    left out with `not ported`), then regenerate the ledger:
-   `tools/triage/deviations.py --out docs/DEVIATIONS-LEDGER.md crates apps`. The policy for
+   `./gameframe run deviations --out docs/DEVIATIONS-LEDGER.md crates apps`. The policy for
    differences is [DEVIATIONS.md](docs/DEVIATIONS.md).
 6. **Game, not hardware.** Legacy DOS set-up (sound card selection, driver overlays, memory checks)
    is not reproduced; the rewrite goes straight into the game.
@@ -60,8 +60,8 @@ against the original running beside it.
 | `docs/DEVIATIONS.md`, `docs/DEVIATIONS-LEDGER.md` | The policy for differences, and the generated ledger of every marked place |
 | `labels/` | Names of original functions, one file per binary because every overlay is numbered from `1000:0000`: `labels/FRONTIER.tsv`, `labels/EL2MATH3.tsv` and so on, generated from the port's citations by `tools/triage/cite_labels.py`; `labels/names.tsv` and `labels/fields.tsv` by hand |
 | `tools/extract-assets.sh`, `tools/dosbox/`, `tools/ghidra/` | This project's own scripts: copy the game, run the original in DOSBox, export from Ghidra |
-| `tools/`, `scripts/`, `./gameframe` | GameFrame's toolkit and its help (`./gameframe help`). `scripts/update-project.sh` in a clone of GameFrame brings this copy up to date and keeps local edits |
-| `docs/DOS.md`, `docs/ABI.md`, `docs/GAME-PATTERNS.md`, `docs/COMPILED-CODE.md`, `docs/TYPES.md`, `docs/OUTPUTS.md` | GameFrame's reference documents (16-bit DOS programs: start with DOS.md) |
+| `./gameframe` | Runs GameFrame's toolkit here: `run NAME ARGS`, `python FILE`, `doctor`, and help (`./gameframe help`). GameFrame itself comes from its plugin |
+| GameFrame's guides | The reference documents the skills name (`docs/DOS.md` first, for 16-bit DOS programs), in GameFrame's `docs/` and on https://tanepiper.github.io/game-frame/ |
 | `docs/games/`, `docs/observe/`, `docs/working/` and the other guides | GameFrame's guides: the family of games (vehicle and space simulations), observing the original, working on a project |
 
 Binaries: `FRONTIER.EXE` (the main program, 16-bit real-mode MZ using 32-bit registers, Ghidra
@@ -86,7 +86,7 @@ After porting, regenerate the labels so the decompile tools name the new routine
 
 ```bash
 for m in EL2MATH3 EL2MCGA3 EL2ADLIB EL2SETUP; do
-  tools/triage/cite_labels.py . --module $m --functions analysis/export/$m.OVL/functions.tsv --no-lines --out labels/$m.tsv
+  ./gameframe run cite_labels . --module $m --functions analysis/export/$m.OVL/functions.tsv --no-lines --out labels/$m.tsv
 done
-tools/triage/cite_labels.py . --any --functions analysis/export/FRONTIER.EXE/functions.tsv --no-lines --out labels/FRONTIER.tsv
+./gameframe run cite_labels . --any --functions analysis/export/FRONTIER.EXE/functions.tsv --no-lines --out labels/FRONTIER.tsv
 ```

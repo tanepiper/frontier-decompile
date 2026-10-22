@@ -3,13 +3,7 @@
   "permissions": {
     "allow": [
       "Bash(./gameframe *)",
-      "Bash(scripts/ghidra-export.sh *)",
-      "Bash(scripts/ghidra-run.sh *)",
-      "Bash(scripts/dosbox-run.sh *)",
-      "Bash(scripts/extract-installer.sh *)",
-      "Bash(scripts/setup.sh)",
       "Bash(tests/run.sh *)",
-      "Bash(.venv/bin/python tools/*)",
       "Bash(.venv/bin/python truth/*)",
       "Bash(git status *)",
       "Bash(git diff *)",
@@ -21,13 +15,13 @@
     ],
     "ask": [
       "Bash(git push *)",
-      "Bash(scripts/setup.sh --install *)",
       "Bash(npx -y rea-agents@6.4.0 setup *)",
       "Bash(brew install *)",
       "Bash(sudo *)",
       "Bash(curl *)",
       "Bash(wget *)",
-      "Bash(cargo install *)"
+      "Bash(cargo install *)",
+      "Bash(./gameframe doctor --install *)"
     ],
     "deny": [
       "Bash(git add -f *)",
@@ -36,28 +30,15 @@
       "Bash(git push -f *)"
     ]
   },
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          { "type": "command", "command": "python3", "args": ["${CLAUDE_PROJECT_DIR}/scripts/hooks/gate.py", "session"], "timeout": 10 }
-        ]
+  "extraKnownMarketplaces": {
+    "game-frame": {
+      "source": {
+        "source": "github",
+        "repo": "tanepiper/game-frame"
       }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          { "type": "command", "if": "Bash(git commit *)", "command": "python3", "args": ["${CLAUDE_PROJECT_DIR}/scripts/hooks/gate.py", "commit"], "timeout": 30 },
-          { "type": "command", "if": "Bash(git push *)", "command": "python3", "args": ["${CLAUDE_PROJECT_DIR}/scripts/hooks/gate.py", "push"], "timeout": 10 }
-        ]
-      },
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          { "type": "command", "command": "python3", "args": ["${CLAUDE_PROJECT_DIR}/scripts/hooks/gate.py", "write"], "timeout": 10 }
-        ]
-      }
-    ]
+    }
+  },
+  "enabledPlugins": {
+    "gameframe@game-frame": true
   }
 }

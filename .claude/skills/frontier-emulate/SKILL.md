@@ -8,8 +8,8 @@ description: Get bit-exact ground truth from the original Frontier code, by runn
 ## Tools
 
 - **Unicorn, 16-bit real mode** (`UC_ARCH_X86`, `UC_MODE_16`) for calling one routine with chosen
-  inputs. A harness `tools/emu/mz_emu.py` does not exist yet: build it on the Banished
-  `tools/emu/pe_emu.py` pattern (load the MZ image at a segment, apply the relocation table,
+  inputs. A harness `tools/emu/mz_emu.py` does not exist yet: build it on GameFrame's
+  `pe_emu.py` pattern (load the MZ image at a segment, apply the relocation table,
   set `SS:SP`/`DS`, hook `int` instructions, `call(seg, off, regs)` returning registers). Keep
   it dependency-light: `python3 -m venv .venv && .venv/bin/pip install unicorn`.
 - **DOSBox** for whole-program state (`tools/dosbox/run.sh`). DOSBox Staging's debugger needs a
