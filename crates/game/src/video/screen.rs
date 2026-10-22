@@ -302,3 +302,317 @@ pub fn clear_view_7f(x: &mut Ctx) -> Result<(), Decline> {
 pub fn clear_view_0(x: &mut Ctx) -> Result<(), Decline> {
     clear_view(x, 0)
 }
+
+/// Paragraph offset of the buffer the mouse pointer's background is saved in (`EL2MCGA3`
+/// segment `05d7`, from offset 0Dh).
+pub const UNDER_PARAS: u16 = 0x5d7;
+/// The pointer's position (`DS:0a0c`, `0a0e`) and bitmap number (`DS:0a0a`).
+pub const POINTER_X: u16 = 0x0a0c;
+pub const POINTER_Y: u16 = 0x0a0e;
+pub const POINTER_BITMAP: u16 = 0x0a0a;
+
+fn cs_byte(x: &mut Ctx, off: u16) -> u8 {
+    x.bus.read8(lin(x.c.cs, off))
+}
+fn cs_word(x: &mut Ctx, off: u16) -> u16 {
+    x.bus.read16(lin(x.c.cs, off))
+}
+
+/// Port of `EL2MCGA3:04d8` (slot `DS:0240`): save the screen under the mouse pointer from `ES`.
+/// The pointer bitmap's header is at `CS:0106` (flags, height, width, x and y offsets); its
+/// rectangle at the pointer position, clipped to 320×200 and widened to whole dwords, is copied
+/// to the buffer at `CS:05d7` paragraphs + 0Dh. `SS:0` = the rectangle's screen offset, or FFFFh
+/// when nothing was saved; `CS:0124`… keep its size for [`restore_under`].
+pub fn save_under(x: &mut Ctx) -> Result<(), Decline> {
+    x.forward()?;
+    let ss = x.c.ss;
+    // MOV SS:[0],0ffffh; MOVZX DX,CS:[107]; MOV AX,[0a0e]; ADD AX,CS:[10c]; JNS 4fb
+    x.bus.write16(lin(ss, 0), 0xffff);
+    let mut dx = cs_byte(x, 0x107) as u16;
+    let mut ax = x.ds_rw(POINTER_Y).wrapping_add(cs_word(x, 0x10c));
+    x.set(EDX, dx);
+    x.set(EAX, ax);
+    x.steps += 5;
+    if (ax as i16) < 0 {
+        // ADD DX,AX; JS 582; JE 582; XOR AX,AX
+        dx = dx.wrapping_add(ax);
+        x.set(EDX, dx);
+        x.steps += 2;
+        if (dx as i16) < 0 {
+            x.retf();
+            return Ok(());
+        }
+        x.steps += 1;
+        if dx == 0 {
+            x.retf();
+            return Ok(());
+        }
+        ax = 0;
+        x.set(EAX, 0);
+        x.steps += 1;
+    }
+    // 4fb: MOV BP,AX; ADD BP,DX; SUB BP,0c8h; JLE 509; SUB DX,BP; JLE 582
+    let end = ax.wrapping_add(dx);
+    let bp = end.wrapping_sub(200);
+    x.set(EBP, bp);
+    x.steps += 4;
+    if (end as i16 as i32) - 200 > 0 {
+        let left = dx as i16 as i32 - bp as i16 as i32;
+        dx = dx.wrapping_sub(bp);
+        x.set(EDX, dx);
+        x.steps += 2;
+        if left <= 0 {
+            x.retf();
+            return Ok(());
+        }
+    }
+    // 509: MOV CS:[129],AX; XCHG AH,AL; MOV SI,AX; SHR AX,2; ADD SI,AX
+    let cs = x.c.cs;
+    x.bus.write16(lin(cs, 0x129), ax);
+    let sw = ax.swap_bytes();
+    let mut si = sw.wrapping_add(sw >> 2);
+    x.set(ESI, si);
+    x.steps += 5;
+    // 516: MOV BX,CS:[108]; MOV AX,[0a0c]; ADD AX,CS:[10a]; AND AX,0fffch; JNS 530
+    let mut bx = cs_word(x, 0x108);
+    ax = x.ds_rw(POINTER_X).wrapping_add(cs_word(x, 0x10a)) & 0xfffc;
+    x.set(EBX, bx);
+    x.set(EAX, ax);
+    x.steps += 5;
+    if (ax as i16) < 0 {
+        // ADD BX,AX; JS 582; JE 582; XOR AX,AX
+        bx = bx.wrapping_add(ax);
+        x.set(EBX, bx);
+        x.steps += 2;
+        if (bx as i16) < 0 {
+            x.retf();
+            return Ok(());
+        }
+        x.steps += 1;
+        if bx == 0 {
+            x.retf();
+            return Ok(());
+        }
+        ax = 0;
+        x.set(EAX, 0);
+        x.steps += 1;
+    }
+    // 530: MOV BP,AX; ADD BP,BX; SUB BP,140h; JLE 53e; SUB BX,BP; JLE 582
+    let end = ax.wrapping_add(bx);
+    let bp = end.wrapping_sub(WIDTH);
+    x.set(EBP, bp);
+    x.steps += 4;
+    if (end as i16 as i32) - WIDTH as i32 > 0 {
+        let left = bx as i16 as i32 - bp as i16 as i32;
+        bx = bx.wrapping_sub(bp);
+        x.set(EBX, bx);
+        x.steps += 2;
+        if left <= 0 {
+            x.retf();
+            return Ok(());
+        }
+    }
+    // 53e: ADD BX,AX; ADD BX,7; AND BL,0fch; SUB BX,AX: the width in whole dwords
+    bx = bx.wrapping_add(ax).wrapping_add(7);
+    bx &= 0xfffc;
+    bx = bx.wrapping_sub(ax);
+    // MOV CS:[127],AX; ADD SI,AX; MOV CS:[124],BX; MOV CS:[126],DL; MOV BP,140h; SUB BP,BX;
+    // SHR BX,2; PUSH DS; MOV AX,ES; MOV DS,AX; MOV AX,05d7h; MOV ES,AX; MOV SS:[0],SI;
+    // MOV DI,0dh
+    x.bus.write16(lin(cs, 0x127), ax);
+    si = si.wrapping_add(ax);
+    x.bus.write16(lin(cs, 0x124), bx);
+    x.bus.write8(lin(cs, 0x126), dx as u8);
+    let gap = WIDTH.wrapping_sub(bx);
+    let dwords = bx >> 2;
+    let src = x.c.es;
+    let buf = cs.wrapping_add(UNDER_PARAS);
+    x.bus.write16(lin(ss, 0), si);
+    let mut di: u16 = 0xd;
+    x.steps += 18;
+    let mut rows = dx as u8;
+    loop {
+        // MOV CX,BX; REP MOVSD; ADD SI,BP; DEC DL; JNE
+        for _ in 0..dwords as u32 * 4 {
+            let b = x.bus.read8(lin(src, si));
+            x.bus.write8(lin(buf, di), b);
+            si = si.wrapping_add(1);
+            di = di.wrapping_add(1);
+        }
+        si = si.wrapping_add(gap);
+        rows = rows.wrapping_sub(1);
+        x.steps += 5;
+        if rows == 0 {
+            break;
+        }
+    }
+    // MOV AX,DS; MOV ES,AX; POP DS; RETF
+    x.set(EAX, src);
+    x.set(EBX, dwords);
+    x.set(ECX, 0);
+    x.set(EDX, dx & 0xff00);
+    x.set(ESI, si);
+    x.set(EDI, di);
+    x.set(EBP, gap);
+    x.steps += 3;
+    x.retf();
+    Ok(())
+}
+
+/// Port of `EL2MCGA3:0583` (slot `DS:0230`): put the background saved by [`save_under`] back
+/// into `ES` at `SS:0` (taking it: `SS:0` = FFFFh after), if any was saved.
+pub fn restore_under(x: &mut Ctx) -> Result<(), Decline> {
+    x.forward()?;
+    // PUSH DS; MOV AX,05d7h; MOV DS,AX; MOV DI,0ffffh; XCHG SS:[0],DI; MOV SI,0dh;
+    // CMP DI,-1; JE 5b6
+    let buf = x.c.cs.wrapping_add(UNDER_PARAS);
+    x.set(EAX, buf);
+    let ss = x.c.ss;
+    let mut di = x.bus.read16(lin(ss, 0));
+    x.bus.write16(lin(ss, 0), 0xffff);
+    let mut si: u16 = 0xd;
+    x.set(EDI, di);
+    x.set(ESI, si);
+    x.steps += 8;
+    if di != 0xffff {
+        // MOV DL,CS:[126]; MOV BX,CS:[124]; MOV BP,140h; SUB BP,BX; SHR BX,2
+        let mut rows = cs_byte(x, 0x126);
+        let width = cs_word(x, 0x124);
+        let gap = WIDTH.wrapping_sub(width);
+        let dwords = width >> 2;
+        let es = x.c.es;
+        x.steps += 5;
+        loop {
+            // MOV CX,BX; REP MOVSD; ADD DI,BP; DEC DL; JNE
+            for _ in 0..dwords as u32 * 4 {
+                let b = x.bus.read8(lin(buf, si));
+                x.bus.write8(lin(es, di), b);
+                si = si.wrapping_add(1);
+                di = di.wrapping_add(1);
+            }
+            di = di.wrapping_add(gap);
+            rows = rows.wrapping_sub(1);
+            x.steps += 5;
+            if rows == 0 {
+                break;
+            }
+        }
+        x.set(EDX, x.dx() & 0xff00);
+        x.set(EBX, dwords);
+        x.set(ECX, 0);
+        x.set(EBP, gap);
+        x.set(ESI, si);
+        x.set(EDI, di);
+    }
+    // POP DS; RETF
+    x.steps += 1;
+    x.retf();
+    Ok(())
+}
+
+/// Port of `EL2MCGA3:0681` (slot `DS:0254`): make bitmap `BX` the mouse pointer, unless it is
+/// already (`DS:0a0a`): hide the pointer (the main program's `DS:0018`), then
+/// [`pointer_after_hide`].
+pub fn set_pointer(x: &mut Ctx) -> Result<(), Decline> {
+    // CMP BX,[0a0a]; JE 6b9; PUSH BX; CALLF [0018]
+    x.steps += 2;
+    if x.bx() == x.ds_rw(POINTER_BITMAP) {
+        x.retf();
+        return Ok(());
+    }
+    let bx = x.bx();
+    x.push(bx);
+    x.steps += 1;
+    x.call_slot(0x0018, 0x068c);
+    Ok(())
+}
+
+/// Port of `EL2MCGA3:068c`: look the new pointer bitmap up through the blitter's slot
+/// (`DS:0220` with `DI` = 0).
+pub fn pointer_after_hide(x: &mut Ctx) -> Result<(), Decline> {
+    // POP BX; PUSH BX; XOR DI,DI; INC [1fa9]; CALLF [0220]
+    let bx = x.pop();
+    x.push(bx);
+    x.set(EBX, bx);
+    x.set(EDI, 0);
+    let n = x.ds_rw(BLIT_BUSY).wrapping_add(1);
+    x.ds_ww(BLIT_BUSY, n);
+    x.steps += 4;
+    x.call_slot(0x0220, 0x0698);
+    Ok(())
+}
+
+/// Port of `EL2MCGA3:0698`: copy the new pointer's header (`ES:BP`) to `CS:0106`, record its
+/// number in `DS:0a0a`, and show the pointer again (the main program's `DS:0024`).
+pub fn pointer_after_lookup(x: &mut Ctx) -> Result<(), Decline> {
+    // MOV EAX,ES:[BP]; MOV CS:[106],EAX; MOV EAX,ES:[BP+4]; MOV CS:[10a],EAX; DEC [1fa9];
+    // POP BX; XCHG [0a0a],BX; CALLF [0024]
+    let (es, bp, cs) = (x.c.es, x.bp(), x.c.cs);
+    let a = x.bus.read32(lin(es, bp));
+    x.bus.write32(lin(cs, 0x106), a);
+    let b = x.bus.read32(lin(es, bp.wrapping_add(4)));
+    x.bus.write32(lin(cs, 0x10a), b);
+    x.c.r[EAX] = b;
+    let n = x.ds_rw(BLIT_BUSY).wrapping_sub(1);
+    x.ds_ww(BLIT_BUSY, n);
+    let bx = x.pop();
+    let old = x.ds_rw(POINTER_BITMAP);
+    x.ds_ww(POINTER_BITMAP, bx);
+    x.set(EBX, old);
+    x.steps += 7;
+    x.call_slot(0x0024, 0x06b9);
+    Ok(())
+}
+
+/// Port of `EL2MCGA3:06b9`, `34c8` and `34e6`: the `RETF` after a call out.
+pub fn retf_after_call(x: &mut Ctx) -> Result<(), Decline> {
+    x.retf();
+    Ok(())
+}
+
+/// Port of `EL2MCGA3:34ac` (slot `DS:01e8`): hide the pointer (`DS:0018`), then
+/// [`copy_after_hide`].
+pub fn copy_screen(x: &mut Ctx) -> Result<(), Decline> {
+    x.call_slot(0x0018, 0x34b0);
+    Ok(())
+}
+
+/// Port of `EL2MCGA3:34b0`: copy the whole screen from segment `DS:09e4` to the target
+/// (`DS:09e2`), then show the pointer (`DS:0024`).
+pub fn copy_after_hide(x: &mut Ctx) -> Result<(), Decline> {
+    copy_block(x, false, 0, 0x3e80, 0x34c8)
+}
+
+/// Port of `EL2MCGA3:34c9` (slot `DS:01e4`): hide the pointer (`DS:0018`), then
+/// [`panel_after_hide`].
+pub fn copy_panel(x: &mut Ctx) -> Result<(), Decline> {
+    x.call_slot(0x0018, 0x34cd);
+    Ok(())
+}
+
+/// Port of `EL2MCGA3:34cd`: copy rows 168–199 (the control panel) from the target (`DS:09e2`)
+/// to segment `DS:09e4`, then show the pointer (`DS:0024`).
+pub fn panel_after_hide(x: &mut Ctx) -> Result<(), Decline> {
+    copy_block(x, true, 0xd200, 0xa00, 0x34e6)
+}
+
+/// `PUSH DS; MOV ES,..; MOV DS,..; MOV SI,start; MOV DI,SI; MOV CX,n; REP MOVSD; POP DS;
+/// CALLF [0024]`: `n` dwords between the target and `DS:09e4` (`to_other` from the target).
+fn copy_block(x: &mut Ctx, to_other: bool, start: u16, dwords: u16, ret: u16) -> Result<(), Decline> {
+    x.forward()?;
+    let (target, other) = (x.ds_rw(TARGET), x.ds_rw(0x09e4));
+    let (src, dst) = if to_other { (target, other) } else { (other, target) };
+    x.c.es = dst;
+    let mut si = start;
+    for _ in 0..dwords as u32 * 4 {
+        let b = x.bus.read8(lin(src, si));
+        x.bus.write8(lin(dst, si), b);
+        si = si.wrapping_add(1);
+    }
+    x.set(ESI, si);
+    x.set(EDI, si);
+    x.set(ECX, 0);
+    x.steps += 8;
+    x.call_slot(0x0024, ret);
+    Ok(())
+}

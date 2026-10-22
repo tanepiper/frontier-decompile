@@ -258,6 +258,40 @@ fn setup(m: &mut Machine, rng: &mut Rng, name: &str, ds: u16) -> bool {
             m.cpu.mem.ww(lin(ds, video::TARGET as u32), target);
             true
         }
+        "save_under" | "restore_under" | "set_pointer" | "set_pointer@068c" | "set_pointer@0698" | "set_pointer@06b9"
+        | "copy_screen" | "copy_screen@34b0" | "copy_screen@34c8" | "copy_panel" | "copy_panel@34cd"
+        | "copy_panel@34e6" => {
+            let seg = m.image_segment("EL2MCGA3.OVL").unwrap();
+            for r in [EAX, EBX, ECX, EDX, ESI, EBP] {
+                m.cpu.r[r] = rng.dword();
+            }
+            // Random words on the stack the pieces pop.
+            for i in 0..8u32 {
+                m.cpu.mem.ww(lin(STACK, 0xFF00 + 2 * i), rng.next());
+            }
+            let back = m.cpu.mem.rw(lin(ds, video::BACK_BUFFER as u32));
+            m.cpu.mem.ww(lin(ds, video::TARGET as u32), target);
+            m.cpu.mem.ww(lin(ds, 0x09e4), if target == 0xA000 { back } else { 0xA000 });
+            m.cpu.s[ES] = target;
+            // The pointer: header at CS:0106, position, saved background.
+            let hdr = [rng.below(4) as u8, 1 + rng.below(40) as u8];
+            m.cpu.mem.wb(lin(seg, 0x106), hdr[0]);
+            m.cpu.mem.wb(lin(seg, 0x107), hdr[1]);
+            m.cpu.mem.ww(lin(seg, 0x108), 1 + rng.below(40));
+            m.cpu.mem.ww(lin(seg, 0x10a), rng.below(40).wrapping_sub(20));
+            m.cpu.mem.ww(lin(seg, 0x10c), rng.below(40).wrapping_sub(20));
+            m.cpu.mem.ww(lin(ds, video::POINTER_X as u32), rng.coord(video::WIDTH));
+            m.cpu.mem.ww(lin(ds, video::POINTER_Y as u32), rng.coord(200));
+            m.cpu.mem.ww(lin(seg, 0x124), 4 * (1 + rng.below(12)));
+            m.cpu.mem.wb(lin(seg, 0x126), 1 + rng.below(40) as u8);
+            let saved = if rng.below(4) == 0 { 0xffff } else { rng.below(64000 - 48 * 320) };
+            m.cpu.mem.ww(lin(STACK, 0), saved);
+            if name == "set_pointer" && rng.below(3) == 0 {
+                let cur = m.cpu.mem.rw(lin(ds, video::POINTER_BITMAP as u32));
+                m.cpu.r[EBX] = (m.cpu.r[EBX] & 0xFFFF_0000) | cur as u32;
+            }
+            true
+        }
         _ => false,
     }
 }
@@ -282,6 +316,10 @@ fn mcga3_ports_match_original() {
                 m.cpu.r[r] = rng.dword();
             }
             m.cpu.r[ESP] = if name.starts_with("fill_") { 0x8000 } else { 0xFF00 };
+            if name.contains('@') {
+                // A piece after a call out: the stack holds what the code before it pushed.
+                m.cpu.r[ESP] = 0xFF04;
+            }
             m.cpu.s[DS] = ds;
             m.cpu.s[SS] = STACK;
             m.cpu.flags &= !frontier_dos::cpu::DF;
