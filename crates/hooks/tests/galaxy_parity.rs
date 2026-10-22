@@ -386,3 +386,51 @@ fn system_builder_matches_original_in_game() {
     assert!(compared > 100, "too few cases compared");
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
+
+/// `EL2M06:3eb9` (module 6, handler `+20`): per-system data for hand-made ids (from the module's
+/// own table) and procedural ids (distance templates), for every selector, against the original.
+#[test]
+fn system_data_matches_original() {
+    let Some(mut m) = booted() else { return };
+    let ds = m.images().iter().find(|i| i.name == "FRONTIER.EXE").unwrap().seg + 0x1615;
+    if m.image_segment("EL2M06.OVL").is_none() {
+        let si = 6 * 8u16;
+        let hdr_off = m.cpu.mem.rw(lin(ds, 0x0396 + si as u32));
+        let hdr_seg = m.cpu.mem.rw(lin(ds, 0x0398 + si as u32));
+        let off = m.cpu.mem.rw(lin(hdr_seg, hdr_off as u32 + 4));
+        let seg = m.cpu.mem.rw(lin(hdr_seg, hdr_off as u32 + 6));
+        m.cpu.s[DS] = ds;
+        m.cpu.r[ESI] = si as u32;
+        m.call(seg, off, 50_000_000).expect("load EL2M06");
+    }
+    let m06 = m.image_segment("EL2M06.OVL").expect("EL2M06 resident");
+    let port = frontier_game::sysdata::PORTS_M06[0].3;
+    let hand: Vec<u32> = (0..64u32).map(|k| m.cpu.mem.rd(lin(m06, 0x01f3 + 0x30 * k))).take_while(|&id| id != 0).collect();
+    let mut x = X(0x0606_0606_1234_5678);
+    let (mut compared, mut failures) = (0, Vec::new());
+    for i in 0..6000 {
+        let id = if i % 4 == 0 && !hand.is_empty() { hand[(x.next() as usize) % hand.len()] } else { x.next() };
+        m.cpu.mem.wd(lin(ds, 0x07c0), id);
+        for r in 0..8 {
+            m.cpu.r[r] = x.next();
+        }
+        m.cpu.r[0] = (m.cpu.r[0] & 0xffff_ff00) | (i % 3) as u32;
+        m.cpu.r[ESP] = 0xFFF0;
+        m.cpu.s[SS] = 0xA000;
+        m.cpu.s[DS] = ds;
+        m.enter(m06, 0x3eb9);
+        let out = run_port(&m.cpu, port);
+        compared += 1;
+        let diff = match frontier_hooks::record_original(&mut m.cpu, 100_000) {
+            Some(orig) => compare(&out, &orig, &m.cpu.mem),
+            None => Some("the original did not return".into()),
+        };
+        if let Some(d) = diff {
+            if failures.len() < 3 {
+                failures.push(format!("id {id:08x} AL {}: {d}", i % 3));
+            }
+        }
+    }
+    eprintln!("system_data: {compared} compared ({} hand-made ids), {} mismatches", hand.len(), failures.len());
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}
