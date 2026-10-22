@@ -1,5 +1,7 @@
 # Labels made from the port's citations by tools/triage/cite_labels.py: address, the item that cites
 # it, and where it is cited. Do not edit: label by hand in names.tsv, which wins over this file.
+1000:23f2	m02_text	crates/game/src/text.rs
+1000:23f7	m02_star_name	crates/game/src/text.rs
 1000:3abe	seed_step	crates/game/src/galaxy.rs
 1000:3b34	sector_density_port	crates/game/src/galaxy.rs
 1000:3c2f	sector_stars_port	crates/game/src/galaxy.rs

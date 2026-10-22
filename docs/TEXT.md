@@ -49,8 +49,18 @@ leave `DX` holding the module's segment. Ported in `frontier_game::text`:
 | `EL2M17:0b60` | `014e` | `DX` |
 | `EL2M18:4cfa` | `00a3` | `SI` |
 
+`EL2M02:23f2`, the galaxy map's handler, is ported (`m02_text`). It is where stars get their
+**procedural names**:
+- **String 0:** star `DS:07d0` in sector (`DS:07c8`, `DS:07cc`). A catalogue sector (the 47 at
+  `EL2M02:00a2`) takes the real name from `EL2M02:0504`. Any other star gets three of the 32
+  syllables at `EL2M02:01c6` ("en", "la", "can", …), chosen by a hash of the sector and the index
+  (`galaxy::star_name_seed`: adds and rotations by 3, 5, 4 and by the index), with the first
+  letter made a capital.
+- **String 1FFh:** the same for the star whose 32-bit system id is `DS:07c0`.
+- **String 1FEh:** its sector relative to Sol's as ` (x,y)`.
+- **Strings 1–1FDh:** the table at `EL2M02:0504`.
+
 Other shapes, not ported yet:
-- `EL2M02:23f2` has extra logic for string 0.
 - `EL2M09:11d1` makes a generated name from the far pointer `[DS:07e4]`, through `EL2M09:0f92`
   ([NAMES.md](NAMES.md)).
 - `EL2M12:4c26` forwards to module 18's handler.
@@ -79,8 +89,9 @@ ten (10⁹ down) that fits, through a cascade of 32-bit compares, and finds each
 subtracting until a borrow. `BL` = 3, 2, 1 forces at least 4, 3, 2 digits. A final `STOSW` writes
 the units digit and the 0.
 
-Not ported: `3022h` (`ec60`, which calls slot `DS:0038`) and `3023h`–`3025h` (`ecc1`, unit
-conversions with the ` km` strings at `1000:e805`).
+| `3023h`–`3025h` | `ecc1` | a speed `v`: up to `4_705Dh`, `3v + v/2 − v/16` (×3.4375) with one decimal and `" km{"` (`1000:e805`); above that, `w = v/128`, `w + w/4 − w/32` with two decimals and `" km|"` (`1000:e80a`). `{` and `|` are the font's unit glyphs (*inferred*) |
+
+Not ported: `3022h` (`ec60`, which calls slot `DS:0038`).
 
 ## The dispatcher's port
 
@@ -99,6 +110,7 @@ declined (the original runs it).
 
 | Module | Compared | Declined | Mismatches |
 |---|---|---|---|
+| `EL2M02` (star names: random sectors, indices and system ids, a third from the catalogue) | 501 | 11 | 0 |
 | `EL2M00` | 508 | 4 | 0 |
 | `EL2M03` | 411 | 101 | 0 |
 | `EL2M05` | 406 | 106 | 0 |
@@ -113,8 +125,8 @@ declined (the original runs it).
 The dispatcher (`dispatcher_matches_original`), with all ten modules loaded, was asked for main
 ids 0–2FDh, `3016h`, `[DS:5703]` ids `4000h`–`41FBh` and 64 strings of every module: Every
 formatter `3000h`–`3029h` was asked 24 times with random arguments of every size and sign:
-**1,806 compared, 0 mismatches**, and 209 declined (`3022h`–`3025h`, and module strings that
-reach them).
+**1,882 compared, 0 mismatches**, and 133 declined (`3022h`, and module strings that reach
+unported text).
 
 ## Open questions
 - The formatters `3022h`–`3025h`.

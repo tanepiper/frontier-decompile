@@ -422,6 +422,28 @@ fn hand_to_renderer(c: &mut Cpu, bus: &mut dyn Bus, ret: u16) -> u64 {
     8
 }
 
+/// The seed of a generated star's name (`EL2M02:24ec`), *observed*: from the sector (`x`, `y`)
+/// and the star's index `i` in it. `cx += i; dx += cx; cx = rol(cx,3) + dx; dx = rol(dx,5) + cx;
+/// dx = rol(dx,4); bx = rol(cx, i) + dx`. Returns (`bx`, `cx` after the hash, `dx`).
+pub fn star_name_seed(x: u16, y: u16, i: u16) -> (u16, u16, u16) {
+    let mut cx = x.wrapping_add(i);
+    let mut dx = y.wrapping_add(cx);
+    cx = cx.rotate_left(3).wrapping_add(dx);
+    dx = dx.rotate_left(5).wrapping_add(cx);
+    dx = dx.rotate_left(4);
+    let bx = cx.rotate_left((i & 31) as u32).wrapping_add(dx);
+    (bx, cx, dx)
+}
+
+/// The three syllable numbers (0–31, into the table of 4-byte syllables at `EL2M02:01c6`) of a
+/// generated star's name: `bx & 7Ch`, then after `ror 5` twice. The first letter is capitalised.
+pub fn star_name_syllables(x: u16, y: u16, i: u16) -> [u16; 3] {
+    let (bx, _, _) = star_name_seed(x, y, i);
+    let b2 = bx.rotate_right(5);
+    let b3 = b2.rotate_right(5);
+    [(bx & 0x7c) >> 2, (b2 & 0x7c) >> 2, (b3 & 0x7c) >> 2]
+}
+
 /// Every ported galaxy routine: (`EL2M02` offset, 0 for a near routine with no vector slot, name, port).
 pub const PORTS_M02: &[(u16, u16, &str, Port)] = &[
     (0x3abe, 0, "seed_step", seed_step_port),

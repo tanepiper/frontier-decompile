@@ -110,17 +110,20 @@ pub fn dispatch(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
     dispatch_at(c, bus, 0)
 }
 
-/// Dispatcher calls in progress, across module handlers (which restart their own depth count).
-static ACTIVE: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+thread_local! {
+    /// Dispatcher calls in progress on this thread, across module handlers (which restart their
+    /// own depth count). Per thread, so parallel machines do not see each other's nesting.
+    static ACTIVE: std::cell::Cell<u32> = const { std::cell::Cell::new(0) };
+}
 
 fn dispatch_at(c: &mut Cpu, bus: &mut dyn Bus, depth: u32) -> Option<u64> {
-    use std::sync::atomic::Ordering;
-    if ACTIVE.fetch_add(1, Ordering::Relaxed) >= MAX_DEPTH {
-        ACTIVE.fetch_sub(1, Ordering::Relaxed);
+    let active = ACTIVE.with(|a| a.get());
+    if active >= MAX_DEPTH {
         return None;
     }
+    ACTIVE.with(|a| a.set(active + 1));
     let r = dispatch_inner(c, bus, depth);
-    ACTIVE.fetch_sub(1, Ordering::Relaxed);
+    ACTIVE.with(|a| a.set(active));
     r
 }
 
@@ -422,6 +425,12 @@ fn formatter(c: &mut Cpu, bus: &mut dyn Bus, target: u16, depth: u32) -> Option<
             c.set_x(EDX, d);
             Some(stub + time(c, bus)?)
         }
+        // Speeds: 3023h–3025h (`ecc1`).
+        0xecba | 0xecb1 | 0xeca8 => {
+            let (slot, stub) = pick([(0xeca8, 0x07c8), (0xecb1, 0x07c4), (0xecba, 0x07c0)])?;
+            let (a, d) = slot_value(c, bus, slot);
+            Some(stub + speed(c, bus, (d as u32) << 16 | a as u32, depth)?)
+        }
         // A text id held in a slot: 3018h–301Ch ([07c0], [07c4], [07c8], [07e4], [07e8]).
         0xec58 | 0xec50 | 0xec48 | 0xec40 | 0xec38 => {
             let slot = match target {
@@ -576,6 +585,48 @@ fn time(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
     Some(n + 1)
 }
 
+/// The speed formatters' body (`1000:ecc1`), *observed*: a speed `v` (signed 32-bit). Up to
+/// `4_705Dh`: `3v + v/2 − v/16` (×3.4375) with one decimal and the string `" km{"` at `1000:e805`;
+/// above: `w = v/128; w + w/4 − w/32` with two decimals and `" km|"` at `1000:e80a` (`{` and `|`
+/// are the font's unit glyphs, *inferred*). Shifts are arithmetic.
+fn speed(c: &mut Cpu, bus: &mut dyn Bus, v: u32, depth: u32) -> Option<u64> {
+    let (dx, ax) = ((v >> 16) as u16, v as u16);
+    let big = (dx as i16) > 4 || (dx == 4 && ax > 0x705d);
+    let mut n: u64 = if (dx as i16) > 4 { 2 } else if dx != 4 { 3 } else { 5 };
+    let sv = v as i32;
+    let (val, places, unit, body) = if !big {
+        let t = sv.wrapping_mul(3).wrapping_add(sv >> 1).wrapping_sub(sv >> 4);
+        // CX:BX ends as v >> 4.
+        let cb = (sv >> 4) as u32;
+        c.set_x(ECX, (cb >> 16) as u16);
+        c.set_x(EBX, cb as u16);
+        n += 18;
+        (t as u32, 1u8, 0xe805u16, 0)
+    } else {
+        let w = sv >> 7;
+        let t = w.wrapping_add(w >> 2).wrapping_sub(w >> 5);
+        let cb = (w >> 5) as u32;
+        c.set_x(ECX, (cb >> 16) as u16);
+        c.set_x(EBX, cb as u16);
+        n += 30;
+        (t as u32, 2u8, 0xe80au16, 1)
+    };
+    let _ = body;
+    c.set_x(EAX, val as u16);
+    c.set_x(EDX, (val >> 16) as u16);
+    // CALL eba9/ebdd; DEC DI; MOV SI,unit; MOV AX,CS; MOV ES,AX; PUSH CS; CALL e96e; RET
+    n += 1 + decimals(c, bus, places);
+    let di = c.x(EDI).wrapping_sub(1);
+    c.set_x(EDI, di);
+    let mcs = main_cs(c);
+    c.set_x(ESI, unit);
+    c.set_x(EAX, mcs);
+    c.es = mcs;
+    n += 6;
+    n += expand_loop_at(c, bus, depth)?;
+    Some(n + 1)
+}
+
 /// The decimal-point formatters' body (`1000:eba9`, `ebdd`, `ec15`): `BL` = places, `ES` = `SS`,
 /// `CALLF b609`, then a `.` is moved in before the last `places` digits and the 0 rewritten.
 fn decimals(c: &mut Cpu, bus: &mut dyn Bus, places: u8) -> u64 {
@@ -687,6 +738,175 @@ pub fn m07_text(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
     }
 }
 
+/// `EL2M02:23f7` from its first instruction through its `RETF`, *observed*: the name of star
+/// `DS:07d0` in the sector (`DS:07c8`, `DS:07cc`) to `SS:DI`, with `AX` (0 or a string offset)
+/// added for catalogue sectors. A catalogue sector (`EL2M02:00a2`–`015d`) takes the string at
+/// `EL2M02:0504` (`AX + EL2M02:0162[sector] + 2·index`; `DS:07d0` is doubled in place); any other
+/// star three syllables from `EL2M02:01c6` chosen by [`crate::galaxy::star_name_seed`], the first
+/// letter made a capital.
+fn m02_star_name(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let cs = c.cs;
+    let ds = c.ds;
+    let x = bus.read16(lin(ds, 0x07c8));
+    let y = bus.read16(lin(ds, 0x07cc));
+    c.set_x(ECX, x);
+    c.set_x(EDX, y);
+    let mut n: u64 = 4;
+    let mut bx: u16 = 0x2e;
+    let mut si: u16 = 0x015e;
+    let mut hit = false;
+    loop {
+        si = si.wrapping_sub(4);
+        if x != bus.read16(lin(cs, si)) {
+            n += 3;
+        } else if y != bus.read16(lin(cs, si.wrapping_add(2))) {
+            n += 5;
+        } else {
+            n += 5;
+            hit = true;
+            break;
+        }
+        n += 2;
+        bx = bx.wrapping_sub(1);
+        if bx & 0x8000 != 0 {
+            break;
+        }
+    }
+    c.set_x(EBX, bx);
+    c.set_x(ESI, si);
+    if hit {
+        let b2 = bx << 1;
+        c.set_x(EBX, b2);
+        let idx2 = bus.read16(lin(ds, 0x07d0)) << 1;
+        bus.write16(lin(ds, 0x07d0), idx2);
+        let ax = c.x(EAX).wrapping_add(bus.read16(lin(cs, 0x0162u16.wrapping_add(b2)))).wrapping_add(idx2);
+        c.set_x(EAX, ax);
+        c.set_x(ESI, 0x0504);
+        c.set_x(EDX, cs);
+        c.es = cs;
+        let m = expand_at(c, bus, 0)?;
+        return Some(n + 8 + m + 1);
+    }
+    n += 1; // JMP 24ec
+    let i = bus.read16(lin(ds, 0x07d0));
+    let (seed, cx, dx) = crate::galaxy::star_name_seed(x, y, i);
+    c.set_x(ECX, i);
+    c.set_x(EDX, dx);
+    let _ = cx;
+    let start = c.x(EDI);
+    c.set_x(ESI, start);
+    let mut di = start;
+    let mut b = seed;
+    n += 12;
+    for k in 0..3 {
+        if k > 0 {
+            b = b.rotate_right(5);
+        }
+        // CALL 2521: PUSH BX; AND BX,7Ch; ADD BX,1C6h; copy; POP BX; RET
+        let mut p = (b & 0x7c).wrapping_add(0x01c6);
+        n += 1 + 3 + 2;
+        loop {
+            let al = bus.read8(lin(cs, p));
+            bus.write8(lin(c.ss, di), al);
+            p = p.wrapping_add(1);
+            di = di.wrapping_add(1);
+            n += 6;
+            if al == 0 {
+                break;
+            }
+        }
+        if k < 2 {
+            di = di.wrapping_sub(1);
+            n += 1; // DEC DI
+            if k == 0 {
+                let a = lin(c.ss, start);
+                let v = bus.read8(a).wrapping_sub(0x20);
+                bus.write8(a, v);
+                n += 1;
+            }
+            n += 1; // ROR BX,5
+        }
+    }
+    c.set_x(EBX, b);
+    c.set_x(EAX, c.x(EAX) & 0xff00);
+    c.set_x(EDI, di);
+    Some(n + 1)
+}
+
+/// Port of `EL2M02:23f2` (handler `+28`), *observed*: the galaxy map module's strings. 0: a star's
+/// name ([`m02_star_name`]). 1–1FDh: the table at `EL2M02:0504`. 1FFh: the name of the star whose
+/// system id is the dword `DS:07c0` (index in bits 0–5, `x` in bits 6–18, `y` from bit 19). 1FEh:
+/// that star's sector relative to Sol's, as ` (x,y)`. The argument slots are restored.
+pub fn m02_text(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    match m02_text_inner(c, bus) {
+        Some(n) => {
+            c.retf(bus);
+            n
+        }
+        None => DECLINE,
+    }
+}
+
+fn m02_text_inner(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let ax = c.x(EAX) & 0x3fe;
+    c.set_x(EAX, ax);
+    let ds = c.ds;
+    if ax == 0 {
+        return Some(2 + m02_star_name(c, bus)?);
+    }
+    if ax < 0x3fc {
+        c.set_x(EAX, ax - 2);
+        c.set_x(ESI, 0x0504);
+        c.set_x(EDX, c.cs);
+        c.es = c.cs;
+        return Some(6 + 4 + expand_at(c, bus, 0)? + 1);
+    }
+    let saved: Vec<u32> = [0x07c0u16, 0x07c4, 0x07c8, 0x07e4, 0x07e8].iter().map(|&o| bus.read32(lin(ds, o))).collect();
+    let id = bus.read32(lin(ds, 0x07c0));
+    let idx = (id & 0x3f) as u16;
+    c.set_x(EDX, idx);
+    bus.write16(lin(ds, 0x07d0), idx);
+    let shifted = id >> 3;
+    let lo = (shifted as u16) >> 3;
+    bus.write32(lin(ds, 0x07c0), (shifted & 0xffff_0000) | lo as u32);
+    bus.write16(lin(ds, 0x07c8), lo);
+    let hi = (shifted >> 16) as u16;
+    bus.write16(lin(ds, 0x07cc), hi);
+    c.set_x(EDX, hi);
+    let mut n: u64 = 4 + 16;
+    if ax == 0x3fe {
+        c.set_x(EAX, 0);
+        n += 2;
+        n += m02_star_name(c, bus)?;
+    } else {
+        // " (" then x − 1718h, "," then y − 1524h, ")".
+        let di = c.x(EDI);
+        bus.write16(lin(c.ss, di), 0x2820);
+        c.set_x(EDI, di.wrapping_add(2));
+        let x = bus.read16(lin(ds, 0x07c8)).wrapping_sub(0x1718);
+        c.set_x(EAX, x);
+        cwd(c);
+        c.es = c.ss;
+        n += 8;
+        n += 1 + print_decimal(c, bus, true);
+        let di = c.x(EDI);
+        bus.write8(lin(c.ss, di.wrapping_sub(1)), b',');
+        let y = hi.wrapping_sub(0x1524);
+        c.set_x(EAX, y);
+        cwd(c);
+        n += 4;
+        n += 1 + print_decimal(c, bus, true);
+        let di = c.x(EDI);
+        bus.write16(lin(c.ss, di.wrapping_sub(1)), 0x0029);
+        c.set_x(EDI, di.wrapping_add(1));
+        n += 2;
+    }
+    for (k, &o) in [0x07c0u16, 0x07c4, 0x07c8, 0x07e4, 0x07e8].iter().enumerate() {
+        bus.write32(lin(ds, o), saved[k]);
+    }
+    Some(n + 6) // POP dword ×5; RETF
+}
+
 /// One port table per module (offset of handler `+28`, slot 0, name, port), in the shape
 /// `frontier_hooks::install_ports` takes.
 pub type Table = &'static [(u16, u16, &'static str, Port)];
@@ -694,6 +914,7 @@ pub type Table = &'static [(u16, u16, &'static str, Port)];
 /// The ported text handlers: (module file, its table).
 pub const MODULE_TEXT: &[(&str, Table)] = &[
     ("EL2M00.OVL", &[(0x4e19, 0, "m00_text", m00_text)]),
+    ("EL2M02.OVL", &[(0x23f2, 0, "m02_text", m02_text)]),
     ("EL2M03.OVL", &[(0x3dd6, 0, "m03_text", m03_text)]),
     ("EL2M05.OVL", &[(0x0170, 0, "m05_text", m05_text)]),
     ("EL2M07.OVL", &[(0x06ec, 0, "m07_text", m07_text)]),

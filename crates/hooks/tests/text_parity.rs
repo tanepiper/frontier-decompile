@@ -67,6 +67,24 @@ fn module_text_matches_original() {
             m.cpu.mem.write_bytes(lin(0xA000, 0x0100), b"Merlin\0");
             m.cpu.mem.ww(lin(ds, 0x07e4), 0x0100);
             m.cpu.mem.ww(lin(ds, 0x07e6), 0xA000);
+            if name == "m02_text" {
+                // Star names: random sectors (a third from the catalogue), indices and system ids.
+                let r = (id as u64).wrapping_mul(0x9E37_79B9_7F4A_7C15).rotate_left(17);
+                let (sx, sy) = if id % 3 == 0 {
+                    let e = 0x00a2 + 4 * (r % 47) as u32;
+                    (m.cpu.mem.rw(lin(seg, e)), m.cpu.mem.rw(lin(seg, e + 2)))
+                } else {
+                    ((r & 0x1fff) as u16, ((r >> 13) & 0x1fff) as u16)
+                };
+                m.cpu.mem.ww(lin(ds, 0x07c8), sx);
+                m.cpu.mem.ww(lin(ds, 0x07cc), sy);
+                m.cpu.mem.ww(lin(ds, 0x07d0), ((r >> 26) % 8) as u16);
+                m.cpu.mem.wd(lin(ds, 0x07c0), (sy as u32) << 19 | (sx as u32) << 6 | ((r >> 40) % 8) as u32);
+                // Mostly the generated-name strings 0, 1FEh and 1FFh.
+                if id % 4 != 3 {
+                    m.cpu.r[0] = [0u32, 0x3fc, 0x3fe][(id % 3) as usize];
+                }
+            }
             m.enter(seg, off);
             let out = run_port(&m.cpu, port);
             if out.steps == DECLINE {
