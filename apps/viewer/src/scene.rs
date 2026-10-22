@@ -45,6 +45,8 @@ pub struct Options {
     pub thrusters: bool,
     pub textures: bool,
     pub back_faces: bool,
+    /// The viewer's own markers at every vertex of the model (not drawn by the game).
+    pub vertices: bool,
     pub yaw: f32,
     pub pitch: f32,
     pub zoom: f32,
@@ -422,7 +424,7 @@ pub fn project(rect: egui::Rect, scene: &Scene, default: u16, o: Options) -> Vec
             Shape::Label(a, text) => out.push(Item::Label { at: scr(xf(*a)), text: text.clone() }),
         }
     }
-    for &v in &scene.points {
+    for &v in scene.points.iter().filter(|_| o.vertices) {
         out.push(Item::Dot { at: scr(xf(v)), radius: 1.2, colour: Color32::from_gray(110) });
     }
     out

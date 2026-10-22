@@ -40,6 +40,7 @@ pub struct Ui {
     thrusters: bool,
     show_textures: bool,
     back_faces: bool,
+    vertices: bool,
     all_branches: bool,
     livery: u8,
     shown: bool,
@@ -73,6 +74,7 @@ impl Ui {
             thrusters: false,
             show_textures: true,
             back_faces: false,
+            vertices: false,
             all_branches: false,
             livery: 0,
             shown: true,
@@ -448,6 +450,7 @@ impl Ui {
             ui.checkbox(&mut self.thrusters, "thruster flames");
             ui.checkbox(&mut self.show_textures, "textures");
             ui.checkbox(&mut self.back_faces, "back faces");
+            ui.checkbox(&mut self.vertices, "vertices").on_hover_text("The viewer's markers at every vertex; the game does not draw them");
             ui.checkbox(&mut self.all_branches, "every level of detail");
             ui.add(egui::Slider::new(&mut self.livery, 0..=7).text("livery (0 = from the variables)"));
             ui.checkbox(&mut self.shown, "ship on show (measured variables)");
@@ -488,6 +491,7 @@ impl Ui {
             thrusters: self.thrusters,
             textures: self.show_textures,
             back_faces: self.back_faces,
+            vertices: self.vertices,
             yaw: self.yaw,
             pitch: self.pitch,
             zoom: self.zoom,

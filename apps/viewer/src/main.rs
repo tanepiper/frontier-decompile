@@ -4,7 +4,7 @@
 //!          `game-data/original`).
 //! Browser: `tools/dev-web.sh --app viewer`, then open `/?data=/game-data/` or pick the files.
 //! Files:   `frontier-viewer --render TABLE N[,N…] OUT.png [--dir DIR] [--yaw R] [--pitch R]
-//!          [--livery 1-7] [--zero-vars] [--registration TEXT] [--zoom Z] [--wire] [--no-textures] [--back-faces] [--all-branches] [--thrusters]` draws models
+//!          [--livery 1-7] [--zero-vars] [--registration TEXT] [--zoom Z] [--wire] [--no-textures] [--back-faces] [--vertices] [--all-branches] [--thrusters]` draws models
 //!          of TABLE (`main` for FRONTIER.EXE, `intro` for EL2M08) into a PNG, 320×240 each, for
 //!          agents and tests that cannot look at a window.
 //!
@@ -206,6 +206,7 @@ fn render(args: &[String]) -> Result<(), String> {
         thrusters: flag("--thrusters"),
         textures: !flag("--no-textures"),
         back_faces: flag("--back-faces"),
+        vertices: flag("--vertices"),
         yaw: value("--yaw").and_then(|v| v.parse().ok()).unwrap_or(0.6),
         pitch: value("--pitch").and_then(|v| v.parse().ok()).unwrap_or(0.35),
         zoom: value("--zoom").and_then(|v| v.parse().ok()).unwrap_or(1.0),
