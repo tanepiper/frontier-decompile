@@ -1,0 +1,18 @@
+# Hand labels for EL2M10.OVL (Ghidra segment 1000, as in analysis/export/EL2M10.OVL), kept apart
+# from names.tsv because every overlay is numbered from 1000:0000. address	label	evidence
+1000:0d8a	save_commander_0d8a	ran only in the coverage run `save` (docs/COVERAGE.md); role inferred, not traced
+1000:157b	save_commander_157b	ran only in the coverage run `save` (docs/COVERAGE.md); role inferred, not traced
+1000:1680	save_commander_1680	ran only in the coverage run `save` (docs/COVERAGE.md); role inferred, not traced
+1000:1751	save_commander_1751	ran only in the coverage run `save` (docs/COVERAGE.md); role inferred, not traced
+1000:18f3	save_commander_18f3	ran only in the coverage run `save` (docs/COVERAGE.md); role inferred, not traced
+1000:1a33	save_commander_1a33	ran only in the coverage run `save` (docs/COVERAGE.md); role inferred, not traced
+1000:1a56	save_commander_1a56	ran only in the coverage run `save` (docs/COVERAGE.md); role inferred, not traced
+1000:1a87	save_commander_1a87	ran only in the coverage run `save` (docs/COVERAGE.md); role inferred, not traced
+1000:1b92	save_commander_1b92	ran only in the coverage run `save` (docs/COVERAGE.md); role inferred, not traced
+1000:0ded	load_commander_0ded	ran only in the coverage run `load` (docs/COVERAGE.md); role inferred, not traced
+1000:123b	load_commander_123b	ran only in the coverage run `load` (docs/COVERAGE.md); role inferred, not traced
+1000:124f	load_commander_124f	ran only in the coverage run `load` (docs/COVERAGE.md); role inferred, not traced
+1000:1859	load_commander_1859	ran only in the coverage run `load` (docs/COVERAGE.md); role inferred, not traced
+1000:1af8	load_commander_1af8	ran only in the coverage run `load` (docs/COVERAGE.md); role inferred, not traced
+1000:1b1a	load_commander_1b1a	ran only in the coverage run `load` (docs/COVERAGE.md); role inferred, not traced
+1000:1bc4	load_commander_1bc4	ran only in the coverage run `load` (docs/COVERAGE.md); role inferred, not traced

@@ -95,6 +95,8 @@ pub struct Cpu {
     breakpoint_count: usize,
     /// Skip the breakpoint check once (to execute the original at a hooked address).
     pub skip_breakpoint: bool,
+    /// Code coverage, when recording (docs/COVERAGE.md); `None` costs one branch per instruction.
+    pub cover: Option<Box<crate::coverage::Recorder>>,
     /// Last few `cs:ip` values executed (debugging aid).
     pub trace: [(u16, u16); 64],
     trace_pos: usize,
@@ -151,6 +153,7 @@ impl Cpu {
             breakpoints: vec![0; 0x10_0000 / 64],
             breakpoint_count: 0,
             skip_breakpoint: false,
+            cover: None,
             trace: [(0, 0); 64],
             trace_pos: 0,
         }
@@ -340,6 +343,15 @@ impl Cpu {
         self.ip = self.mem.rw(n as u32 * 4) as u32;
         self.s[CS] = self.mem.rw(n as u32 * 4 + 2);
         self.halted = false;
+        self.entered();
+    }
+
+    /// The next instruction is a routine's entry (call, far jump or interrupt), for coverage.
+    #[inline(always)]
+    fn entered(&mut self) {
+        if let Some(c) = self.cover.as_deref_mut() {
+            c.entry_pending = true;
+        }
     }
 
     /// Far call to `seg:off` with a return address of `ret_seg:ret_off` (host-initiated calls).
@@ -912,6 +924,9 @@ impl Cpu {
                 }
             }
         }
+        if let Some(c) = self.cover.as_deref_mut() {
+            c.mark(lin(self.s[CS], self.ip) & 0xF_FFFF);
+        }
         self.seg_ovr = None;
         self.os32 = false;
         self.as32 = false;
@@ -1210,6 +1225,7 @@ impl Cpu {
                 self.push(osz, ip);
                 self.s[CS] = seg;
                 self.ip = off;
+                self.entered();
             }
             0x9B => {}
             0x9C => {
@@ -1396,6 +1412,7 @@ impl Cpu {
                 let ip = self.ip;
                 self.push(osz, ip);
                 self.jump_rel(d);
+                self.entered();
             }
             0xE9 => {
                 let d = if self.os32 { self.fetch32() } else { self.fetch16() as i16 as i32 as u32 };
@@ -1406,6 +1423,7 @@ impl Cpu {
                 let seg = self.fetch16();
                 self.s[CS] = seg;
                 self.ip = off;
+                self.entered();
             }
             0xEB => {
                 let d = self.fetch8() as i8 as i32 as u32;
@@ -1476,6 +1494,7 @@ impl Cpu {
                         let ip = self.ip;
                         self.push(osz, ip);
                         self.ip = t;
+                        self.entered();
                     }
                     3 => {
                         let off = self.read(ea.seg, ea.off, osz);
@@ -1486,6 +1505,7 @@ impl Cpu {
                         self.push(osz, ip);
                         self.s[CS] = seg;
                         self.ip = off;
+                        self.entered();
                     }
                     4 => self.ip = self.rd_ea(&ea, osz),
                     5 => {
@@ -1493,6 +1513,7 @@ impl Cpu {
                         let seg = self.read(ea.seg, ea.off.wrapping_add(osz as u32), 2) as u16;
                         self.s[CS] = seg;
                         self.ip = off;
+                        self.entered();
                     }
                     6 => {
                         let v = self.rd_ea(&ea, osz);

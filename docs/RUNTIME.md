@@ -5,8 +5,8 @@ what it implements, and what was observed when the original ran on it. The evide
 observation on this runtime: boot logs from `crates/dos/examples/boot.rs`, frames captured to
 `game-data/derived/captures/`, and the native app's window. These were compared by eye with the
 original running in DOSBox Staging 0.83.0 (`tools/dosbox/frontier.conf`, sound option 2 fed
-through stdin). No frame was compared pixel by pixel yet, and nothing was run past the
-start-position menu.
+through stdin). No frame was compared pixel by pixel yet. Scripted runs go on past the menu to the
+cockpit, the station screens, saving and loading, and a hyperspace jump ([COVERAGE.md](COVERAGE.md)).
 
 ## Why a runtime
 
@@ -109,6 +109,13 @@ every byte the original writes, for parity tests and shadow verification. `crate
 every proven port (`install_all`); the app does this by default (`--original` natively, `?original`
 in the browser, to run original code only). Status: [MATH3.md](MATH3.md) for the maths overlay,
 [AUDIO.md](AUDIO.md) §6 for the sound driver.
+
+## Code coverage
+
+`Machine::coverage_start()` records every instruction the original executes, per program image
+and in each file's own offsets, even when an overlay is reloaded at another segment.
+`crates/dos/examples/coverage.rs` drives a scripted session and writes the logs that GameFrame's
+`coverdiff` compares. Method and results: [COVERAGE.md](COVERAGE.md).
 
 ## Mouse capture
 

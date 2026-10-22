@@ -1,0 +1,14 @@
+# Hand labels for EL2M00.OVL (Ghidra segment 1000, as in analysis/export/EL2M00.OVL), kept apart
+# from names.tsv because every overlay is numbered from 1000:0000. address	label	evidence
+1000:468a	hyperspace_468a	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1000:47d8	hyperspace_47d8	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1000:4990	hyperspace_4990	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1000:4abb	hyperspace_4abb	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1000:4b69	hyperspace_4b69	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1000:4bda	hyperspace_4bda	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1000:4c32	hyperspace_4c32	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1000:4d10	hyperspace_4d10	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1000:4db8	hyperspace_4db8	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1000:4df5	hyperspace_4df5	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1000:4e29	hyperspace_4e29	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1000:4e3f	hyperspace_4e3f	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced

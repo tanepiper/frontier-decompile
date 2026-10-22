@@ -1,0 +1,43 @@
+# Coverage runs (docs/COVERAGE.md). One run per line, tab-separated:
+# name, baseline run (- for none), virtual seconds, events for crates/dos/examples/coverage.rs,
+# what the action is (- for no events). $P, $SEL, $LAUNCH, $CLIMB and $TARGET are expanded by run.sh.
+# A run and its baseline have the same length and the same events up to the action.
+boot	-	1	-	Start-up to the first second: set-up overlay, drivers, module loads
+intro	boot	20	-	The intro sequence up to the start-position menu
+menu	-	34	20:39 20:cover	Start-position menu, idle
+start_game	menu	34	20:39 20:cover 24:02	Choose 1 (Ross 154): commander set-up, system generation, the cockpit landed at Merlin
+idle	-	41	$P 33:cover	Cockpit, landed at Sirocco starport on Merlin, idle
+f1_view	idle	41	$P 33:cover 33:3b	F1 view icon: rear view
+f2_galaxy	idle	41	$P 33:cover 33:3c	F2 galactic map
+f2_select	f2_galaxy	41	$P 33:cover 33:3c $SEL	Galactic map: scroll with the arrow keys until Barnard's Star is the target
+f2_f5	f2_galaxy	41	$P 33:cover 33:3c 35:3f	Galactic map, then F5
+f2_f6	f2_galaxy	41	$P 33:cover 33:3c 35:40	Galactic map, then F6: system data (orrery of the current system)
+f2_f7	f2_galaxy	41	$P 33:cover 33:3c 35:41	Galactic map, then F7
+f2_f8	f2_galaxy	41	$P 33:cover 33:3c 35:42	Galactic map, then F8
+f2_f9	f2_galaxy	41	$P 33:cover 33:3c 35:43	Galactic map, then F9
+f2_f10	f2_galaxy	41	$P 33:cover 33:3c 35:44	Galactic map, then F10: the whole galaxy
+f3_equipment	idle	41	$P 33:cover 33:3d	F3 inventory: ship equipment status
+f3_profile	f3_equipment	41	$P 33:cover 33:3d 35:3d	F3 twice: commander profile
+f3_cargo	f3_profile	41	$P 33:cover 33:3d 35:3d 37:3d	F3 three times: cargo inventory
+f4_comms	idle	41	$P 33:cover 33:3e	F4 communications: station services
+f4_launch_request	f4_comms	41	$P 33:cover 33:3e 35:@129,18	Station services: launch request (clearance granted)
+f4_shipyard	f4_comms	41	$P 33:cover 33:3e 35:@129,55	Station services: shipyard
+f4_bbs	f4_comms	41	$P 33:cover 33:3e 35:@129,90	Station services: bulletin board
+f4_market	f4_comms	41	$P 33:cover 33:3e 35:@129,126	Station services: stockmarket
+f5	idle	41	$P 33:cover 33:3f	Cockpit F5: weapons panel ("Armed: None")
+f6	idle	41	$P 33:cover 33:40	Cockpit F6
+f7_takeoff	idle	41	$P 33:cover 33:41	Cockpit F7 without clearance: take-off, fined by the station
+f8	idle	41	$P 33:cover 33:42	Cockpit F8 while landed
+f9	idle	41	$P 33:cover 33:43	Cockpit F9
+f10	idle	41	$P 33:cover 33:44	Cockpit F10
+esc_pause	idle	41	$P 33:cover 33:01	Esc: time stopped
+preferences	esc_pause	41	$P 33:cover 33:01 34:01	Esc twice: the preferences screen (EL2M10)
+save_screen	-	44	$P 33:cover 33:01 34:01 35:42	Preferences, F8: the save-commander screen
+save	save_screen	44	$P 33:cover 33:01 34:01 35:42 36:1c	Save screen, Enter: writes COMMANDR\JAMESON._01
+load_list	save	44	$P 33:cover 33:01 34:01 35:42 36:1c 38:41	After saving, F7: the load-commander list
+load	load_list	44	$P 33:cover 33:01 34:01 35:42 36:1c 38:41 39:@30,66	Load list: click JAMESON._01
+fly_idle	-	80	$P 33:cover	Cockpit landed, idle for 47 s (baseline for the flight runs)
+fly_launch	fly_idle	80	$P 33:cover $LAUNCH	Launch request, then F7: vertical take-off with clearance
+fly_climb	fly_launch	80	$P 33:cover $LAUNCH $CLIMB	After take-off: pitch up (right button and mouse back) and thrust (Enter) out of the atmosphere
+fly_target	fly_climb	80	$P 33:cover $LAUNCH $CLIMB $TARGET	While climbing: galactic map, select Barnard's Star, back to the front view
+hyperspace	fly_target	80	$P 33:cover $LAUNCH $CLIMB $TARGET 70:42	F8 hyperspace to Barnard's Star

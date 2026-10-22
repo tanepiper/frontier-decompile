@@ -59,7 +59,7 @@ against the original running beside it.
 | `docs/CHECKLIST.md` | What is traced, ported and verified, and what is next |
 | `docs/DEVIATIONS.md`, `docs/DEVIATIONS-LEDGER.md` | The policy for differences, and the generated ledger of every marked place |
 | `labels/` | Names of original functions, one file per binary because every overlay is numbered from `1000:0000`: `labels/FRONTIER.tsv`, `labels/EL2MATH3.tsv` and so on, generated from the port's citations by `tools/triage/cite_labels.py`; `labels/names.tsv` and `labels/fields.tsv` by hand |
-| `tools/extract-assets.sh`, `tools/dosbox/`, `tools/ghidra/` | This project's own scripts: copy the game, run the original in DOSBox, export from Ghidra |
+| `tools/extract-assets.sh`, `tools/dosbox/`, `tools/ghidra/`, `tools/coverage/` | This project's own scripts: copy the game, run the original in DOSBox, export from Ghidra, record and compare code coverage ([COVERAGE.md](docs/COVERAGE.md)) |
 | `./gameframe` | Runs GameFrame's toolkit here: `run NAME ARGS`, `python FILE`, `doctor`, and help (`./gameframe help`). GameFrame itself comes from its plugin |
 | GameFrame's guides | The reference documents the skills name (`docs/DOS.md` first, for 16-bit DOS programs), in GameFrame's `docs/` and on https://tanepiper.github.io/game-frame/ |
 | `docs/games/`, `docs/observe/`, `docs/working/` and the other guides | GameFrame's guides: the family of games (vehicle and space simulations), observing the original, working on a project |

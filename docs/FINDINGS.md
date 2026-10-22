@@ -67,7 +67,11 @@ so `lcall [vec]` decompiles as a direct call. Coverage went from 29 to 342 funct
 M1 status:
 1. ~~Trace the overlay loader and the overlay entry tables~~: done, [OVERLAYS.md](OVERLAYS.md).
 2. ~~Seed functions from call targets, jump tables and the overlay entry tables~~: done.
-3. Resolve the remaining indirect calls (computed module slots, register calls) and record function
+3. ~~Find the code that runs but is in no function~~: done by recording coverage on the runtime
+   ([COVERAGE.md](COVERAGE.md)). `FRONTIER.EXE` executes only between `1000:008f` and `2614:000d`,
+   about 90 KB. The rest of the 332 KB image is the main data segment from `2615:0000`
+   (*inferred*). Seeding from 39 runs took it to 409 functions and 86 KB, about 95 % of the code.
+4. Resolve the remaining indirect calls (computed module slots, register calls) and record function
    roles in a names table as they are identified.
 
 ## 4. Observed in the original (DOSBox)
@@ -99,6 +103,12 @@ interpreter with the DOS/BIOS/EMS/mouse services the program uses ([RUNTIME.md](
 - Choosing 1 lands the player at **Merlin, Ross 154, 12:00:01 1-Jan-3200**, cockpit view, with the
   clock running. This is the screen the first DOSBox session reached, so that session had most
   likely been sent through the prompt and menu by stray input.
+- Scripted past the cockpit ([COVERAGE.md](COVERAGE.md)): every F1–F4 screen, the station's
+  launch request, shipyard, bulletin board and stockmarket, the preferences screen (Esc twice),
+  saving `COMMANDR\JAMESON._01` and loading it back, launch with clearance, climbing out of
+  the atmosphere, and a hyperspace jump to Barnard's Star (5.42 light years, 1 t of fuel).
+- The game reads keys by polling, so a key must be held across a frame. It moves its pointer by
+  the mouse driver's motion counters at half a pixel per mickey.
 - The program never leaves real mode (no `mov cr0`/`lgdt` anywhere) and uses the PIT, the
   keyboard port and `int 33h` directly ([RUNTIME.md](RUNTIME.md)).
 

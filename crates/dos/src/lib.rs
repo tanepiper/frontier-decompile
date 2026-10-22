@@ -12,6 +12,7 @@
 //! No game code or data is included: everything is read from the user's files at run time.
 
 pub mod audio;
+pub mod coverage;
 pub mod cpu;
 pub mod devices;
 pub mod machine;

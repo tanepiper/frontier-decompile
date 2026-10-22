@@ -2,3 +2,24 @@
 1000:069b	random	docs/RNG.md (slot DS:0124)
 1000:0645	random32	docs/RNG.md (slot DS:012c)
 1000:066a	mix	docs/RNG.md (slot DS:0128)
+1000:0865	hyperspace_0865	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1ee8:0815	hyperspace_0815	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1ee8:2148	hyperspace_2148	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1ee8:2d25	hyperspace_2d25	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1ee8:4ede	hyperspace_4ede	ran only in the coverage run `hyperspace` (docs/COVERAGE.md); role inferred, not traced
+1000:2f67	start_game_2f67	ran only in the coverage run `start_game` (docs/COVERAGE.md); role inferred, not traced
+1000:c99b	start_game_c99b	ran only in the coverage run `start_game` (docs/COVERAGE.md); role inferred, not traced
+1000:cc3f	start_game_cc3f	ran only in the coverage run `start_game` (docs/COVERAGE.md); role inferred, not traced
+1ee8:0007	start_game_0007	ran only in the coverage run `start_game` (docs/COVERAGE.md); role inferred, not traced
+1ee8:4219	start_game_4219	ran only in the coverage run `start_game` (docs/COVERAGE.md); role inferred, not traced
+1000:29b3	intro_29b3	ran only in the coverage run `intro` (docs/COVERAGE.md); role inferred, not traced
+1000:2a3c	intro_2a3c	ran only in the coverage run `intro` (docs/COVERAGE.md); role inferred, not traced
+1000:6dfa	intro_6dfa	ran only in the coverage run `intro` (docs/COVERAGE.md); role inferred, not traced
+1000:b893	intro_b893	ran only in the coverage run `intro` (docs/COVERAGE.md); role inferred, not traced
+1000:2422	load_commander_2422	ran only in the coverage run `load` (docs/COVERAGE.md); role inferred, not traced
+1000:64d3	launch_request_64d3	ran only in the coverage run `f4_launch_request` (docs/COVERAGE.md); role inferred, not traced
+1000:b286	launch_request_b286	ran only in the coverage run `f4_launch_request` (docs/COVERAGE.md); role inferred, not traced
+1000:eb26	stockmarket_eb26	ran only in the coverage run `f4_market` (docs/COVERAGE.md); role inferred, not traced
+1000:eb90	bulletin_board_eb90	ran only in the coverage run `f4_bbs` (docs/COVERAGE.md); role inferred, not traced
+1000:ebc4	equipment_screen_ebc4	ran only in the coverage run `f3_equipment` (docs/COVERAGE.md); role inferred, not traced
+1000:ec48	commander_profile_ec48	ran only in the coverage run `f3_profile` (docs/COVERAGE.md); role inferred, not traced

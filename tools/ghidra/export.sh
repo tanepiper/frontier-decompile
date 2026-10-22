@@ -4,12 +4,14 @@
 # Requires tools/extract-assets.sh to have been run first.
 #
 #   GHIDRA_INSTALL_DIR=/opt/homebrew/opt/ghidra/libexec tools/ghidra/export.sh
+#   GAME_DATA=/path/to/game-data ANALYSIS=/path/to/analysis tools/ghidra/export.sh
 set -euo pipefail
 
 repo="$(cd "$(dirname "$0")/../.." && pwd)"
 ghidra="${GHIDRA_INSTALL_DIR:-/opt/homebrew/opt/ghidra/libexec}"
-bins="$repo/game-data/original"
-out="$repo/analysis"
+# A worktree without its own game-data/ and analysis/ can point at the main checkout's.
+bins="${GAME_DATA:-$repo/game-data}/original"
+out="${ANALYSIS:-$repo/analysis}"
 
 if [[ ! -x "$ghidra/support/analyzeHeadless" ]]; then
   echo "Ghidra not found at $ghidra; set GHIDRA_INSTALL_DIR." >&2; exit 1
@@ -27,4 +29,4 @@ MAXMEM="${MAXMEM:-4G}" "$ghidra/support/analyzeHeadless" "$out/ghidra-project" f
   -overwrite -max-cpu "${GHIDRA_CPUS:-6}" \
   -import "$bins/FRONTIER.EXE" "$bins"/EL2*.OVL \
   -scriptPath "$repo/tools/ghidra" -postScript SeedFunctions.java -postScript ExportAll.java "$out/export" \
-  2>&1 | tee "$out/headless.log" | grep -E --line-buffered "SEED DONE|call overrides|EXPORT DONE|ERROR.*Exception"
+  2>&1 | tee "$out/headless.log" | grep -E --line-buffered "SEED DONE|COVERAGE|call overrides|EXPORT DONE|ERROR.*Exception"

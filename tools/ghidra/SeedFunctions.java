@@ -7,6 +7,9 @@
 //   routine, read from the overlay files next to the imported EXE.
 // EL2*.OVL: the TSR stub at 0000, the export block at 005e defined as data (Ghidra otherwise runs the
 //   stub on into it), and every exported far pointer seeded as a function.
+// Coverage (docs/COVERAGE.md), when game-data/derived/coverage/seeds/<NAME>.cov and .entries exist
+//   (tools/coverage/report.py): every instruction the original executed on the runtime is
+//   disassembled, and every address it entered by a call, far jump or interrupt becomes a function.
 //
 // Usage: -postScript SeedFunctions.java   (before ExportAll.java)
 import ghidra.app.script.GhidraScript;
@@ -59,6 +62,7 @@ public class SeedFunctions extends GhidraScript {
     String name = currentProgram.getName();
     if (name.equalsIgnoreCase("FRONTIER.EXE")) seedMain(dir);
     else seedOverlay(dir, name);
+    seedCoverage(dir, name);
     analyzeChanges(currentProgram);
     for (int pass = 0; pass < 8; pass++) {
       int n = fm.getFunctionCount();
@@ -103,6 +107,49 @@ public class SeedFunctions extends GhidraScript {
     clearListing(a, a.add(1));
     createWord(a);
     if (label != null) createLabel(a, label, true, SourceType.ANALYSIS);
+  }
+
+  /** Ghidra address of a flat address (segment * 16 + offset), in the block that holds it. */
+  Address flatAddr(int flat) {
+    for (MemoryBlock b : currentProgram.getMemory().getBlocks()) {
+      if (!(b.getStart() instanceof SegmentedAddress)) continue;
+      SegmentedAddress s = (SegmentedAddress) b.getStart();
+      int start = s.getSegment() * 16 + s.getSegmentOffset();
+      if (flat >= start && flat < start + b.getSize()) return sp.getAddress(s.getSegment(), flat - s.getSegment() * 16);
+    }
+    return null;
+  }
+
+  static List<Integer> readHex(File f) throws IOException {
+    List<Integer> out = new ArrayList<>();
+    if (!f.exists()) return out;
+    for (String l : Files.readAllLines(f.toPath())) if (!l.isBlank()) out.add(Integer.parseInt(l.trim(), 16));
+    return out;
+  }
+
+  /** Executed code from the runtime's coverage logs: disassemble it, and make functions at entries. */
+  void seedCoverage(File dir, String name) throws Exception {
+    File seeds = new File(dir.getParentFile(), "derived/coverage/seeds");
+    List<Integer> ran = readHex(new File(seeds, name + ".cov"));
+    List<Integer> entries = readHex(new File(seeds, name + ".entries"));
+    if (ran.isEmpty() && entries.isEmpty()) return;
+    int dis = 0, before = seeded;
+    for (int flat : ran) {
+      if (monitor.isCancelled()) return;
+      Address a = flatAddr(flat);
+      if (a == null || listing.getInstructionAt(a) != null) continue;
+      // Executed on the runtime, so code: clear whatever analysis or seeding put there.
+      Data d = listing.getDefinedDataContaining(a);
+      if (d != null) clearListing(d.getMinAddress(), d.getMaxAddress());
+      if (listing.getInstructionContaining(a) != null) continue; // inside another instruction
+      if (disassemble(a)) dis++;
+    }
+    for (int flat : entries) {
+      Address a = flatAddr(flat);
+      if (a != null) fn(a, null);
+    }
+    println("COVERAGE " + name + ": " + ran.size() + " executed, " + dis + " disassembly starts, "
+        + entries.size() + " entries, " + (seeded - before) + " functions created");
   }
 
   /** Every call/jump destination that is code without a function gets one. */

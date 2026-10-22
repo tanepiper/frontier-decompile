@@ -11,6 +11,7 @@
 
 use std::collections::BTreeSet;
 
+use crate::coverage::CoverageMap;
 use crate::cpu::{Cpu, Event, CF, CS, DS, EAX, EBP, EBX, ECX, EDI, EDX, ES, ESI, ESP, SS, ZF};
 use crate::devices::Devices;
 use crate::mem::{lin, Memory, FRAME_SEGMENT};
@@ -162,6 +163,8 @@ pub struct Machine {
     /// Set when the setup overlay is loaded; its check routine is replaced (DEVIATIONS.md).
     pub skip_setup: bool,
     pub sound_selection: u8,
+    /// Coverage moved out of the CPU's bitmaps so far, per image ([`Machine::coverage_start`]).
+    coverage: CoverageMap,
 }
 
 impl Machine {
@@ -194,6 +197,7 @@ impl Machine {
             console: String::new(),
             skip_setup: true,
             sound_selection: 2,
+            coverage: CoverageMap::new(),
         };
         m.install_bios();
         for name in ["CON", "CON", "CON", "AUX", "PRN"] {
@@ -287,6 +291,7 @@ impl Machine {
             Some(i) => {
                 self.blocks.remove(i);
                 if self.images.iter().any(|im| im.psp == seg) {
+                    self.coverage_flush();
                     self.images.retain(|im| im.psp != seg);
                     self.arm_hooks();
                 }
@@ -297,6 +302,51 @@ impl Machine {
     }
 
     // ---- images, hooks and host calls ------------------------------------------------------
+
+    // ---- code coverage (docs/COVERAGE.md) ---------------------------------------------------
+
+    /// Start recording which instructions run (clears anything recorded before).
+    pub fn coverage_start(&mut self) {
+        self.cpu.cover = Some(Box::default());
+        self.coverage.clear();
+    }
+
+    /// Stop recording and return what ran, per image, in each file's own offsets.
+    pub fn coverage_take(&mut self) -> CoverageMap {
+        self.coverage_flush();
+        self.cpu.cover = None;
+        std::mem::take(&mut self.coverage)
+    }
+
+    /// Move the CPU's bitmaps into the per-image sets while the resident images are still where
+    /// the code ran: before an image is loaded over, freed or reloaded elsewhere.
+    fn coverage_flush(&mut self) {
+        let Some(rec) = self.cpu.cover.as_deref_mut() else { return };
+        // Each image spans its load segment to the end of its PSP's memory block.
+        let spans: Vec<(u32, u32, &str)> = self
+            .images
+            .iter()
+            .map(|im| {
+                let paras = self.blocks.iter().find(|b| b.seg == im.psp).map_or(0x1000, |b| b.paras);
+                (lin(im.seg, 0), lin(im.psp, 0) + paras as u32 * 16, im.name.as_str())
+            })
+            .collect();
+        let map = &mut self.coverage;
+        rec.drain(|l, entry| {
+            let (name, off) = match spans.iter().find(|s| l >= s.0 && l < s.1) {
+                Some(s) => (s.2, l - s.0),
+                None => ("linear", l),
+            };
+            let c = match map.get_mut(name) {
+                Some(c) => c,
+                None => map.entry(name.to_string()).or_default(),
+            };
+            c.exec.insert(off);
+            if entry {
+                c.entries.insert(off);
+            }
+        });
+    }
 
     /// Resident program images (main program first).
     pub fn images(&self) -> &[Image] {
@@ -1224,6 +1274,7 @@ impl Machine {
             Ok((psp, cs, ip, ss, sp)) => {
                 self.log.push(format!("exec {key} at PSP {psp:04x}"));
                 let name = key.rsplit('\\').next().unwrap_or(&key).to_string();
+                self.coverage_flush();
                 self.images.retain(|im| im.psp != psp);
                 self.images.push(Image { name, psp, seg: psp + 0x10 });
                 self.arm_hooks();
