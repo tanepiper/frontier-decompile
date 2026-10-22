@@ -55,6 +55,14 @@ Other shapes, not ported yet:
   ([NAMES.md](NAMES.md)).
 - `EL2M12:4c26` forwards to module 18's handler.
 
+## The dispatcher's port
+
+`frontier_game::text::dispatch_port` covers the main table, `[DS:5703]` and module strings (when
+the module is resident and its handler is ported), and the `3016h` formatter. Other formatters
+decline. The main code segment is taken as `DS − 1615h` (docs/OVERLAYS.md §2). Nesting deeper
+than 16 strings declines, so a garbage table (`[DS:5703]` before the game sets it) cannot recurse
+without end on the host.
+
 ## How parity was proven
 
 `crates/hooks/tests/text_parity.rs` loads every module through its own thunk and asks each ported
@@ -75,9 +83,10 @@ declined (the original runs it).
 | `EL2M17` | 449 | 63 | 0 |
 | `EL2M18` | 374 | 138 | 0 |
 
-## Open questions
+The dispatcher (`dispatcher_matches_original`), with all ten modules loaded, was asked for main
+ids 0–2FDh, `3016h`, `[DS:5703]` ids `4000h`–`41FBh` and 64 strings of every module: **852
+compared, 0 mismatches**, and 155 declined (formatters that are not ported).
 
-- The dispatcher itself (`1000:e89d`) and its other sources: the main table, `[DS:5703]` and
-  module recursion. These would remove most of the declines.
+## Open questions
 - The formatters `3000h`–`3FFFh` (the jump table at `1000:8915 + 6000h`): numbers, credits, dates.
 - The control codes `1Eh` and `1Fh`: the renderer interprets them (colour, position, *inferred*).

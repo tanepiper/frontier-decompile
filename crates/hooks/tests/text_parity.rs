@@ -90,3 +90,53 @@ fn module_text_matches_original() {
     }
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
+
+/// The dispatcher `1000:e89d` across its id ranges: the main table, the `3016h` formatter, the
+/// `[DS:5703]` table and module strings (every module loaded first), against the original.
+#[test]
+fn dispatcher_matches_original() {
+    let Some(mut m) = machine() else { return };
+    let main = m.images().iter().find(|i| i.name == "FRONTIER.EXE").unwrap().seg;
+    let ds = main + 0x1615;
+    for slot in [0u16, 3, 5, 7, 10, 11, 14, 15, 17, 18] {
+        load(&mut m, ds, slot);
+    }
+    let port = frontier_game::text::MAIN_TEXT[0].3;
+    let mut ids: Vec<u16> = (0..0x300).step_by(3).collect();
+    ids.extend([0x3016; 8]);
+    ids.extend((0x4000..0x4200).step_by(5));
+    for slot in [0u16, 3, 5, 7, 10, 11, 14, 15, 17, 18] {
+        ids.extend((0..0x40).map(|k| 0x8000 | slot << 9 | k));
+    }
+    let (mut compared, mut declined, mut failures) = (0, 0, Vec::new());
+    for id in ids {
+        m.cpu.r[0] = id as u32;
+        m.cpu.r[7] = 0x8000;
+        m.cpu.r[ESP] = 0xFFF0;
+        m.cpu.s[SS] = 0xA000;
+        m.cpu.s[DS] = ds;
+        m.cpu.s[ES] = 0xB000;
+        m.cpu.mem.write_bytes(lin(0xA000, 0x0100), b"Merlin\0");
+        m.cpu.mem.ww(lin(ds, 0x07e4), 0x0100);
+        m.cpu.mem.ww(lin(ds, 0x07e6), 0xA000);
+        m.enter(main, 0xe89d);
+        let out = run_port(&m.cpu, port);
+        if out.steps == DECLINE {
+            declined += 1;
+            continue;
+        }
+        compared += 1;
+        let diff = match frontier_hooks::record_original(&mut m.cpu, 1_000_000) {
+            Some(orig) => compare(&out, &orig, &m.cpu.mem),
+            None => Some("the original did not return".into()),
+        };
+        if let Some(d) = diff {
+            if failures.len() < 4 {
+                failures.push(format!("id {id:04x}: {d}"));
+            }
+        }
+    }
+    eprintln!("dispatch: {compared} compared, {declined} declined, {} mismatches", failures.len());
+    assert!(compared > 300, "too few compared");
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}
