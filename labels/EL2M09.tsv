@@ -1,0 +1,7 @@
+# Labels made from the port's citations by tools/triage/cite_labels.py: address, the item that cites
+# it, and where it is cited. Do not edit: label by hand in names.tsv, which wins over this file.
+1000:0f92	name_port	crates/game/src/names.rs
+1000:0fc0	St::generate	crates/game/src/names.rs
+1000:1032	St::last_word_1032	crates/game/src/names.rs
+1000:11a7	St::char_at_bp	crates/game/src/names.rs
+1000:11c3	St::copy_word	crates/game/src/names.rs

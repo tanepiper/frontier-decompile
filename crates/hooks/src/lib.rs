@@ -378,6 +378,7 @@ pub fn install_all(m: &mut Machine) {
     install_math3(m);
     install_ports(m, "FRONTIER.EXE", frontier_game::rng::PORTS);
     install_ports(m, "EL2M02.OVL", frontier_game::galaxy::PORTS_M02);
+    install_ports(m, "EL2M09.OVL", frontier_game::names::PORTS_M09);
     adlib::install(m);
     video::install(m);
 }

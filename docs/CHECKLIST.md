@@ -22,6 +22,7 @@ original on the runtime). Keep it short. Details belong in the topic documents.
 - [ ] `EL2MCGA3`: the span filler, flat triangles, quadrilaterals and lines ported; the rest of the renderer
 - [x] The random number generators: `random(n)` `1000:069b`, `random32` `1000:0645`, `mix` `1000:066a`, ported and verified ([RNG.md](RNG.md))
 - [x] Galaxy: the density map (`EL2M19`), sector density `EL2M02:3b34`, sector seed `EL2M02:3abe` and sector star list `EL2M02:3c2f`, ported and verified ([GALAXY.md](GALAXY.md))
+- [x] Names: the `EL2M09` name generator `EL2M09:0f92` and the text expander `1000:e969`, ported and verified except nested strings ([NAMES.md](NAMES.md))
 - [ ] Star systems: from a star in the list to its system, type, name and planets ([GALAXY.md](GALAXY.md); leads: the routines only a hyperspace jump runs, in `EL2M00` and `FRONTIER.EXE`, [COVERAGE.md](COVERAGE.md))
 - [x] `EL2G.GRF` (`1000:e2ba`, `EL2MCGA3:02d3`) and the `PICnnn.GRF` screenshots (`1000:db9f`) decoded, every byte of the shipped files ([FORMATS.md](FORMATS.md))
 - [x] The `.ROL` songs read as Standard MIDI Files ([FORMATS.md](FORMATS.md) §3)

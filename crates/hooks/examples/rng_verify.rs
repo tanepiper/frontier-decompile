@@ -20,6 +20,7 @@ fn main() {
     m.boot("FRONTIER.EXE").unwrap();
     let stats = frontier_hooks::verify_ports(&mut m, "FRONTIER.EXE", frontier_game::rng::PORTS);
     let galaxy = frontier_hooks::verify_ports(&mut m, "EL2M02.OVL", frontier_game::galaxy::PORTS_M02);
+    let names = frontier_hooks::verify_ports(&mut m, "EL2M09.OVL", frontier_game::names::PORTS_M09);
     let mut keys: Vec<(f64, u8)> = args.iter().skip(2).filter_map(|k| {
         let (t, sc) = k.split_once(':')?;
         Some((t.parse().ok()?, u8::from_str_radix(sc, 16).ok()?))
@@ -52,6 +53,11 @@ fn main() {
             m.mouse_button(1, false);
             stage = 2;
         }
+    }
+    let nm = names.borrow();
+    println!("names: {} calls verified, {} mismatches, {} declined, unported {:?}", nm.calls, nm.mismatches, nm.declined, nm.unported);
+    for e in &nm.examples {
+        println!("  {e:x?}");
     }
     let g = galaxy.borrow();
     println!("galaxy: {} calls verified, {} mismatches, {} declined, unported {:?}", g.calls, g.mismatches, g.declined, g.unported);

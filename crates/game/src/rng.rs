@@ -94,6 +94,20 @@ pub fn mix_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
     23
 }
 
+/// The register effect of `mix` (`1000:066a`) as a pure function:
+/// (`AX`, `BX`, `CX`, `SI`, `DI`) in, (`AX`, `BX`, `CX`, `DX`, `SI`, `DI`) out.
+pub fn mix(ax: u16, bx: u16, cx: u16, si: u16, di: u16) -> (u16, u16, u16, u16, u16, u16) {
+    let a = ((cx as u32) << 16 | bx as u32).wrapping_add((si as u32) << 16 | di as u32);
+    let b = ((si as u32) << 16 | di as u32).rotate_left(5);
+    let a = a.wrapping_add(b);
+    let (new_cx, new_bx) = (a as u16, (a >> 16) as u16);
+    let p = ax as u32 * new_bx as u32;
+    ((p >> 16) as u16, new_bx, new_cx, p as u16, (b >> 16) as u16, b as u16)
+}
+
+/// Instructions `mix` executes, from its first through its `RETF`.
+pub const MIX_STEPS: u64 = 23;
+
 /// Every ported routine of the main program's generators: (`FRONTIER.EXE` offset in segment
 /// `1000`, vector slot, name, port).
 pub const PORTS: &[(u16, u16, &str, Port)] = &[

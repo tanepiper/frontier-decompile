@@ -8,6 +8,7 @@ use frontier_dos::cpu::{CS, DS, ECX, ES, ESI, ESP, SS};
 use frontier_dos::mem::lin;
 use frontier_dos::{Machine, Vfs};
 use frontier_game::galaxy::PORTS_M02;
+use frontier_game::names::PORTS_M09;
 use frontier_game::math3::DECLINE;
 use frontier_hooks::{compare, record_original_until, regs_from, run_port};
 
@@ -30,7 +31,7 @@ fn booted() -> Option<Machine> {
     // Load modules 2 (EL2M02) and 19 (EL2M19) the way the game does: call handler +04 through
     // the module table, which reaches the lazy-load thunk while the module is not resident
     // (docs/OVERLAYS.md §4). AL = 0 makes EL2M02's handler +04 do nothing.
-    for slot in [19u16, 2] {
+    for slot in [19u16, 2, 9] {
         let si = slot * 8;
         let hdr_off = m.cpu.mem.rw(lin(ds, 0x0396 + si as u32));
         let hdr_seg = m.cpu.mem.rw(lin(ds, 0x0398 + si as u32));
@@ -65,7 +66,10 @@ fn galaxy_ports_match_original() {
     let ds = m.images().iter().find(|i| i.name == "FRONTIER.EXE").unwrap().seg + 0x1615;
     let mut x = X(0x5DEE_CE66_D1CE_4E5B);
     let mut failures = Vec::new();
-    for &(off, _slot, name, port) in PORTS_M02 {
+    let m09 = m.image_segment("EL2M09.OVL").expect("EL2M09 resident");
+    let tables: Vec<(u16, &[(u16, u16, &str, frontier_game::math3::Port)])> = vec![(m02, PORTS_M02), (m09, PORTS_M09)];
+    for &(seg, ports) in &tables {
+    for &(off, _slot, name, port) in ports {
         let (mut mismatches, mut declined, mut compared, mut nonzero) = (0, 0, 0, 0);
         let cases = if name == "sector_stars" { 5_000 } else { 20_000 };
         for i in 0..cases {
@@ -101,7 +105,15 @@ fn galaxy_ports_match_original() {
             m.cpu.s[ES] = 0xB000;
             m.cpu.s[SS] = 0xA000;
             m.cpu.push16(0x1234); // near return offset, never executed
-            m.cpu.s[CS] = m02;
+            if name == "name" {
+                // Kind in AX (mostly the generator's 0–17), seed in CX:BX, output at SS:9000h.
+                m.cpu.r[0] = (m.cpu.r[0] & 0xFFFF_0000) | if i % 8 == 0 { x.next() & 0x1F } else { x.next() % 18 };
+                m.cpu.r[7] = (m.cpu.r[7] & 0xFFFF_0000) | 0x9000;
+                m.cpu.pop16();
+                m.cpu.push16(m.cpu.s[CS]);
+                m.cpu.push16(0x1234);
+            }
+            m.cpu.s[CS] = seg;
             m.cpu.ip = off as u32;
             let input = regs_from(&m.cpu);
             let out = run_port(&m.cpu, port);
@@ -119,7 +131,7 @@ fn galaxy_ports_match_original() {
             };
             if let Some(d) = diff {
                 if mismatches == 0 {
-                    failures.push(format!("{name} (EL2M02:{off:04x}): input {input:x?}\n  {d}"));
+                    failures.push(format!("{name} ({off:04x}): input {input:x?}\n  {d}"));
                 }
                 mismatches += 1;
             }
@@ -130,6 +142,7 @@ fn galaxy_ports_match_original() {
         if mismatches > 0 {
             failures.push(format!("  {name}: {mismatches}/{cases} mismatches"));
         }
+    }
     }
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
