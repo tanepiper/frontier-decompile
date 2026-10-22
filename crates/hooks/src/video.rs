@@ -176,10 +176,11 @@ pub struct Original {
     pub accesses: Vec<Access>,
 }
 
-/// Run the original routine the CPU is at until the `RETF` that leaves it, on the real devices,
-/// recording memory writes and port accesses. `None` if it faulted, called a host service or
-/// ran past `budget`; memory is then restored.
-pub fn record_original(cpu: &mut Cpu, dev: &mut Devices, budget: u64) -> Option<Original> {
+/// Run the original routine the CPU is at until it reaches `until` (`CS`, `IP`, `SP`: where the
+/// port stopped, at its `RETF` or at a call out of the driver) or the `RETF` that leaves it,
+/// on the real devices, recording memory writes and port accesses. `None` if it faulted,
+/// called a host service or ran past `budget`; memory is then restored.
+pub fn record_original(cpu: &mut Cpu, dev: &mut Devices, budget: u64, until: (u16, u16, u16)) -> Option<Original> {
     let start = cpu.icount;
     cpu.mem.write_log = Some(Vec::new());
     cpu.skip_breakpoint = true;
@@ -207,7 +208,7 @@ pub fn record_original(cpu: &mut Cpu, dev: &mut Devices, budget: u64) -> Option<
             break false;
         }
         depth += d;
-        if depth < 0 {
+        if (cpu.s[CS], cpu.ip as u16, cpu.r[frontier_dos::cpu::ESP] as u16) == until || depth < 0 {
             break true;
         }
     };
@@ -332,7 +333,8 @@ pub fn verify(m: &mut Machine) -> Rc<RefCell<VerifyStats>> {
                     stats.borrow_mut().declined += 1;
                     return false;
                 }
-                let diff = match record_original(cpu, dev, 50_000_000) {
+                let until = (out.cpu.cs, out.cpu.ip, out.cpu.x(math3::ESP));
+                let diff = match record_original(cpu, dev, 50_000_000, until) {
                     Some(orig) => compare(&out, &shadow, &orig, &cpu.mem, &dev.vga),
                     None => Some("original faulted, called a host service or did not return".into()),
                 };

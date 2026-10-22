@@ -18,9 +18,11 @@
 mod raster;
 mod screen;
 mod shapes;
+mod sprite;
 pub use raster::*;
 pub use screen::*;
 pub use shapes::*;
+pub use sprite::*;
 
 pub use crate::math3::{lin, lin32, Bus, Cpu, DIVIDE_HANDLER_STEPS, DIVIDE_RESUME, EAX, EBP, EBX, ECX, EDI, EDX, ESI, ESP};
 
@@ -53,6 +55,25 @@ pub type Port = fn(&mut Ctx) -> Result<(), Decline>;
 pub const DF: u32 = 0x0400;
 /// Interrupt flag.
 pub const IF: u32 = 0x0200;
+/// Trap flag.
+pub const TF: u32 = 0x0100;
+/// The arithmetic flags.
+pub const CF: u32 = 0x0001;
+pub const PF: u32 = 0x0004;
+pub const AF: u32 = 0x0010;
+pub const ZF: u32 = 0x0040;
+pub const SF: u32 = 0x0080;
+pub const OF: u32 = 0x0800;
+
+/// Parity flag of the low byte of `r`: set when it has an even number of bits set.
+pub fn parity(r: u32) -> bool {
+    (r as u8).count_ones() % 2 == 0
+}
+
+/// The zero, sign and parity flags of a 16-bit result.
+pub fn szp16(r: u16) -> u32 {
+    (if r == 0 { ZF } else { 0 }) | (if r & 0x8000 != 0 { SF } else { 0 }) | (if parity(r as u32) { PF } else { 0 })
+}
 
 // ---- main data segment variables the driver uses (names inferred from use) -------------
 
@@ -155,6 +176,50 @@ impl Ctx<'_> {
         self.steps += 1;
     }
 
+    /// `PUSH r32`.
+    pub fn push32(&mut self, v: u32) {
+        self.push((v >> 16) as u16);
+        self.push(v as u16);
+    }
+
+    /// `POP r32`.
+    pub fn pop32(&mut self) -> u32 {
+        let lo = self.pop() as u32;
+        lo | (self.pop() as u32) << 16
+    }
+
+    /// A far call to `seg:off` returning to `ret` in this segment (`CALLF`, or `PUSH CS; CALL`
+    /// within it): +1 instruction. A port that ends here leaves the routine called to run as
+    /// itself; the code after the call is ported as its own entry at `ret`.
+    pub fn far_call(&mut self, seg: u16, off: u16, ret: u16) {
+        let cs = self.c.cs;
+        self.push(cs);
+        self.push(ret);
+        self.c.cs = seg;
+        self.c.ip = off;
+        self.steps += 1;
+    }
+
+    /// `CALLF [slot]` through the main vector table (`DS:slot`), returning to `ret`.
+    pub fn call_slot(&mut self, slot: u16, ret: u16) {
+        let (off, seg) = (self.ds_rw(slot), self.ds_rw(slot.wrapping_add(2)));
+        self.far_call(seg, off, ret);
+    }
+
+    /// `INT n` returning to `ret` with the flags `flags` pushed (the arithmetic flags as the
+    /// instructions before left them): +1 instruction. Ends a port; the service runs as itself.
+    pub fn int(&mut self, n: u8, ret: u16, flags: u32) {
+        let cs = self.c.cs;
+        self.push(flags as u16);
+        self.push(cs);
+        self.push(ret);
+        self.c.flags = flags & !(IF | TF);
+        let v = self.bus.read32(n as u32 * 4);
+        self.c.ip = v as u16;
+        self.c.cs = (v >> 16) as u16;
+        self.steps += 1;
+    }
+
     /// Decline if the direction flag is set: the string instructions would run backwards.
     pub fn forward(&self) -> Result<(), Decline> {
         if self.c.flags & DF != 0 {
@@ -165,8 +230,9 @@ impl Ctx<'_> {
     }
 }
 
-/// Every export of `EL2MCGA3`: (offset, vector slot, name, port). Exports not listed here run
-/// the original.
+/// Every export of `EL2MCGA3`: (offset, vector slot, name, port). Entries with slot 0 are the
+/// driver's own code after a call out of a port (`int 67h`, a far call): the routine called
+/// runs as itself and returns there. Exports not listed here run the original.
 pub const EXPORTS: &[(u16, u16, &str, Port)] = &[
     (0x1b62, 0x0264, "triangle", triangle),
     (0x1b3f, 0x0260, "triangle_clipped", triangle_clipped),
@@ -189,4 +255,11 @@ pub const EXPORTS: &[(u16, u16, &str, Port)] = &[
     (0x078f, 0x026c, "target_screen", target_screen),
     (0x3489, 0x01dc, "clear_view_7f", clear_view_7f),
     (0x349c, 0x01e0, "clear_view_0", clear_view_0),
+    (0x02d3, 0x0220, "blit", blit),
+    (0x02ce, 0x021c, "blit_pointer", blit_pointer),
+    (0x02dc, 0, "blit@02dc", blit_after_lookup),
+    (0x0173, 0, "cache", cache),
+    (0x01b4, 0, "cache@01b4", cache_after_save),
+    (0x01be, 0, "cache@01be", cache_after_map),
+    (0x0244, 0, "cache@0244", cache_after_restore),
 ];

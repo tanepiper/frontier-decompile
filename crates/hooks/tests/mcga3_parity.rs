@@ -302,7 +302,8 @@ fn mcga3_ports_match_original() {
             };
             ran += 1;
             let mut orig_writes = std::collections::BTreeMap::new();
-            let diff = match record_original(&mut m.cpu, &mut m.dev, 50_000_000) {
+            let until = (out.cpu.cs, out.cpu.ip, out.cpu.r[ESP] as u16);
+            let diff = match record_original(&mut m.cpu, &mut m.dev, 50_000_000, until) {
                 Some(orig) => {
                     let d = compare(&out, &shadow, &orig, &m.cpu.mem, &m.dev.vga);
                     orig_writes = orig.writes;
@@ -329,5 +330,109 @@ fn mcga3_ports_match_original() {
             failures.push(format!("  {name}: {mismatches}/{ran} mismatches"));
         }
     }
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}
+
+/// Compare the port of the entry the CPU is at with the original, which then carries on.
+fn compare_here(m: &mut Machine, shadow: &mut Shadow, name: &str) -> Result<(u16, u16, u16), String> {
+    let port = EXPORTS.iter().find(|e| e.2 == name).unwrap().3;
+    let entry = state(&m.cpu);
+    let out = run_port(&m.cpu, &m.dev.vga, m.dev.ips, shadow, port).map_err(|d| format!("{name}: declined {d:?}"))?;
+    let until = (out.cpu.cs, out.cpu.ip, out.cpu.r[ESP] as u16);
+    let rec = record_original(&mut m.cpu, &mut m.dev, 50_000_000, until);
+    match rec {
+        Some(orig) => match compare(&out, shadow, &orig, &m.cpu.mem, &m.dev.vga) {
+            None => Ok(until),
+            Some(d) => {
+                let h: Vec<u8> = (0..8).map(|i| m.cpu.mem.rb(lin(entry.es, entry.r[ESI] as u16 as u32 + i))).collect();
+                Err(format!("{name}: input {entry:x?} header {h:02x?}\n  {d}"))
+            }
+        },
+        None => Err(format!("{name}: the original did not reach the port's end {until:x?}")),
+    }
+}
+
+/// Run the machine (DOS and EMS services included) until `CS:IP` is `seg:off`.
+fn run_to(m: &mut Machine, seg: u16, off: u16) {
+    for _ in 0..1_000_000 {
+        if m.cpu.s[frontier_dos::cpu::CS] == seg && m.cpu.ip as u16 == off {
+            return;
+        }
+        m.run(1);
+    }
+    panic!("did not reach {seg:04x}:{off:04x}");
+}
+
+/// The bitmap path end to end: the blitter, the cache lookup, and on a miss the three pieces
+/// between the `int 67h` calls, each compared with the original, the EMS driver run in between.
+#[test]
+fn sprite_chain_matches_original() {
+    let Some(mut m) = booted() else { return };
+    let seg = m.image_segment("EL2MCGA3.OVL").unwrap();
+    let ds = m.images().iter().find(|i| i.name == "FRONTIER.EXE").unwrap().seg + 0x1615;
+    let cases: usize = std::env::var("MCGA3_CASES").ok().and_then(|n| n.parse().ok()).unwrap_or(1500);
+    let mut rng = Rng(0x2545_F491_4F6C_DD1D);
+    let mut shadow = Shadow::default();
+    // Bitmaps with a plausible directory entry (EMS page below 30h).
+    let ids: Vec<u16> = (0..0x400u16)
+        .filter(|&i| {
+            let page = m.cpu.mem.rw(lin(ds, 0x5813 + 4 * i as u32 + 2));
+            let off = m.cpu.mem.rw(lin(ds, 0x5813 + 4 * i as u32));
+            page < 0x30 && off < 0x4000
+        })
+        .collect();
+    assert!(ids.len() > 10, "no bitmap directory");
+    let (mut misses, mut failures) = (0, Vec::new());
+    for _ in 0..cases {
+        let id = ids[rng.below(ids.len() as u16) as usize];
+        // Skip cached entries that are not bitmaps (flags above 3): their sizes wrap the stack.
+        let cache = m.cpu.mem.rw(lin(ds, video::CACHE_SEGMENT as u32));
+        let slot = m.cpu.mem.rw(lin(cache, 0xf000 + 2 * id as u32));
+        if slot != 0xffff && m.cpu.mem.rb(lin(cache, slot as u32)) > 3 {
+            continue;
+        }
+        // A target descriptor in the stack segment, as the mouse pointer's at SS:0fd59h.
+        let d = 0xF000u16;
+        let target = if rng.below(2) == 0 { 0xA000 } else { m.cpu.mem.rw(lin(ds, video::BACK_BUFFER as u32)) };
+        let fields = [0, target, rng.below(40), rng.below(40), 240 + rng.below(80), 120 + rng.below(80), rng.below(8)];
+        for (i, v) in fields.into_iter().enumerate() {
+            m.cpu.mem.ww(lin(STACK, (d + 2 * i as u16) as u32), v);
+        }
+        for r in [EAX, ESI, EBP] {
+            m.cpu.r[r] = rng.dword();
+        }
+        let set = |m: &mut Machine, r: usize, v: u16| m.cpu.r[r] = (m.cpu.r[r] & 0xFFFF_0000) | v as u32;
+        set(&mut m, EBX, id);
+        set(&mut m, ECX, rng.coord(video::WIDTH));
+        set(&mut m, EDX, rng.coord(200));
+        set(&mut m, EDI, if rng.below(16) == 0 { 0 } else { d });
+        m.cpu.r[ESP] = 0xE000;
+        m.cpu.s[DS] = ds;
+        m.cpu.s[SS] = STACK;
+        m.cpu.flags &= !frontier_dos::cpu::DF;
+        m.enter(seg, 0x02d3);
+        let mut step = |m: &mut Machine, name: &str| compare_here(m, &mut shadow, name);
+        let r = (|| -> Result<(), String> {
+            let end = step(&mut m, "blit")?;
+            if (end.0, end.1) == (0xF000, 0x0f00) {
+                // Returned to the host: the bitmap was cached.
+                return Ok(());
+            }
+            misses += 1;
+            for (resume, name) in [(0x01b4, "cache@01b4"), (0x01be, "cache@01be"), (0x0244, "cache@0244")] {
+                run_to(&mut m, seg, resume);
+                step(&mut m, name)?;
+            }
+            run_to(&mut m, seg, 0x02dc);
+            step(&mut m, "blit@02dc")?;
+            Ok(())
+        })();
+        if let Err(e) = r {
+            if failures.len() < 4 {
+                failures.push(e);
+            }
+        }
+    }
+    eprintln!("sprite chain: {cases} blits, {misses} cache misses, {} failures", failures.len());
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
