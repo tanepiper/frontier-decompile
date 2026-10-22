@@ -34,6 +34,8 @@ pub struct Scene {
     pub points: Vec<[f32; 3]>,
     /// Sub-objects drawn, by model number.
     pub parts: Vec<u16>,
+    /// Ranges of `shapes` that lie on a surface (text): drawn after what is at their depth.
+    pub decals: Vec<std::ops::Range<usize>>,
 }
 
 /// How to draw.
@@ -48,18 +50,32 @@ pub struct Options {
     pub zoom: f32,
 }
 
-/// Flatten model `n` of `set`. Sub-objects (`0E`) are placed at their vertex and scaled by
+/// What the scene is built with: the model tables, the starting state (object variables,
+/// livery), the registration text and the text table.
+pub struct Context<'a> {
+    pub set: &'a ModelSet,
+    /// The second table of `FRONTIER.EXE` (fonts for `0A` text).
+    pub fonts: Option<&'a ModelSet>,
+    pub paint: Paint,
+    pub branches: Branches,
+    /// Text `3016h`: the object's registration (`[DS:07e4]`, object `+F6h`).
+    pub registration: &'a str,
+    /// Texts `4000h`–`7FFFh` ([`model::texts`]).
+    pub texts: &'a [String],
+}
+
+/// Flatten model `n`. Sub-objects (`0E`) are placed at their vertex and scaled by
 /// 2^(their header scale − the parent's), since coordinates are shifted by `17h − scale`
-/// (`EL2MATH3:0d58`, *inferred* for sub-objects); depth is limited to 4.
-/// `livery` is the value of the paint variable (0 = each model's own colours).
-pub fn build(set: &ModelSet, n: usize, branches: Branches, livery: u8) -> Scene {
+/// (`EL2MATH3:0d58`, *inferred* for sub-objects); depth is limited to 4. Each starts with the
+/// state the walk gives it (`model::Mesh::sub_paints`).
+pub fn build(cx: &Context, n: usize) -> Scene {
     let mut s = Scene::default();
-    add(set, n, [0.0; 3], 1.0, 0, branches, Paint { colour: model::START_COLOUR, livery }, &mut s);
+    add(cx, cx.set, n, [0.0; 3], 1.0, 0, cx.paint.clone(), &mut s);
     s
 }
 
 #[allow(clippy::too_many_arguments)]
-fn add(set: &ModelSet, n: usize, origin: [f32; 3], scale: f32, depth: u32, branches: Branches, mut paint: Paint, s: &mut Scene) {
+fn add(cx: &Context, set: &ModelSet, n: usize, origin: [f32; 3], scale: f32, depth: u32, mut paint: Paint, s: &mut Scene) {
     let Some(Some(off)) = set.table.models.get(n).copied() else { return };
     let Ok(h) = model::header(&set.image, off) else { return };
     let defs = model::vertex_defs(&set.image, &h).unwrap_or_default();
@@ -73,48 +89,12 @@ fn add(set: &ModelSet, n: usize, origin: [f32; 3], scale: f32, depth: u32, branc
     if depth == 0 {
         s.points.extend((0..pos.len()).filter_map(|v| at(v as u8)));
     }
-    // Sub-objects start with the model colour as it is when they are drawn; the walk returns
-    // them in order, so the colour is replayed alongside (*inferred*: `1000:7c2b`).
-    let start_paint = paint;
-    let mesh = model::walk_with(&set.image, off + h.mesh as usize, branches, &mut paint);
-    let mut replay = start_paint;
-    let mut cmd = 0;
+    let mesh = model::walk_with(&set.image, off + h.mesh as usize, cx.branches, &mut paint);
+    let mut subs = mesh.sub_paints.iter();
     for (prim, c) in mesh.prims {
         match prim {
-            Prim::Line(v) => {
-                if let (Some(a), Some(b)) = (at(v[0]), at(v[1])) {
-                    s.shapes.push(Shape::Line([a, b], c));
-                }
-            }
-            Prim::Tri(v, k) => face(&v, c, normal(k), &[[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]], &at, s),
-            Prim::Quad(v, k) => face(&v, c, normal(k), &[[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]], &at, s),
-            Prim::Polygon(v) => face(&v, c, None, &[], &at, s),
-            Prim::Disc { at: v, .. } => {
-                if let Some(a) = at(v) {
-                    s.shapes.push(Shape::Disc(a, c));
-                }
-            }
-            Prim::Thruster { from, to, .. } => {
-                if let (Some(a), Some(b)) = (at(from), at(to)) {
-                    s.shapes.push(Shape::Thruster([a, b], c));
-                }
-            }
-            Prim::Sub { model: m, at: v } => {
-                // The model colour when this sub-object's command ran.
-                while cmd < mesh.commands.len() {
-                    let k = &mesh.commands[cmd];
-                    cmd += 1;
-                    if k.op() == 0x1a {
-                        let mut c = (k.word >> 4) & 0xffe;
-                        if k.operands[0] >> 8 != 0 && k.operands.len() == 8 && (1..=7).contains(&replay.livery) {
-                            c = k.operands[replay.livery as usize] & 0xfff;
-                        }
-                        replay.colour = c;
-                    }
-                    if k.op() == 0x0e && (k.word >> 5) == m {
-                        break;
-                    }
-                }
+            Prim::Sub { model: m, at: v, scale: step } => {
+                let child = subs.next().cloned().unwrap_or_else(|| paint.child());
                 let Some(o) = at(v) else { continue };
                 s.parts.push(m);
                 let sub_scale = set
@@ -127,16 +107,145 @@ fn add(set: &ModelSet, n: usize, origin: [f32; 3], scale: f32, depth: u32, branc
                     .and_then(|h| h.scale());
                 if depth < 4 && m as usize != n {
                     let k = match (sub_scale, h.scale()) {
-                        (Some(a), Some(b)) => 2f32.powi(a as i32 - b as i32),
+                        (Some(a), Some(b)) => 2f32.powi(a as i32 + step as i32 - b as i32),
                         _ => 1.0,
                     };
-                    add(set, m as usize, o, scale * k.clamp(1.0 / 64.0, 64.0), depth + 1, branches, replay, s);
+                    add(cx, set, m as usize, o, scale * k.clamp(1.0 / 64.0, 64.0), depth + 1, child, s);
                 } else {
                     s.shapes.push(Shape::Label(o, format!("model {m}")));
                 }
             }
+            Prim::Text { at: v, normal: tn, font, scale: fs, text, matrix } => {
+                let (Some(o), Some(fonts)) = (at(v), cx.fonts) else { continue };
+                let string = match text {
+                    0x3016 => cx.registration.to_string(),
+                    0x4000..=0x7fff => cx.texts.get((text & 0x3fff) as usize).cloned().unwrap_or_default(),
+                    _ => String::new(),
+                };
+                let k = scale * 2f32.powi(fs as i32 - h.scale().unwrap_or(fs as u16) as i32);
+                // The 0A command's colour is the text's model colour (1000:7978, 79cc).
+                let mut tp = paint.child();
+                tp.colour = c;
+                text_shapes(cx, fonts, font as usize, &string, o, k, matrix, &tp, normal(tn), s);
+            }
+            other => draw_prim(other, c, &at, &normal, s),
         }
     }
+}
+
+/// One drawing command of a walked mesh, with its corners at `at`.
+fn draw_prim(prim: Prim, c: u16, at: &dyn Fn(u8) -> Option<[f32; 3]>, normal: &dyn Fn(u8) -> Option<[f32; 3]>, s: &mut Scene) {
+    match prim {
+        Prim::Line(v) => {
+            if let (Some(a), Some(b)) = (at(v[0]), at(v[1])) {
+                s.shapes.push(Shape::Line([a, b], c));
+            }
+        }
+        Prim::Tri(v, k) => face(&v, c, normal(k), &[[0.0, 0.0], [1.0, 0.0], [0.0, 1.0]], at, s),
+        Prim::Quad(v, k) => face(&v, c, normal(k), &[[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]], at, s),
+        Prim::Polygon { points, curves } => {
+            // Curves sampled as cubic Béziers in 8 steps (*inferred* shape).
+            let mut pts = Vec::new();
+            let mut i = 0;
+            while i < points.len() {
+                if curves.contains(&i) && i + 4 <= points.len() {
+                    let q: Vec<Option<[f32; 3]>> = points[i..i + 4].iter().map(|&v| at(v)).collect();
+                    if let [Some(a), Some(b), Some(c2), Some(d)] = q[..] {
+                        for k in 0..=8 {
+                            let t = k as f32 / 8.0;
+                            let u = 1.0 - t;
+                            pts.push(std::array::from_fn(|j| {
+                                u * u * u * a[j] + 3.0 * u * u * t * b[j] + 3.0 * u * t * t * c2[j] + t * t * t * d[j]
+                            }));
+                        }
+                    }
+                    i += 4;
+                } else {
+                    if let Some(p) = at(points[i]) {
+                        if pts.last() != Some(&p) {
+                            pts.push(p);
+                        }
+                    }
+                    i += 1;
+                }
+            }
+            if pts.len() >= 3 {
+                let uv = planar_uv(&pts);
+                s.shapes.push(Shape::Face { pts, colour: c, normal: None, uv });
+            }
+        }
+        Prim::Disc { at: v, .. } => {
+            if let Some(a) = at(v) {
+                s.shapes.push(Shape::Disc(a, c));
+            }
+        }
+        Prim::Thruster { from, to, .. } => {
+            if let (Some(a), Some(b)) = (at(from), at(to)) {
+                s.shapes.push(Shape::Thruster([a, b], c));
+            }
+        }
+        Prim::Sub { .. } | Prim::Text { .. } => {}
+    }
+}
+
+/// Text drawn with font model `font` of the second table, as `1000:7a94` does: each character's
+/// glyph is the command list at the font's `+20h + 2·(char − 20h)` offset, drawn at the cursor;
+/// the vertex named by the glyph's end word (`>> 6`) is where the next character starts
+/// (`1000:7ac6`); a control character returns to the line start moved by the vertex in header
+/// word `+1Eh` (`1000:7b14`). Points are `origin + scale · (x·row0 + y·row1 + z·row2)`
+/// (*inferred* reading of the matrix).
+#[allow(clippy::too_many_arguments)]
+fn text_shapes(
+    cx: &Context,
+    fonts: &ModelSet,
+    font: usize,
+    text: &str,
+    origin: [f32; 3],
+    k: f32,
+    m: [[f32; 3]; 3],
+    paint: &Paint,
+    normal: Option<[f32; 3]>,
+    s: &mut Scene,
+) {
+    let Some(Some(f)) = fonts.table.models.get(font).copied() else { return };
+    let Ok(fh) = model::header(&fonts.image, f) else { return };
+    let fpos = model::resolve(&model::vertex_defs(&fonts.image, &fh).unwrap_or_default());
+    let place = |base: [f32; 3], v: [f32; 3]| -> [f32; 3] {
+        std::array::from_fn(|i| base[i] + k * (v[0] * m[0][i] + v[1] * m[1][i] + v[2] * m[2][i]))
+    };
+    let word = |o: usize| fonts.image.get(o..o + 2).map(|b| u16::from_le_bytes([b[0], b[1]]));
+    let (mut cursor, mut line) = (origin, origin);
+    let first = s.shapes.len();
+    for ch in text.bytes().take(64) {
+        if ch < 0x20 {
+            let lf = word(f + 0x1e).and_then(|v| fpos.get(v as i16 as usize).copied().flatten()).unwrap_or([0.0; 3]);
+            line = place(line, lf);
+            cursor = line;
+            continue;
+        }
+        let Some(rel) = word(f + 0x20 + 2 * (ch - 0x20) as usize) else { continue };
+        let mut gp = paint.child();
+        gp.colour = paint.colour;
+        let glyph = model::walk_with(&fonts.image, f + rel as usize, cx.branches, &mut gp);
+        let base = cursor;
+        let at = |v: u8| fpos.get(v as usize).copied().flatten().map(|p| place(base, p));
+        // The glyphs take the text command's normal: shown when it faces the viewer (1000:7917).
+        for (prim, c) in glyph.prims {
+            draw_prim(prim, c, &at, &|_| normal, s);
+            if let Some(Shape::Face { normal: n, .. }) = s.shapes.last_mut() {
+                *n = normal;
+            }
+        }
+        if let Some(end) = glyph.commands.last().filter(|c| c.op() == 0) {
+            let adv = (end.word >> 6) as usize;
+            if adv != 0 {
+                if let Some(p) = fpos.get(adv).copied().flatten() {
+                    cursor = place(cursor, p);
+                }
+            }
+        }
+    }
+    s.decals.push(first..s.shapes.len());
 }
 
 fn face(v: &[u8], colour: u16, normal: Option<[f32; 3]>, uv: &[[f32; 2]], at: &dyn Fn(u8) -> Option<[f32; 3]>, s: &mut Scene) {
@@ -228,17 +337,21 @@ pub fn project(rect: egui::Rect, scene: &Scene, default: u16, o: Options) -> Vec
         let [r, g, b] = model::rgb12(base_colour(c));
         Color32::from_rgb(r, g, b)
     };
-    // Painter's order over every shape: farthest first.
+    // Painter's order over every shape: farthest first. Text on a surface is drawn after every
+    // other shape (it lies on the hull; the game draws it after the surface it is on), back to
+    // front among itself.
+    let decal = |i: usize| scene.decals.iter().any(|r| r.contains(&i));
     let mut items: Vec<(f32, &Shape)> = scene
         .shapes
         .iter()
-        .map(|sh| {
+        .enumerate()
+        .map(|(i, sh)| {
             let d = match sh {
                 Shape::Face { pts, .. } => pts.iter().map(|&p| xf(p)[2]).sum::<f32>() / pts.len() as f32,
                 Shape::Line(v, _) | Shape::Thruster(v, _) => (xf(v[0])[2] + xf(v[1])[2]) / 2.0,
                 Shape::Disc(a, _) | Shape::Label(a, _) => xf(*a)[2],
             };
-            (d, sh)
+            (if decal(i) { d - radius * 1000.0 } else { d }, sh)
         })
         .collect();
     items.sort_by(|a, b| b.0.total_cmp(&a.0));

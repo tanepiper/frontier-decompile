@@ -25,6 +25,17 @@ pub const MAIN_DS: usize = 0x1615;
 pub const DEFAULT_TABLE_SEG_VAR: usize = 0x07fa;
 /// The default table's `base` (`1000:18f7`).
 pub const DEFAULT_BASE: usize = 4;
+/// `DS:07f8`: relocated word holding the segment of the second model table, which `1000:190a`
+/// (slot `DS:0054`) reads at offset `8106h` (*observed*): the fonts and features opcode `0A` uses.
+pub const TEXT_TABLE_SEG_VAR: usize = 0x07f8;
+pub const TEXT_TABLE_BASE: usize = 0x8106;
+
+/// The second model table of `FRONTIER.EXE`'s image (fonts for `0A` text).
+pub fn text_table(image: &[u8]) -> Result<Table> {
+    let seg = le16(image, MAIN_DS * 16 + TEXT_TABLE_SEG_VAR)? as usize;
+    table(image, seg * 16 + TEXT_TABLE_BASE)
+}
+
 /// `EL2M08`'s table base, passed in `AX` to `1000:18c5` at `EL2M08:6ede`.
 pub const EL2M08_BASE: usize = 0x3b0;
 
@@ -248,7 +259,7 @@ pub fn operands(op: u8) -> Option<usize> {
     Some(match op {
         0x00 | 0x0f | 0x15 | 0x19 | 0x1e => 0,
         0x02 | 0x0b | 0x0c | 0x0d | 0x12 | 0x13 | 0x14 | 0x1c | 0x1d => 1,
-        0x01 | 0x03 | 0x07 | 0x09 | 0x17 | 0x1b => 2,
+        0x01 | 0x03 | 0x07 | 0x09 | 0x17 => 2,
         0x04 | 0x08 | 0x0a | 0x10 | 0x16 => 3,
         0x11 => 5,
         _ => return None,
@@ -294,6 +305,13 @@ pub fn length(image: &[u8], p: usize) -> Option<usize> {
                 4
             }
         }
+        0x1b => {
+            if w(q)? & 0x8000 != 0 {
+                10
+            } else {
+                6
+            }
+        }
         0x1a => {
             if w(q)? & 0x8000 != 0 {
                 18
@@ -326,20 +344,37 @@ fn polygon_extra(sub: u8) -> usize {
 }
 
 /// Something the viewer can draw, with the command's 12-bit colour field.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Prim {
     Line([u8; 2]),
     /// Corners in drawing order, and the face's normal number (`face_shade`, [`normals`]).
     Tri([u8; 3], u8),
     Quad([u8; 4], u8),
-    /// Outline of a polygon (*inferred*: the vertex bytes of sub-commands 2 and 3, and the
-    /// four bytes of a sub-command 1 as curve control points).
-    Polygon(Vec<u8>),
+    /// Outline of a polygon (`1000:67e7`): sub-command 2 an edge between two vertices, 3 on to a
+    /// vertex, 1 a curve through four vertices; `curves` are the indices in `points` where a
+    /// curve's four control points start (*inferred* to be a cubic Bézier).
+    Polygon {
+        points: Vec<u8>,
+        curves: Vec<usize>,
+    },
     /// Another model drawn at a vertex (`0E`: model number = command >> 5, vertex = the low
     /// byte of its operand, `1000:7c0d`).
     Sub {
         model: u16,
         at: u8,
+        /// `1B`: added to the sub-object's scale (`1000:7be9`).
+        scale: i8,
+    },
+    /// `0A`: text drawn with a font model of the second table ([`text_table`]) at vertex `at`,
+    /// oriented by `matrix` (rows, the images of the font's x, y and z axes), at `scale` (the
+    /// font frame's scale, *inferred* to compare with a header's scale); `text` is a text number.
+    Text {
+        at: u8,
+        normal: u8,
+        font: u8,
+        scale: u8,
+        text: u16,
+        matrix: [[f32; 3]; 3],
     },
     /// `01`: a disc at a vertex (*inferred*: the handler projects one vertex, `1000:4991`), with
     /// the size word.
@@ -375,10 +410,12 @@ impl Command {
     }
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq)]
 pub struct Mesh {
     pub commands: Vec<Command>,
     pub prims: Vec<(Prim, u16)>,
+    /// The state each [`Prim::Sub`] starts with, in order.
+    pub sub_paints: Vec<Paint>,
     /// Why the walk stopped early, if it did.
     pub stopped: Option<String>,
 }
@@ -388,10 +425,10 @@ pub struct Mesh {
 pub enum Branches {
     /// Follow every command in order: every level of detail at once. For listing a model.
     All,
-    /// Take the branches the original takes for a model seen close up with all its variables
-    /// zero (*assumed* state): `0B` (skip if far) falls through, `0C` (skip if near) skips, `13`
-    /// skips when its variable is 0 (`1000:7f0b`), `14` falls through when it is 0
-    /// (`1000:7f6a`). A skip of 0 bytes ends the model (`1000:7e3d`).
+    /// Evaluate the model's logic as the original does for a model seen close up: `0D`/`1D`
+    /// compute frame variables, `13`/`14` test variables ([`Paint`]), `1A` reads its paint
+    /// variable, `1C` builds matrices; the distance tests take the near branch (`0B` falls
+    /// through, `0C` skips; *assumed*). A skip of 0 bytes ends the model (`1000:7e3d`).
     Near,
 }
 
@@ -402,18 +439,178 @@ pub enum Branches {
 pub const START_COLOUR: u16 = 0x111;
 
 /// Walk a mesh command list from `start` (image offset), following every command
-/// ([`Branches::All`]), with the starting model colour and livery 0.
+/// ([`Branches::All`]), with the starting model colour and every variable 0.
 pub fn walk(image: &[u8], start: usize) -> Mesh {
-    walk_with(image, start, Branches::All, &mut Paint { colour: START_COLOUR, livery: 0 })
+    walk_with(image, start, Branches::All, &mut Paint::new(std::sync::Arc::new(Vec::new())))
 }
 
-/// The model colour ([`START_COLOUR`]) and the livery: the value (0–7) of the variable a `1A`
-/// command consults. 0 keeps each `1A`'s own colour (*assumed* default; the game reads an
-/// object variable, a ship's paint).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+/// `DS:5bff` in `FRONTIER.EXE`: the sine table, 2048 words for a half turn (0 … 7FFEh … 0), read
+/// at `(angle & 7FFFh) >> 4` and negated for angles with bit 15 set; cosine is sine of angle +
+/// 4000h (`1000:8073`, `809d`). Static data in the file (*observed*).
+pub const SINE_AT: usize = MAIN_DS * 16 + 0x5bff;
+
+/// The sine table from `FRONTIER.EXE`'s load image.
+pub fn sine_table(image: &[u8]) -> Vec<i16> {
+    (0..2048).filter_map(|i| le16(image, SINE_AT + i * 2).ok().map(|v| v as i16)).collect()
+}
+
+/// `angle` (a full turn is 10000h) through `table`, as a fraction of 1.
+fn sine(table: &[i16], angle: u16) -> f32 {
+    let v = table.get(((angle & 0x7fff) >> 4) as usize).copied().unwrap_or(0) as f32 / 32768.0;
+    if angle & 0x8000 != 0 {
+        -v
+    } else {
+        v
+    }
+}
+
+/// The values the original keeps while it draws a model: the model colour, the model's frame
+/// variables `[BP-40h]`… (64 words; a model computes them with `0D`/`1D`), the object's variables
+/// at `[BP-D8h]:+72h`… (64 words, given by the caller), the sine table, and the matrix the last
+/// `1C` built. `livery`, when set, replaces the value of the variable a `1A` command reads.
+#[derive(Debug, Clone, PartialEq)]
 pub struct Paint {
     pub colour: u16,
-    pub livery: u8,
+    pub livery: Option<u8>,
+    pub frame: [u16; 64],
+    pub object: [u16; 64],
+    pub sine: std::sync::Arc<Vec<i16>>,
+    /// Rows of the `1C` matrix (`[BP-7Ah]`…), as fractions of 1.
+    pub matrix: [[f32; 3]; 3],
+}
+
+/// The object variables the original had when it drew the Tiger Trader in a shipyard's view
+/// (*measured* with `model_census`, the hook at `1000:b2db`, all 64; variable 0 counts down, a
+/// timer).
+/// Used as the viewer's default for a ship on show.
+pub const SHOWN_SHIP: [u16; 64] = [
+    0x0424, 0xffff, 0x2ca4, 0x1e44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0xffff, 0xffff, 0, 0, 0, 0x8888, 0x8888, 0x8282,
+    0x8282, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+];
+
+impl Paint {
+    /// [`START_COLOUR`], every variable 0, the identity matrix.
+    pub fn new(sine: std::sync::Arc<Vec<i16>>) -> Paint {
+        Paint {
+            colour: START_COLOUR,
+            livery: None,
+            frame: [0; 64],
+            object: [0; 64],
+            sine,
+            matrix: [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
+        }
+    }
+
+    /// An operand byte (`1000:7f8a`–`7fbe`): bit 7 clear, a constant (bits 0–5, or bits 0–5
+    /// shifted to 10–15 when bit 6 is set); bit 7 set, a variable n = bits 0–5, the frame's when
+    /// bit 6 is set, else the object's.
+    pub fn operand(&self, b: u8) -> u16 {
+        let n = (b & 0x3f) as usize;
+        match (b & 0x80 != 0, b & 0x40 != 0) {
+            (false, false) => n as u16,
+            (false, true) => (n as u16) << 10,
+            (true, true) => self.frame[n],
+            (true, false) => self.object[n],
+        }
+    }
+
+    /// The frame variables a sub-object starts with (`1000:7d9e`): the first is the parent's
+    /// plus 1, the next two are the parent's, the rest 0 (*assumed*: the frame is new stack).
+    pub fn child(&self) -> Paint {
+        let mut c = self.clone();
+        c.frame = [0; 64];
+        c.frame[0] = self.frame[0].wrapping_add(1);
+        c.frame[1] = self.frame[1];
+        c.frame[2] = self.frame[2];
+        c
+    }
+
+    /// `0D` / `1D` (`1000:7f82`, the operations at `CS:28b2`): `a op b` into frame variable
+    /// `(word >> 8) & 7`. The operation is `(word >> 4) & 15`.
+    fn arithmetic(&mut self, word: u16, operand: u16) {
+        let (a, b) = (self.operand(operand as u8), self.operand((operand >> 8) as u8));
+        let r = match (word >> 4) & 15 {
+            0 => a.wrapping_add(b),
+            1 => a.wrapping_sub(b),
+            2 | 8 => a.wrapping_mul(b),
+            3 => a.checked_div(b).unwrap_or(a),
+            4 => a.checked_shr(b as u32).unwrap_or(0),
+            5 => a.checked_shl(b as u32).unwrap_or(0),
+            6 => a.max(b),
+            7 => {
+                if b > a {
+                    a
+                } else {
+                    b.wrapping_sub(1)
+                }
+            }
+            9 => ((a as i16).checked_shr(b as u32).unwrap_or(if (a as i16) < 0 { -1 } else { 0 })) as u16,
+            10 => self.object[(a.wrapping_add(b) & 63) as usize],
+            11 => {
+                if b <= a {
+                    a
+                } else {
+                    0
+                }
+            }
+            12 => {
+                if b >= a {
+                    a
+                } else {
+                    0
+                }
+            }
+            13 => ((a as i16 as f32) * sine(&self.sine, b)) as i16 as u16,
+            14 => ((a as i16 as f32) * sine(&self.sine, b.wrapping_add(0x4000))) as i16 as u16,
+            _ => a & b,
+        };
+        self.frame[((word >> 8) & 7) as usize] = r;
+    }
+
+    /// `13` / `14` (`1000:7ec4`, `7f23`): the operand's low byte gives a value, its high byte a
+    /// bit number + 1 (0: the whole value). `13` skips when the value is 0 or the bit is clear;
+    /// `14` skips when the value is not 0 and (no bit is named or) the bit is set.
+    fn skips(&self, op: u8, operand: u16) -> bool {
+        let v = self.operand(operand as u8);
+        let bit = (operand >> 8) as i32 - 1;
+        let set = bit >= 0 && (v >> (bit & 15)) & 1 != 0;
+        if op == 0x13 {
+            v == 0 || (bit >= 0 && !set)
+        } else {
+            v != 0 && (bit < 0 || set)
+        }
+    }
+
+    /// `1C` (`1000:76dd`): with the command not negative, rebuild the matrix from the identity
+    /// (the parent's, in model space) with its rows moved by the permutation `(word >> 7) & 7` of
+    /// the table at `DS:5749` and negated by command bits 12, 11 and 10; then, if the operand is
+    /// not 0, or always for a negative command (`1000:7778`), turn two rows by the angle the
+    /// operand gives: rows 1 and 2 (x), 2 and 0 (y) or 0 and 1 (z) by `(word >> 5) & 3`
+    /// (`DS:57b5`), A' = A·cos + B·sin, B' = B·cos − A·sin.
+    fn orient(&mut self, word: u16, operand: u16) {
+        const PERM: [[usize; 3]; 7] = [[0, 1, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0], [1, 0, 2], [0, 2, 1], [0, 1, 2]];
+        if word & 0x8000 == 0 {
+            let perm = PERM[((word >> 7) & 7).min(6) as usize];
+            let id = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]];
+            let mut m = [[0.0f32; 3]; 3];
+            for (i, &dest) in perm.iter().enumerate() {
+                let neg = word & (0x1000 >> i) != 0;
+                m[dest] = id[i].map(|v: f32| if neg { -v } else { v });
+            }
+            self.matrix = m;
+            if operand == 0 {
+                return;
+            }
+        }
+        let angle = if operand & 0x80 == 0 { operand.rotate_right(7) } else { self.operand(operand as u8) };
+        let (s, c) = (sine(&self.sine, angle), sine(&self.sine, angle.wrapping_add(0x4000)));
+        let (ra, rb) = [(1, 2), (2, 0), (0, 1), (1, 2)][((word >> 5) & 3) as usize];
+        let (a, b) = (self.matrix[ra], self.matrix[rb]);
+        for k in 0..3 {
+            self.matrix[ra][k] = a[k] * c + b[k] * s;
+            self.matrix[rb][k] = b[k] * c - a[k] * s;
+        }
+    }
 }
 
 /// The colour a drawing command uses: a colour with bit 4 set takes the model colour
@@ -454,7 +651,7 @@ pub fn walk_with(image: &[u8], start: usize, branches: Branches, paint: &mut Pai
                 let Some(first) = w(p) else { break };
                 ops.push(first);
                 p += 2;
-                let mut outline = Vec::new();
+                let (mut outline, mut curves) = (Vec::new(), Vec::new());
                 while let Some(s) = w(p) {
                     ops.push(s);
                     p += 2;
@@ -466,15 +663,22 @@ pub fn walk_with(image: &[u8], start: usize, branches: Branches, paint: &mut Pai
                     let extra: Vec<u16> = (0..n).filter_map(|i| w(p + i * 2)).collect();
                     p += n * 2;
                     match sub {
-                        2 | 3 => outline.push(s as u8),
+                        // 1000:6a05: an edge from the vertex in the low byte to the vertex in the
+                        // extra word.
+                        2 if extra.len() == 1 => outline.extend([s as u8, extra[0] as u8]),
+                        // 1000:6b91: on to the vertex in the low byte.
+                        3 => outline.push(s as u8),
+                        // 1000:6ceb: a curve through four vertices, high byte then low byte of
+                        // each extra word.
                         1 if extra.len() == 2 => {
-                            outline.extend([extra[0] as u8, (extra[0] >> 8) as u8, extra[1] as u8, (extra[1] >> 8) as u8])
+                            curves.push(outline.len());
+                            outline.extend([(extra[0] >> 8) as u8, extra[0] as u8, (extra[1] >> 8) as u8, extra[1] as u8])
                         }
                         _ => {}
                     }
                     ops.extend(extra);
                 }
-                m.prims.push((Prim::Polygon(outline), resolve_colour((word >> 4) & 0xfff, paint)));
+                m.prims.push((Prim::Polygon { points: outline, curves }, resolve_colour((word >> 4) & 0xfff, paint)));
             }
             _ => {
                 let Some(len) = length(image, at) else {
@@ -486,14 +690,20 @@ pub fn walk_with(image: &[u8], start: usize, branches: Branches, paint: &mut Pai
                     ops.push(w(p + i * 2).unwrap_or(0));
                 }
                 p = at + len;
+                if branches == Branches::Near && matches!(op, 0x0d | 0x1d) {
+                    paint.arithmetic(word, ops[0]);
+                }
+                if branches == Branches::Near && op == 0x1c {
+                    paint.orient(word, ops[0]);
+                }
                 if branches == Branches::Near && matches!(op, 0x0b | 0x0c | 0x13 | 0x14) {
                     // 1000:7e37: skip (word >> 4) & !1 bytes after the operand; 0 ends the model.
                     // A negative operand of 0B / 0C picks another test (1000:7de0, 7e66): taken
                     // as falling through.
                     let skip = match op {
-                        0x0b | 0x14 => false,
+                        0x0b => false,
                         0x0c => ops[0] & 0x8000 == 0,
-                        _ => true,
+                        _ => paint.skips(op, ops[0]),
                     };
                     if skip {
                         let n = ((word >> 4) & !1) as usize;
@@ -507,8 +717,11 @@ pub fn walk_with(image: &[u8], start: usize, branches: Branches, paint: &mut Pai
                 }
                 if op == 0x1a {
                     let mut c = (word >> 4) & 0xffe;
-                    if ops[0] >> 8 != 0 && ops.len() == 8 && (1..=7).contains(&paint.livery) {
-                        c = ops[paint.livery as usize] & 0xfff;
+                    if ops[0] >> 8 != 0 && ops.len() == 8 {
+                        let v = paint.livery.map_or_else(|| paint.operand((ops[0] >> 8) as u8) & 7, u16::from) as usize;
+                        if (1..=7).contains(&v) {
+                            c = ops[v] & 0xfff;
+                        }
                     }
                     paint.colour = c;
                 }
@@ -540,7 +753,58 @@ pub fn walk_with(image: &[u8], start: usize, branches: Branches, paint: &mut Pai
                         }
                     }
                     0x09 => m.prims.push((Prim::Thruster { from: ops[0] as u8, to: (ops[0] >> 8) as u8, size: ops[1] }, c)),
-                    0x0e => m.prims.push((Prim::Sub { model: word >> 5, at: ops[0] as u8 }, c)),
+                    0x0e => {
+                        m.prims.push((Prim::Sub { model: word >> 5, at: ops[0] as u8, scale: 0 }, c));
+                        m.sub_paints.push(paint.child());
+                    }
+                    0x1b => {
+                        // 1000:7b6b: model `word >> 5` at the vertex in the first operand, with
+                        // its own model colour from the second: `(op << 1) & EFEh` (`Exxh` a
+                        // texture), plus the current model colour when bit 4 is set (7bca–7bd3);
+                        // its top 4 bits (signed) are a scale step, or with bit 11 set a frame
+                        // variable gives it (7be4, *not ported*: taken as 0).
+                        let raw = (ops[1] << 1) & 0xfff;
+                        let colour = if raw & 0xf00 == 0xe00 {
+                            raw
+                        } else if raw & 0x10 != 0 {
+                            (raw & 0xeee).wrapping_add(paint.colour) & 0xfff
+                        } else {
+                            raw & 0xefe
+                        };
+                        let scale = if ops[1] & 0x0800 == 0 { ((ops[1] as i16) >> 12) as i8 } else { 0 };
+                        m.prims.push((Prim::Sub { model: word >> 5, at: ops[0] as u8, scale }, c));
+                        let mut child = paint.child();
+                        child.colour = colour;
+                        m.sub_paints.push(child);
+                    }
+                    0x0a => {
+                        // 1000:78d8: word 1 low byte the normal, high byte the font (bits 4–7, a
+                        // model of the second table, [`text_table`]) and scale (bits 0–3); word 2
+                        // low byte the origin vertex (1000:797c), bits 8–10 the orientation
+                        // (`DS:5749` row; 6 = the 1C matrix) and 11–13 negations (1000:75fb);
+                        // word 3 the text number (the text expander, slot DS:0014).
+                        let orient = (ops[1] >> 8) & 7;
+                        // Rows 0–5: the same permutation and signs as 1C's first part, from word 2
+                        // shifted right by one (1C keeps the command doubled in [DS:07d8]).
+                        let matrix = if orient == 6 {
+                            paint.matrix
+                        } else {
+                            let mut p2 = paint.clone();
+                            p2.orient((ops[1] >> 1) & 0x7fff, 0);
+                            p2.matrix
+                        };
+                        m.prims.push((
+                            Prim::Text {
+                                at: ops[1] as u8,
+                                normal: ops[0] as u8,
+                                font: (ops[0] >> 12) as u8,
+                                scale: ((ops[0] >> 8) & 15) as u8,
+                                text: ops[2],
+                                matrix,
+                            },
+                            c,
+                        ));
+                    }
                     _ => {}
                 }
             }
@@ -784,7 +1048,8 @@ mod tests {
 
     #[test]
     fn model_colour_and_textures() {
-        let paint = Paint { colour: 0xe22, livery: 0 };
+        let mut paint = Paint::new(std::sync::Arc::new(Vec::new()));
+        paint.colour = 0xe22;
         // Bit 4 set: the model colour's texture; bit 4 clear: the command's own colour.
         assert_eq!(resolve_colour(0x0f0, &paint), 0xe22);
         assert_eq!(resolve_colour(0x0e0, &paint), 0x0e0);

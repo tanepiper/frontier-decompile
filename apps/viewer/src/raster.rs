@@ -57,12 +57,13 @@ impl Canvas {
 
     fn line(&mut self, a: Pos2, b: Pos2, width: f32, c: [u8; 3]) {
         let n = ((b.x - a.x).abs().max((b.y - a.y).abs()) as usize).max(1);
-        let r = (width / 2.0).max(0.5) as i32;
+        // A pen of `width` pixels: 1 → just the pixel, 4 → 3 × 3.
+        let r = ((width - 1.0) / 2.0).round().max(0.0) as i32;
         for k in 0..=n {
             let t = k as f32 / n as f32;
             let (x, y) = ((a.x + (b.x - a.x) * t) as i32, (a.y + (b.y - a.y) * t) as i32);
-            for dy in -r + 1..r.max(1) {
-                for dx in -r + 1..r.max(1) {
+            for dy in -r..=r {
+                for dx in -r..=r {
                     self.put(x + dx, y + dy, c);
                 }
             }

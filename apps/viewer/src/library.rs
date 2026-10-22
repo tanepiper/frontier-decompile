@@ -44,6 +44,11 @@ pub struct Library {
     pub palette: [[u8; 3]; 256],
     pub palette_source: &'static str,
     pub models: Vec<ModelSet>,
+    /// `FRONTIER.EXE`'s second model table: the fonts of `0A` text.
+    pub fonts: Option<ModelSet>,
+    /// The sine table (`model::sine_table`) and the texts `4000h`– (`model::texts`).
+    pub sine: std::sync::Arc<Vec<i16>>,
+    pub texts: Vec<String>,
     /// The face texture table of `FRONTIER.EXE` (`model::textures`), by entry.
     pub textures: Vec<Option<model::Texture>>,
     /// `EL2G.GRF`'s pictures by entry number, for the textures.
@@ -71,10 +76,15 @@ impl Library {
             }
         }
         let mut models = Vec::new();
-        let mut textures = Vec::new();
+        let (mut textures, mut fonts, mut sine, mut texts) = (Vec::new(), None, Vec::new(), Vec::new());
         if let Some(exe) = files.iter().find(|f| f.kind == Kind::Program) {
             if let Ok((image, _)) = model::main_table(&exe.data) {
                 textures = model::textures(&image);
+                sine = model::sine_table(&image);
+                texts = model::texts(&exe.data);
+                if let Ok(t) = model::text_table(&image) {
+                    fonts = Some(ModelSet::new(format!("{} (fonts)", exe.name), image.clone(), t, &[]));
+                }
             }
         }
         let bitmaps = files
@@ -96,7 +106,18 @@ impl Library {
                 }
             }
         }
-        Library { files, parsed: HashMap::new(), palette, palette_source, models, textures, bitmaps }
+        Library {
+            files,
+            parsed: HashMap::new(),
+            palette,
+            palette_source,
+            models,
+            fonts,
+            sine: std::sync::Arc::new(sine),
+            texts,
+            textures,
+            bitmaps,
+        }
     }
 
     pub fn find(&self, name: &str) -> Option<&Resource> {
@@ -126,6 +147,24 @@ impl Library {
                 Kind::Position | Kind::Unknown => Parsed::Raw,
             }
         });
+    }
+
+    /// What to build a model's scene with: `shown` uses the object variables measured for a ship
+    /// on show ([`model::SHOWN_SHIP`]), otherwise all 0; `livery` overrides the paint variable.
+    pub fn context<'a>(
+        &'a self,
+        set: &'a ModelSet,
+        branches: model::Branches,
+        shown: bool,
+        livery: Option<u8>,
+        registration: &'a str,
+    ) -> crate::scene::Context<'a> {
+        let mut paint = model::Paint::new(self.sine.clone());
+        if shown {
+            paint.object.copy_from_slice(&model::SHOWN_SHIP);
+        }
+        paint.livery = livery;
+        crate::scene::Context { set, fonts: self.fonts.as_ref(), paint, branches, registration, texts: &self.texts }
     }
 
     /// Texture-table entry `entry` as RGBA on the 12-bit base colour `base`: texel t gets

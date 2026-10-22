@@ -132,18 +132,20 @@ the handlers.
 | `05` | `67e7` | 2 + sub-commands | polygon (below) |
 | `06` | `4265` | 1, or 2 when `word >> 5` is 700h–7FDh | depth group (*inferred*) |
 | `09` | `71ed` | 3 | a thruster flame between two vertices with a size (*inferred*: projects both, `1000:726e`, `729c`; points along all six axes from each hull) |
-| `0A` | `78d8` | 4 | a sub-object from a second table, `1000:190a` (slot `DS:0054`: segment `[DS:07f8]`, table at `8106h`); not decoded |
+| `0A` | `78d8` | 4 | text: word 1 the normal (low byte), the font (bits 12–15, a model of the second table, `1000:190a`: segment `[DS:07f8]`, offset `8106h`) and scale (bits 8–11); word 2 the origin vertex (low byte) and orientation (bits 8–13); word 3 a text number (below) |
 | `0B` / `0C` | `7dff` / `7e85` | 2 | distance test; on failure skip `(word >> 5) × 2` bytes, or end the model if that is 0 |
-| `0D`, `1D` | `7f82` | 2 | arithmetic on model variables |
-| `0E` | `7c0c` | 2, or 4 when the operand has bit 15 set | draws model `word >> 5` at the vertex in the operand's low byte |
+| `0D`, `1D` | `7f82` | 2 | arithmetic on model variables (below) |
+| `0E` | `7c0c` | 2, or 4 when the operand has bit 15 set | draws model `word >> 5` at the vertex in the operand's low byte, with the parent's colour |
 | `0F`, `15`, `19`, `1E` | | 1 | not traced |
 | `10` / `11` | `81ab` / `812a` | 4 / 6 | not traced |
-| `12`, `1C` | `8da6`, `76dd` | 2 | not traced |
+| `12` | `8da6` | 2 | not traced |
+| `1C` | `76dd` | 2 | builds the matrix for `0A` (below) |
 | `13` / `14` | `7ec4` / `7f23` | 2 | flag tests with the same skip as `0B` |
 | `16` | | 4 | not traced |
-| `17`, `1B` | `8ec1`, `7b6b` | 3 | not traced |
+| `17` | `8ec1` | 3 | not traced |
+| `1B` | `7b6b` | 3, or 5 when the first operand has bit 15 set (`1000:7c01`) | draws model `word >> 5` at the vertex in the first operand, with its own colour from the second (`(op << 1) & EFEh`, `Exxh` a texture, bit 4 adds the model colour) and a scale step in its top 4 bits |
 | `18` | `8f60` | words up to and including `7F7Fh` | not traced |
-| `1A` | `8c8b` | 2, or 9 when the operand has bit 15 set | not traced |
+| `1A` | `8c8b` | 2, or 9 when the operand has bit 15 set | sets the model colour (liveries, below) |
 | `1F` | `93d5` | 3 + `(word >> 5)` | a block the handler reads (the planets use it) |
 
 A polygon (`05`) is followed by sub-command words until one with sub-command 0; the sub-command
@@ -199,6 +201,39 @@ Other groups, for the main table:
 | header scale 19 and up | planets, stars and terrain (most use `1F`) | *inferred* |
 | the rest | parts drawn by other models through `0E`, and others | *observed* in the mesh lists |
 
+**Model logic.** A model computes and tests variables while it is drawn (`1000:7f82`–`80cd`,
+`7ec4`, `7f23`). An operand byte with bit 7 clear is a constant (bits 0–5, or bits 0–5 moved to
+bits 10–15 when bit 6 is set); with bit 7 set it names variable n = bits 0–5: the model frame's
+`[BP-40h + 2n]` when bit 6 is set, else the object's `[[BP-D8h] + 72h + 2n]`. `0D`/`1D` put
+`a op b` into frame variable `(word >> 8) & 7`; the operation is `(word >> 4) & 15` through
+`CS:28b2`: add, subtract, multiply, divide, shift right, shift left, maximum, a minimum
+variant, multiply, arithmetic shift, an indexed object variable, two compares, `a·sin b`,
+`a·cos b` (the table at `DS:5bff`, 2048 words per half turn) and AND. `13` skips when its value
+is 0 or the bit `(operand >> 8) − 1` is clear; `14` skips when the value is not 0 and the bit
+is set (or none is named). A sub-object's frame starts with the parent's first variable plus 1
+and its next two (`1000:7d9e`).
+
+*Measured*: the object variables when the original drew the shipyard's Tiger Trader (the hook
+at `1000:b2db` in `model_census`): variable 0 counting down (a timer), 1 = `FFFFh`, 2–3 =
+`2CA4h`, `1E44h`, 22–23 = `FFFFh`, 27–28 = `8888h`, 29–30 = `8282h`, the rest 0
+(`crates/formats::model::SHOWN_SHIP`). With them the walker draws exactly the parts the
+original looked up for that view (models 2, 111 three times, 120–123 and 127), and the Tiger
+Trader's `1A` picks texture entry 9 as measured (`crates/formats/tests/original_data.rs`).
+
+**Text and matrices.** `0A` draws a text with a font model of the second table (model 0 is the
+font of the registrations): each character's glyph is the command list at the font's
+`+20h + 2·(char − 20h)`, and the vertex named by the glyph's end word `>> 6` is where the next
+character starts (`1000:7a94`–`7af4`). Text `3016h` is the object's registration (the string at
+`[DS:07e4]`, the object's `+F6h`; text formatters, [TEXT.md](TEXT.md)); texts `4000h`– come from
+the text table. The orientation is a row of `DS:5749` (six axis permutations; row 6 = the matrix
+the last `1C` built) with three sign bits. `1C` builds that matrix: the identity's rows moved by
+a permutation and negated (command bits 7–9 and 10–12), then, if the operand is not 0, two rows
+turned by an angle (rows 1–2, 2–0 or 0–1 by command bits 5–6, `DS:57b5`). *Measured*: at
+`1000:7a1e` the text frame's matrix is R·P for the parent's P, with R constant over 52 frames of
+the turning Tiger Trader, and the walker's R for the Tiger Trader's registration equals it to
+three decimals. The rows of R are the images of the font's x, y and z axes; its third row is the
+face normal the text command names, so the registration lies on the hull face.
+
 **Colours, textures and liveries.** A drawing command's colour field is `0RGBh`; bit 4 says
 "use the model colour" and bit 8 "unshaded" (`1000:51c2`–`5211`). Colours `E00h`–`EFFh` are
 textures: entry `((c >> 1) & 7) | ((c >> 5) & 7) << 3` of the table at `CS:25c4` (16 bytes per
@@ -214,7 +249,8 @@ at the seven sites that add the double word), the shipyard's Tiger Trader (model
 with `00090000h`, texture entry 9, which is the Tiger Trader's livery 2. The viewer offers the
 livery as a choice (0 = each `1A`'s own colour).
 
-The viewer draws the near branches with every variable 0 (*assumed*; every level of detail on
+The viewer evaluates the model logic with the measured Tiger Trader variables by default (all
+0 on request; the distance tests take the near branch, *assumed*; every level of detail on
 request), hides faces whose stored normal points away as `face_shade` does (back faces on
 request), places sub-objects at their vertex scaled by 2^(their scale − the parent's), stretches
 each texture over its whole face (the game picks one of 8 orientations), and lights with its own
@@ -266,9 +302,9 @@ with `tools/dev-web.sh --app viewer`.
 
 ## Open questions
 
-- Which variable each model's `1A` reads for its livery, and the conditions that hide parts
-  (the Tiger Trader's window parts 120–127 are not drawn in the viewer's near state).
-- What opcodes `0F`–`12`, `15`–`19`, `1B`, `1C` and `1E` draw (their lengths are known), and
+- What each object variable means (a ship's paint, landing gear, timers); the viewer has one
+  measured set.
+- What opcodes `0F`–`12`, `15`–`19` and `1E` draw (their lengths are known), and
   the second model table `0A` uses (`1000:190a`): the intro's ships draw their hulls through it.
 - Which of models 2–8 is which missile or mine, and what models 39, 60, 92 and 110 are.
 - The palette the game sets for the GRF pictures (`EL2MCGA3:0234` and the colour allocator).

@@ -141,3 +141,36 @@ fn overlay_headers_parse() {
         }
     }
 }
+
+/// The parts the original drew for the shipyard's Tiger Trader (model 31) with its object
+/// variables (*measured* with model_census: lookups of models 2, 111 ×3, 120–123, 127), against
+/// the walker evaluating the model's logic with the same variables.
+#[test]
+fn tiger_trader_parts_match_the_game() {
+    let Some(d) = dir() else { return };
+    let exe = std::fs::read(d.join("FRONTIER.EXE")).unwrap();
+    let (image, table) = model::main_table(&exe).unwrap();
+    let mut paint = model::Paint::new(std::sync::Arc::new(model::sine_table(&image)));
+    paint.object.copy_from_slice(&model::SHOWN_SHIP);
+    fn parts(image: &[u8], table: &model::Table, n: usize, paint: &mut model::Paint, out: &mut Vec<u16>, depth: u32) {
+        let off = table.models[n].unwrap();
+        let h = model::header(image, off).unwrap();
+        let m = model::walk_with(image, off + h.mesh as usize, model::Branches::Near, paint);
+        let mut subs = m.sub_paints.into_iter();
+        for (prim, _) in m.prims {
+            if let model::Prim::Sub { model: s, .. } = prim {
+                out.push(s);
+                let mut child = subs.next().unwrap();
+                if depth < 4 {
+                    parts(image, table, s as usize, &mut child, out, depth + 1);
+                }
+            }
+        }
+    }
+    let mut out = Vec::new();
+    parts(&image, &table, 31, &mut paint, &mut out, 0);
+    out.sort();
+    assert_eq!(out, vec![2, 111, 111, 111, 120, 121, 122, 123, 127]);
+    // Its livery: texture entry 9 (measured: the faces added 00090000h).
+    assert_eq!(model::texture_entry(paint.colour), Some(9));
+}

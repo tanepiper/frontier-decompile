@@ -4,7 +4,7 @@
 //!          `game-data/original`).
 //! Browser: `tools/dev-web.sh --app viewer`, then open `/?data=/game-data/` or pick the files.
 //! Files:   `frontier-viewer --render TABLE N[,N…] OUT.png [--dir DIR] [--yaw R] [--pitch R]
-//!          [--livery 0-7] [--wire] [--no-textures] [--back-faces] [--all-branches] [--thrusters]` draws models
+//!          [--livery 1-7] [--zero-vars] [--registration TEXT] [--zoom Z] [--wire] [--no-textures] [--back-faces] [--all-branches] [--thrusters]` draws models
 //!          of TABLE (`main` for FRONTIER.EXE, `intro` for EL2M08) into a PNG, 320×240 each, for
 //!          agents and tests that cannot look at a window.
 //!
@@ -181,7 +181,7 @@ fn render(args: &[String]) -> Result<(), String> {
     let mut i = 1;
     while i < args.len() {
         match args[i].as_str() {
-            "--dir" | "--yaw" | "--pitch" | "--livery" => i += 2,
+            "--dir" | "--yaw" | "--pitch" | "--livery" | "--registration" | "--zoom" => i += 2,
             a if a.starts_with("--") => i += 1,
             _ => {
                 pos.push(&args[i]);
@@ -208,7 +208,7 @@ fn render(args: &[String]) -> Result<(), String> {
         back_faces: flag("--back-faces"),
         yaw: value("--yaw").and_then(|v| v.parse().ok()).unwrap_or(0.6),
         pitch: value("--pitch").and_then(|v| v.parse().ok()).unwrap_or(0.35),
-        zoom: 1.0,
+        zoom: value("--zoom").and_then(|v| v.parse().ok()).unwrap_or(1.0),
     };
     let branches = if flag("--all-branches") { frontier_formats::model::Branches::All } else { frontier_formats::model::Branches::Near };
     let (cw, ch, cols) = (320usize, 240usize, numbers.len().clamp(1, 4));
@@ -224,8 +224,22 @@ fn render(args: &[String]) -> Result<(), String> {
             .and_then(|o| frontier_formats::model::header(&set.image, o).ok())
             .and_then(|h| h.colour())
             .unwrap_or(0x666);
-        let livery = value("--livery").and_then(|v| v.parse().ok()).unwrap_or(0);
-        let sc = scene::build(set, n, branches, livery);
+        let livery = value("--livery").and_then(|v| v.parse().ok());
+        let registration = value("--registration").unwrap_or_else(|| "WT-920".into());
+        let cx = lib.context(set, branches, !flag("--zero-vars"), livery, &registration);
+        let sc = scene::build(&cx, n);
+        println!("model {n}: {} shapes, sub-objects {:?}", sc.shapes.len(), sc.parts);
+        if flag("--debug-text") {
+            for r in &sc.decals {
+                for sh in &sc.shapes[r.clone()] {
+                    match sh {
+                        scene::Shape::Line(v, c) => println!("  text line {v:?} colour {c:03x}"),
+                        scene::Shape::Face { pts, colour, .. } => println!("  text face {pts:?} colour {colour:03x}"),
+                        _ => {}
+                    }
+                }
+            }
+        }
         let items = scene::project(egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(cw as f32, ch as f32)), &sc, default, o);
         let mut cell = raster::Canvas::new(cw, ch, egui::Color32::from_rgb(8, 10, 16));
         cell.draw(&items, &mut |e, base| lib.texture_rgba(e, base));

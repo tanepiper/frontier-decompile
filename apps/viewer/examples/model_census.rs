@@ -121,6 +121,46 @@ fn main() {
             }),
         );
     }
+    // At the start of each model's commands (`1000:b2db`, BP = the model's frame): the model's
+    // offset `[BP-4]`, its frame variables `[BP-40h]`… and the object variables at
+    // `[BP-D8h]:+72h`…, written once per distinct set to models-vars.txt.
+    let vars: Rc<RefCell<std::collections::BTreeSet<String>>> = Rc::default();
+    let v2 = vars.clone();
+    m.hook(
+        "FRONTIER.EXE",
+        0xb2db,
+        Box::new(move |cpu, _| {
+            let ss = (cpu.s[2] as u32) << 4;
+            let bp = cpu.r[5] as u16;
+            let at = |o: i32| ss + bp.wrapping_add(o as u16) as u32;
+            let model = cpu.mem.rw(at(-4));
+            let frame: Vec<String> = (0..8).map(|i| format!("{:04x}", cpu.mem.rw(at(-0x40 + 2 * i)))).collect();
+            let (oo, os) = (cpu.mem.rw(at(-0xd8)), cpu.mem.rw(at(-0xd6)));
+            let obj: Vec<String> =
+                (0..64).map(|i| format!("{:04x}", cpu.mem.rw(((os as u32) << 4) + oo.wrapping_add(0x72 + 2 * i) as u32))).collect();
+            v2.borrow_mut().insert(format!("model {model:04x} frame {} obj {os:04x}:{oo:04x} {}", frame.join(" "), obj.join(" ")));
+            false
+        }),
+    );
+    // Text (`0A`): at `1000:7a1e` the text's frame matrix `[BP-24h]`… is set; BX is the parent's
+    // frame. Both matrices (9 words each) and the parent's model, once per distinct set, to
+    // models-text.txt.
+    let texts: Rc<RefCell<std::collections::BTreeSet<String>>> = Rc::default();
+    let t2 = texts.clone();
+    m.hook(
+        "FRONTIER.EXE",
+        0x7a1e,
+        Box::new(move |cpu, _| {
+            let ss = (cpu.s[2] as u32) << 4;
+            let (bp, bx) = (cpu.r[5] as u16, cpu.r[3] as u16);
+            let rd = |base: u16, o: i32| cpu.mem.rw(ss + base.wrapping_add(o as u16) as u32) as i16;
+            let child: Vec<String> = (0..9).map(|i| rd(bp, -0x24 + 2 * i).to_string()).collect();
+            let parent: Vec<String> = (0..9).map(|i| rd(bx, -0x24 + 2 * i).to_string()).collect();
+            let model = rd(bx, -4) as u16;
+            t2.borrow_mut().insert(format!("model {model:04x} parent [{}] text [{}]", parent.join(","), child.join(",")));
+            false
+        }),
+    );
     let out = Path::new("game-data/derived/captures");
     std::fs::create_dir_all(out).unwrap();
     let slice = (m.dev.ips / 100.0) as u64;
@@ -182,6 +222,10 @@ fn main() {
                 }
             }
             std::fs::write(out.join("models-commands.txt"), lines).unwrap();
+            let v: Vec<String> = vars.borrow().iter().cloned().collect();
+            std::fs::write(out.join("models-vars.txt"), v.join("\n")).unwrap();
+            let t: Vec<String> = texts.borrow().iter().cloned().collect();
+            std::fs::write(out.join("models-text.txt"), t.join("\n")).unwrap();
             println!("stop {st:?} at {:.1}s", m.now());
             break;
         }

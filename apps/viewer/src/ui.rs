@@ -42,6 +42,8 @@ pub struct Ui {
     back_faces: bool,
     all_branches: bool,
     livery: u8,
+    shown: bool,
+    registration: String,
     model_textures: HashMap<(u8, u16), TextureHandle>,
     message: String,
 }
@@ -73,6 +75,8 @@ impl Ui {
             back_faces: false,
             all_branches: false,
             livery: 0,
+            shown: true,
+            registration: "WT-920".into(),
             model_textures: HashMap::new(),
             message: String::new(),
         }
@@ -428,7 +432,9 @@ impl Ui {
         let pos = model::resolve(&defs);
         let mesh = model::walk(&set.image, off + h.mesh as usize);
         let branches = if self.all_branches { model::Branches::All } else { model::Branches::Near };
-        let scene = scene::build(set, self.model, branches, self.livery);
+        let livery = (self.livery > 0).then_some(self.livery);
+        let cx = self.lib.context(set, branches, self.shown, livery, &self.registration);
+        let scene = scene::build(&cx, self.model);
         let title = match set.roles.get(self.model).cloned().flatten() {
             Some(model::Role::Named(n)) => format!("{n} (model {})", self.model),
             Some(r) => format!("Model {} · {}", self.model, r.group()),
@@ -442,7 +448,9 @@ impl Ui {
             ui.checkbox(&mut self.show_textures, "textures");
             ui.checkbox(&mut self.back_faces, "back faces");
             ui.checkbox(&mut self.all_branches, "every level of detail");
-            ui.add(egui::Slider::new(&mut self.livery, 0..=7).text("livery"));
+            ui.add(egui::Slider::new(&mut self.livery, 0..=7).text("livery (0 = from the variables)"));
+            ui.checkbox(&mut self.shown, "ship on show (measured variables)");
+            ui.add(egui::TextEdit::singleline(&mut self.registration).desired_width(70.0)).on_hover_text("Registration (text 3016h)");
             ui.add(egui::Slider::new(&mut self.zoom, 0.2..=5.0).text("zoom"));
         });
         match &mesh.stopped {

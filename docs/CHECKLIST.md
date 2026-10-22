@@ -32,7 +32,7 @@ original on the runtime). Keep it short. Details belong in the topic documents.
   - [ ] Its flight-object path `EL2M00:4275` (main-program object routines)
 - [x] `EL2G.GRF` (`1000:e2ba`, `EL2MCGA3:02d3`) and the `PICnnn.GRF` screenshots (`1000:db9f`) decoded, every byte of the shipped files ([FORMATS.md](FORMATS.md))
 - [x] The `.ROL` songs read as Standard MIDI Files ([FORMATS.md](FORMATS.md) §3)
-- [ ] The models: tables (`1000:18b5`), header, vertices; every command's length measured, every model walks to its end; ships named from their data blocks (four checked in the game), stations and starports grouped (*inferred*); face textures and liveries (`CS:25c4`, opcode `1A`) read; what opcodes `0A`, `0F`–`12`, `15`–`1C`, `1E` draw, not traced ([FORMATS.md](FORMATS.md) §4)
+- [ ] The models: tables (`1000:18b5`), header, vertices; every command's length measured, every model walks to its end; ships named from their data blocks (four checked in the game), stations and starports grouped (*inferred*); face textures and liveries (`CS:25c4`, opcode `1A`) read; model logic (variables, `0D`/`1D`, `13`/`14`, `1B`, `1C`, `0A` text) evaluated, the shipyard Tiger Trader's parts matching the game; what opcodes `0A`, `0F`–`12`, `15`–`1C`, `1E` draw, not traced ([FORMATS.md](FORMATS.md) §4)
 - [ ] Saves and the position files (`11 00 C6`, packed) ([FORMATS.md](FORMATS.md) §6)
 - [x] Resource viewer (`apps/viewer`): every file, native and browser
 
