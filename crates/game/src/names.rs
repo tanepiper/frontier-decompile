@@ -60,9 +60,6 @@ impl St<'_> {
 
     /// `EL2M09:11c3` (entered by `PUSH CS; CALL`) and the main program's text expander
     /// `1000:e969` (slot `DS:005c`), *observed*: copy word `AX` of the `EL2M09` table to `SS:DI`.
-    /// Ordinary bytes are copied up to and including the 0; bytes 80h–FCh are copied too; `FDh`
-    /// writes `1Eh` and the next byte, `FEh` writes `1Fh` and the next word; `FFh` (expand another
-    /// string) declines.
     fn copy_word(&mut self) -> Result<(), Decline> {
         // 11c3: SHL AX,1; MOV SI,CS; MOV ES,SI; MOV SI,00a3h; CALLF [005c]
         self.ax <<= 1;
@@ -74,6 +71,18 @@ impl St<'_> {
         let rel = self.bus.read16(lin(self.es, self.bx.wrapping_add(self.si)));
         self.si = self.si.wrapping_add(rel);
         self.n += 2;
+        self.copy_loop()?;
+        self.n += 1; // 11c3's RETF
+        Ok(())
+    }
+
+    /// The expander's loop (`1000:e96e`) from `ES:SI` to `SS:DI`, through its `RETF`.
+    /// Ordinary bytes are copied up to and including the 0; bytes 80h–FCh are copied too; `FDh`
+    /// writes `1Eh` and the next byte; `FEh` writes `1Fh` and the next word; `FFh` expands the
+    /// string whose id is the next (big-endian) word through slot `DS:0014` (`1000:e89d`). Of
+    /// those only id `3016h` is ported (formatter `1000:eaf3`: the string at `[DS:07e4]`, copied
+    /// by re-entering this loop); any other id declines.
+    fn copy_loop(&mut self) -> Result<(), Decline> {
         loop {
             let al = self.bus.read8(lin(self.es, self.si));
             self.si = self.si.wrapping_add(1);
@@ -86,7 +95,7 @@ impl St<'_> {
             }
             if al == 0 {
                 self.n += 7; // ... JNZ (not taken), RETF
-                break;
+                return Ok(());
             }
             self.di = self.di.wrapping_sub(1);
             if al < 0xfd {
@@ -95,7 +104,30 @@ impl St<'_> {
                 continue;
             }
             if al == 0xff {
-                return Err(Decline);
+                // e9a7: LODSW; XCHG AH,AL; CALLF [0014]
+                let w = self.bus.read16(lin(self.es, self.si));
+                self.si = self.si.wrapping_add(2);
+                let id = w.swap_bytes();
+                if id != 0x3016 {
+                    return Err(Decline);
+                }
+                // e89d: PUSH SI; PUSH ES; SHL AX,1; JC; JS; CMP AH,60h; JNC e8e9;
+                // MOV BX,AX; MOV AX,SS; MOV ES,AX; PUSH [7c0]; PUSH [7c4]; PUSH [7c8];
+                // CALL CS:[BX+8915] -> eaf3: LES SI,[07e4]; PUSH CS; CALL e96e
+                let (si, es) = (self.si, self.es);
+                self.bx = id << 1;
+                self.ax = self.ss;
+                self.si = self.bus.read16(lin(self.ds, 0x07e4));
+                self.es = self.bus.read16(lin(self.ds, 0x07e6));
+                self.n += 14 + 14 + 3; // outer dispatch + LODSW, XCHG, CALLF; e89d; eaf3
+                self.copy_loop()?;
+                // eaf3's RET; POP [7c8]; POP [7c4]; POP [7c0]; POP ES; POP SI; RETF; then
+                // e9af: DEC DI; JMP e96e
+                self.si = si;
+                self.es = es;
+                self.di = self.di.wrapping_sub(1);
+                self.n += 1 + 6 + 2;
+                continue;
             }
             if al == 0xfe {
                 self.wb(self.di, 0x1f);
@@ -114,8 +146,6 @@ impl St<'_> {
             }
             self.n += 17;
         }
-        self.n += 1; // 11c3's RETF
-        Ok(())
     }
 
     /// `PUSH BX; PUSH CX; PUSH DI; PUSH SI; MOV DI,BP; PUSH CS; CALL 11c3`, the copy, then (with
@@ -367,7 +397,7 @@ impl St<'_> {
 /// Port of `EL2M09:0f92` (module 9, handler `+20`), *observed*: write a generated name of kind
 /// `AX` from the seed `CX:BX` to `SS:DI`, terminated by 0. `BP` returns just past the name (or
 /// past its last word). `[DS:07e0]`–`07ef` are saved and restored around the work. Declines when
-/// a copied word contains an `FFh` escape (a nested string expansion).
+/// a copied word contains an `FFh` escape for a string other than `3016h` (the sub-name).
 pub fn name_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
     let ds = c.ds;
     let mut saved = [0u32; 4];

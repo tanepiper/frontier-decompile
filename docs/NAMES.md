@@ -35,23 +35,25 @@ string `AX` of the table (`SI += ES:[SI + 2·AX]`, offsets relative to the table
 | 00h | copied, then return (`DI` is past it) |
 | FDh | writes `1Eh` and the next byte (a 1-byte control code) |
 | FEh | writes `1Fh` and the next word (a 2-byte control code) |
-| FFh | the next word names another string, expanded through slot `DS:0014` (recursive). **Not ported** |
+| FFh | the next word (big-endian) names another string, expanded through slot `DS:0014` (`1000:e89d`). In the name tables every escape is id `3016h`: formatter `1000:eaf3` (jump table `CS:8915`), which loads `ES:SI` from `[DS:07e4]`, the template's sub-name, and re-enters the copy loop at `1000:e96e`. Ported for that id |
 
 ## Port and proof
 
 `frontier_game::names::name_port` is register- and memory-exact and returns the original's
-instruction count. It declines when a copied word contains an `FFh` escape, and the original runs
-in that case.
+instruction count. It declines only when an `FFh` escape names a string other than `3016h`,
+which does not happen in `EL2M09`'s tables (all 69 escapes are `3016h`, from a scan of the table).
 
 - **Fuzzing** (`crates/hooks/tests/galaxy_parity.rs`): 20,000 calls with kinds 0–31 and random
-  seeds, in the booted game with `EL2M09` loaded through its module thunk. **14,274 compared,
-  0 mismatches**, 5,726 declined (`FFh` escapes).
+  seeds, in the booted game with `EL2M09` loaded through its module thunk. **20,000 compared,
+  0 mismatches, none declined.**
 - **Shadow verification in play** (`rng_verify` example, 60 s with the galaxy map): 5 calls,
   0 mismatches.
 
 ## Open questions
 
-- The nested string expansion (`FFh`, slot `DS:0014`): the main program's text system. It is
-  needed for kinds 6–14 and for most of the game's text.
+- The rest of the text system behind slot `DS:0014` (`1000:e89d`): ids below `3000h` (the main
+  table at `CS:e4dd`), `3000h`–`3FFFh` (formatters through `CS:8915`, arguments in
+  `DS:07c0`–`07cb`, which are saved around the call), `4000h`–`7FFFh` (the table at `[DS:5703]`)
+  and `8000h` up (a module's own strings through module handler `+28`).
 - What each kind is used for (planets, people, ships). The callers in `EL2M00` (`EL2M00:4db8`
   for system bodies, [GALAXY.md](GALAXY.md)) and the bulletin board give the answer.
