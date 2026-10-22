@@ -46,7 +46,7 @@ fn cs_ww(x: &mut Ctx, off: u16, v: u16) {
     x.bus.write16(lin(x.c.cs, off), v)
 }
 
-/// How the cache lookup at `EL2MCGA3:0173` ended.
+/// How the cache lookup ended.
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Lookup {
     /// The bitmap is cached: `ES:SI` is its data, and the `RETF` was taken.
@@ -529,6 +529,7 @@ pub fn blit_after_lookup(x: &mut Ctx) -> Result<(), Decline> {
             break;
         }
         if x.steps > 50_000_000 {
+            // Not ported: compressed data that never ends (not a bitmap); the original runs.
             return Err(Decline("bitmap data does not end"));
         }
         // LODSB; OR AL,AL; JS 421

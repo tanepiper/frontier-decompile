@@ -84,6 +84,10 @@ See [docs/FINDINGS.md](docs/FINDINGS.md) for what is known about the binaries an
   through an OPL2 model. Its audio is identical sample for sample to the original driver's. One
   stereo output natively (cpal) and in the browser (WebAudio) ([docs/AUDIO.md](docs/AUDIO.md)).
   A DOSBox audio comparison remains
+- [x] Video: all 40 `EL2MCGA3` exports (polygons flat and textured, lines, discs, the model and
+  scanline fills, text, bitmaps with their EMS cache, the palette and the flip) are ported
+  natively; shadow-verified over 90 s of play with 0 mismatches, frames identical to the original
+  ([docs/VIDEO.md](docs/VIDEO.md))
 - [ ] M1: function discovery across `FRONTIER.EXE` and the overlays; overlay loader traced
   (loader and seeding done, see [docs/OVERLAYS.md](docs/OVERLAYS.md); indirect calls and names remain)
 - [ ] M2: data formats. `EL2G.GRF` and the screenshot format, the MIDI songs, the model tables,

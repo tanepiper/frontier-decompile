@@ -599,6 +599,8 @@ fn map_row(x: &mut Ctx) -> Result<(), Decline> {
     let sp = x.sp();
     // A texel offset past FFFFh wraps below the buffer, into the words the fill pushed (its
     // copy loop, the call of this routine, divide-overflow frames), not modelled here.
+    // Not ported: a texel read that wraps below the buffer into the fill's own pushed words (the
+    // copy loop's, the call's, divide-overflow frames); the original runs.
     let base = rw(x, 0x357d);
     let pushed = |a: u16| a < base && a >= base.wrapping_sub(16);
     let mut pair = 0;

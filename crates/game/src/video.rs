@@ -230,6 +230,7 @@ impl Ctx<'_> {
     /// Decline if the direction flag is set: the string instructions would run backwards.
     pub fn forward(&self) -> Result<(), Decline> {
         if self.c.flags & DF != 0 {
+            // Not ported: the string instructions with DF set (never seen); the original runs.
             Err(Decline("direction flag set"))
         } else {
             Ok(())

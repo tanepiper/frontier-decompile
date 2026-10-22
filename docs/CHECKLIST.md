@@ -1,6 +1,6 @@
 # Checklist: Frontier: Elite II
 
-Updated: 2026-10-22
+Updated: 2026-10-23
 
 Each line names an item and its main original routine. Its state is traced (read and
 documented), measured (run, ground truth captured), ported, or verified (identical to the
@@ -19,7 +19,8 @@ original on the runtime). Keep it short. Details belong in the topic documents.
 - [x] Interrupts per instruction, and ported routines charged their instruction counts
 - [x] `EL2MATH3`: every routine ported and verified, floats, 3D transforms, orbits and positions ([MATH3.md](MATH3.md))
 - [x] `EL2ADLIB`: the AdLib sound driver ported, identical to the original, with an OPL2 model ([AUDIO.md](AUDIO.md))
-- [ ] `EL2MCGA3`: the span filler, flat triangles, quadrilaterals and lines ported; the rest of the renderer
+- [x] `EL2MCGA3`: all 40 exports ported and verified: spans, flat and textured polygons, lines, discs, scanline and mask fills, text, bitmaps and their EMS cache, the palette, the flip ([VIDEO.md](VIDEO.md))
+- [ ] The draw-command layer and a WebGPU backend that renders it at higher resolution ([VIDEO.md](VIDEO.md) §10)
 - [x] The random number generators: `random(n)` `1000:069b`, `random32` `1000:0645`, `mix` `1000:066a`, ported and verified ([RNG.md](RNG.md))
 - [x] Galaxy: the density map (`EL2M19`), sector density `EL2M02:3b34`, sector seed `EL2M02:3abe` and sector star list `EL2M02:3c2f`, ported and verified ([GALAXY.md](GALAXY.md))
 - [x] Names: the `EL2M09` name generator `EL2M09:0f92` and the text expander `1000:e969`, ported and verified, with the nested sub-name string ([NAMES.md](NAMES.md))
@@ -43,6 +44,6 @@ original on the runtime). Keep it short. Details belong in the topic documents.
 ## Labels and evidence
 
 - [x] Deviations: the policy ([DEVIATIONS.md](DEVIATIONS.md)) and the generated ledger ([DEVIATIONS-LEDGER.md](DEVIATIONS-LEDGER.md))
-- [x] Labels from the port's citations, one file per binary in `labels/` (91 labels)
+- [x] Labels from the port's citations, one file per binary in `labels/` (221 labels)
 - [x] Hand labels for the routines only one action runs (`labels/names.tsv`, `labels/names-EL2M00.tsv`, `labels/names-EL2M10.tsv`), roles inferred
 - [ ] The open questions in [FINDINGS.md](FINDINGS.md): the `LAVE`, `MARS`, `MOON`, `VTOL`, `BATTLE` and `LATIS._0n` files (all packed, same 3-byte header; [FORMATS.md](FORMATS.md) §6)

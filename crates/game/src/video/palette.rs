@@ -311,6 +311,7 @@ pub fn upload_colours(x: &mut Ctx) -> Result<(), Decline> {
                 loop {
                     guard += 1;
                     if guard > 100_000 {
+                        // Not ported: no known colour below a new one; the original loops for ever.
                         return Err(Decline("no known colour below a new one (the original loops for ever)"));
                     }
                     let probe = |x: &mut Ctx, c: u16| -> Option<u8> {

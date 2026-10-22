@@ -258,6 +258,7 @@ pub fn disc(x: &mut Ctx) -> Result<(), Decline> {
     // SUB CX,AX; MOV [57bd],CX; MOV AH,[57fd]; MOVZX EDI,DI
     let rows = last.wrapping_sub(first);
     if rows as i16 <= 0 {
+        // Not ported: a disc with no rows in view, where the original fills 65,536 rows.
         return Err(Decline("disc with no rows in view (the original runs 65536 rows)"));
     }
     x.ds_ww(ROWS, rows);

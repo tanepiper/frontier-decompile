@@ -17,7 +17,7 @@ may be patched — *inferred*).
 |---|---|---|
 | `FRONTIER.EXE` | Main program, DOS MZ | header |
 | `EL2M00`–`EL2M19.OVL` | 20 overlays, all MZ images with entry `0000:0000` and SP `0x200` | header |
-| `EL2MCGA3.OVL` | MCGA/VGA 320×200 video driver (*inferred* from name) | name, string in EXE |
+| `EL2MCGA3.OVL` | MCGA/VGA 320×200 video driver: 40 exports, all ported ([VIDEO.md](VIDEO.md)) | code, runtime |
 | `EL2MATH3.OVL` | Maths routines (*inferred*) | name, string in EXE |
 | `EL2ADLIB.OVL`, `EL2ROL.OVL`, `EL2SPK.OVL` | AdLib, ROL music, PC speaker sound drivers (*inferred*) | names, strings in EXE |
 | `EL2SETUP.OVL` | Setup/config overlay (*inferred*) | name, string in EXE |
