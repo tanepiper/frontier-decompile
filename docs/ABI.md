@@ -52,6 +52,15 @@ A reimplementation is exact only if it copies these details:
   precise than either float type; match where the original stores. The precision control word
   (set by Direct3D 9 to 24-bit by default unless `D3DCREATE_FPU_PRESERVE` is used) can make x87
   round every result to float precision.
+- **Reversed and popping x87 forms.** `fsub` computes `st(0) - src`. `fsubr` computes
+  `src - st(0)`, and `fdivr` divides the other way round in the same way. Forms ending in `p`
+  pop the stack afterwards. Ghidra usually writes the right order, but check it where a
+  result looks negated or inverted. The order is the whole difference.
+- **x87 compares.** `fcom`, `fcomp` and `fcompp` set C0, C2 and C3 in the status word, read
+  with `fnstsw ax`. `fcomi` and `fucomi` (Pentium Pro and later) set the CPU flags directly,
+  so `ja` or `jb` follows. A compare with a NaN is unordered: all three bits set, or ZF, PF
+  and CF set. A `jp` after the compare tests for it. The port must take the same branch for
+  NaN as the original.
 - **Conversions.** `cvttss2si` truncates toward zero (a C cast); `cvtss2si` rounds with the
   current mode (`lrintf`). Ghidra writes both as a cast; the instruction tells you which.
 - **min and max.** `minss a, b` returns b when either is NaN, so keep the original's operand order.
@@ -73,6 +82,16 @@ A reimplementation is exact only if it copies these details:
   need explicit wrapping.
 - `imul`/`idiv` are signed, `mul`/`div` unsigned. Take the type from the instruction, whatever
   type Ghidra declares.
+- `movsx` loads a byte or a 16-bit value as signed, `movzx` as unsigned. This shows whether a
+  `char` or `short` field is signed.
+- C widens `char` and `short` values to `int` before it computes with them. The result is cut
+  back only when it is stored. A sum of two 8-bit values can therefore go above 255 inside an
+  expression, and a compare sees that full value.
+- An operation on two types first converts one operand to the other's type. With an `int` and
+  a `float`, the `int` becomes a `float` (`cvtsi2ss`, `fild`) before the operation. Dividing
+  two `int` values, then storing the result in a `float`, divides as integers first. With a
+  signed and an unsigned value of the same width, the compare is unsigned, so `-1 < 0u` is
+  false. Convert at the same point as the original.
 
 ## Further reading
 

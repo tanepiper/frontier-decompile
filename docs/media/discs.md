@@ -113,6 +113,24 @@ image with Redump's entry to learn which pressing you have.
 In a few rips, the audio is stored big-endian. If an extracted track sounds like loud noise,
 extract it again with `--swap`.
 
+## The disc as an object
+
+A pressed disc and a recordable disc (CD-R) are made differently. A pressed disc has its data
+moulded in. A CD-R has a dye layer, which gives it a green, gold or blue tint, and a groove
+that carries a time code (ATIP) for the writer. Prototypes, review copies and many demo discs
+were burned on CD-R. A CD-R of a game is therefore often a different build from the retail
+pressing. Record which kind you have.
+
+- **The hub.** A pressed disc has codes moulded or etched around the hole: a matrix number, and
+  on most discs since 1994 the IFPI mastering and mould codes. They identify the plant and the
+  master. [Redump](http://redump.org/) records them with each dump. Photograph the hub and the
+  label before you clean or read the disc.
+- **CD-Text.** Some discs store album and track titles in the lead-in. Raw images that keep the
+  lead-in (CloneCD's `.ccd`) keep it. It can name the music tracks of a mixed-mode disc.
+- **A disc that will not read.** Scratches and dye that has faded make a drive retry. Read with
+  a tool that keeps going and records the errors (Redump's method, or `ddrescue` for data
+  tracks), so the image shows which sectors were lost.
+
 ## Using discinfo
 
 ```bash

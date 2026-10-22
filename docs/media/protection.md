@@ -3,9 +3,10 @@
 Some executables do not hold their code in readable form. A packer compresses the program and
 adds a small routine that unpacks it in memory at start-up. A protection system encrypts parts
 of the code, checks for the original disc or a debugger, or binds the program to an online
-account. This page describes how to recognise each case, and what it means for the work. It
-describes the techniques as facts. It does not describe how to defeat a commercial protection.
-The law on working around copy protection differs by country ([Legal](../LEGAL.md),
+account. This page describes how to recognise each case, and what it means for the work. For
+older games, it also describes how to study a protection check and how to work on a copy that
+no longer needs the original disk. It does not cover current protection systems. The law on
+working around copy protection differs by country ([Legal](../LEGAL.md),
 [the law worldwide](../preservation/law/README.md)). You decide which route to take.
 
 ## Recognising a packed program
@@ -71,6 +72,11 @@ Some protection systems also change the code itself, so that it is hard to read.
   is always even, guard jumps into junk code that never runs.
 - **Junk instructions.** Instructions with no effect, and jumps into the middle of other
   instructions, confuse a disassembler.
+- **Imports found by hash.** The code walks the list of loaded modules through the process
+  environment block (`fs:[30h]` on 32-bit Windows, `gs:[60h]` on 64-bit) and compares a hash of
+  each exported name with a constant. No import table entry and no string names the function.
+  Hash the export names of the system DLLs with the same function and match the constants
+  (`tools/triage/hashnames.py` does this for common hashes).
 - **Virtualised code.** The protected functions are translated into the instructions of a
   private virtual machine, with an interpreter in the program. VMProtect and Denuvo work this
   way.
@@ -115,6 +121,42 @@ port leaves out with a "not ported" note at the place it would have run, so the 
 it ([re-port](../../.claude/skills/re-port/SKILL.md)). Prefer a release that has no protection.
 Many digital re-releases ship without the disc checks. `compare_trees.py` and `similar.py`
 show whether such a release is otherwise the same program.
+
+## Working with an old protection check
+
+A floppy or CD game from before online activation usually has one check, or a few. Studying it
+answers two questions. What does the game need in order to run, and does the check change
+anything the player sees? Take the routes in this order, and stop at the first one that works.
+
+1. **A release without the check.** Many re-releases on GOG, Steam or a budget label removed
+   the check. `compare_trees.py --similar` and `similar.py` show whether the rest of the
+   program is the same version.
+2. **The original media in an emulator.** Emulators read disk images that keep the unusual
+   sectors a key disk depends on: IPF, SCP or MFM images for Amiga and Atari ST disks, 86F or
+   flux images for PC floppies. Raw CD images with subchannel data (`.ccd` with `.sub`, `.mds`)
+   keep what most disc checks read. The game then runs as its owner ran it.
+3. **Your own copy, changed for analysis.** When neither works, find the check and record what
+   it tests. Change a copy so that it passes, and keep the original untouched. Do this only
+   where your law allows it ([Legal](../LEGAL.md)). Never publish the changed program or the
+   patch.
+
+Finding the check follows the same steps as any other feature:
+
+| Kind of check | How to find it |
+|---|---|
+| A manual lookup or code wheel ("type the third word on page 12") | The question's text. The answers are a table in the program or its data, which the port keeps if the owner wants the lookup |
+| A key disk | Calls that read a sector directly (BIOS `int 13h` on a PC, the hardware or the trackdisk device on an Amiga), then a compare of what came back. Rob Northen's Copylock on the Amiga decrypts its code one instruction at a time with the trace exception |
+| A CD check | Calls for the volume label (`GetVolumeInformation`), the drive type (`GetDriveType`), a file's presence, or the table of contents through MCI or MSCDEX |
+| A serial number or CD key | The text of the error message, then the function that tests the key. It transforms the name or the key and compares the result |
+| Any of these | The error message or the screen shown on failure. Its string, or the code that draws it, leads back to the decision. The decision is the compare and the branch just before |
+
+Record what the check tests and what it does on failure. Some games do more than stop. They
+make the game harder, remove an item, or crash later, long after the check. That behaviour is
+part of what a cracked copy changed. Note it, so that a recording made on such a copy is not
+taken as the original's behaviour.
+
+The port leaves the check out and marks it "not ported", as above. A manual lookup is the one
+exception the owner may keep, because it is part of the game's screens.
 
 ## What to record
 

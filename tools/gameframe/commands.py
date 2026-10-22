@@ -9,6 +9,7 @@ import subprocess
 import sys
 import textwrap
 
+import agents
 import catalog
 import skills
 from paths import NAME, SCRIPTS, python, rel
@@ -81,6 +82,19 @@ def skill(args):
         print(text)
         return 0
     print(s.body.rstrip())
+    return 0
+
+
+def list_agents(args):
+    if args.table:
+        print(agents.table())
+        return 0
+    found = agents.agents()
+    if args.json:
+        return _dump(found)
+    pad = max(len(a['name']) for a in found) + 2
+    for a in found:
+        print(_row(a['name'], a['summary'], pad))
     return 0
 
 

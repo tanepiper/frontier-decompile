@@ -77,6 +77,17 @@ def main(path, *flags):
         if '--imports' in flags:
             for i in d.imports:
                 print(f'        {i.name.decode() if i.name else "#" + str(i.ordinal)}')
+    delayed = getattr(pe, 'DIRECTORY_ENTRY_DELAY_IMPORT', [])
+    if delayed:
+        print(f'  delay-loaded imports: {len(delayed)} DLLs (loaded on the first call, not in the import table)')
+        for d in delayed:
+            print(f'    {d.dll.decode():<28} {len(d.imports)} functions')
+            if '--imports' in flags:
+                for i in d.imports:
+                    print(f'        {i.name.decode() if i.name else "#" + str(i.ordinal)}')
+    relocs = sum(len(b.entries) for b in getattr(pe, 'DIRECTORY_ENTRY_BASERELOC', []))
+    print(f'  base relocations: {relocs}' + (' (tools/pe/relocs.py lists the pointers in data)' if relocs
+                                             else ' (none: linked to load only at its base, /FIXED)'))
     exports = getattr(pe, 'DIRECTORY_ENTRY_EXPORT', None)
     n = len(exports.symbols) if exports else 0
     mangled = sum(1 for e in (exports.symbols if exports else []) if e.name and e.name.startswith(b'?'))

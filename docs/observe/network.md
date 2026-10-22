@@ -14,6 +14,12 @@ original. [Online and network games](../games/online.md) covers the rules such g
 - **A service that has closed.** Captures taken while it ran, by you or by a community, are
   the evidence. Ask where they came from and keep that with them.
 
+- **A proxy between client and server.** A small program listens where the client connects,
+  connects to the server itself, and passes every message on. It can decompress or decrypt
+  each message on the way, so the log shows plain data. On a local server, it can also change
+  one field of a message to see how the server reacts. That finds the server's own rules
+  without its code.
+
 Wireshark and tcpdump write `.pcap` and `.pcapng` files. Record each capture with what you did
 in the game, second by second, so a message can be matched to an action.
 

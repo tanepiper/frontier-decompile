@@ -113,7 +113,16 @@ These are the details that make a reimplementation drift, in order of how often 
    arithmetic against logical shifts, float-to-int truncation (`cvttss2si`).
 8. **Time.** Fixed step against variable step; integer ticks against float seconds; the exact
    step size and when the accumulated time is consumed.
-9. **Uninitialised and stale state.** The original may read a field before writing it, or keep
+9. **Order of evaluation.** The order of a call's arguments, and of the two sides of an
+   operator, is the compiler's choice in C and C++. Take it from the binary. When two parts of
+   one expression draw random numbers or change shared state, give each its own statement in
+   the binary's order (`docs/COMPILED-CODE.md`, "Order of evaluation").
+10. **Folded constants.** A float constant the compiler computed (`0x3eaaaaab` for 1/3) is exact
+    in the binary. Copy its bits. An expression for it in the port may round differently.
+11. **Update order.** Objects added or removed during an update, pools, queues, double
+    buffers and dirty flags each decide what runs this frame (`docs/GAME-PATTERNS.md`, "Update
+    order"). Copy each decision from the binary.
+12. **Uninitialised and stale state.** The original may read a field before writing it, or keep
    a value from the last frame. That is behaviour too.
 
 ## Deviations

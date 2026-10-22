@@ -75,6 +75,99 @@ action once. The blocks in the second run and not the first are the action's cod
 Keep the two runs alike: the same save, the same menus, the same length. Every extra
 difference adds functions to the list.
 
+## Tracing calls in the running game
+
+`tools/live/frida_trace.py` traces calls to chosen functions while the game runs on its own
+platform. Name each function by module and offset, or by export:
+
+```bash
+.venv/bin/python tools/live/frida_trace.py --hook 'game.exe+0x1a2b30=rng_next' --args 1 \
+  --out derived/live.trace --attach game.exe
+tools/verify/seqdiff.py derived/live.trace derived/port.trace
+```
+
+Each call is one line with its label, its first arguments and its call site. The format is the
+one `tools/emu/call_trace.py` writes, so `seqdiff.py` compares the trace with the port's. Use it
+for what the emulator cannot reach: a whole level played by hand, calls that depend on the
+graphics or sound system, and timing between frames. `--watch 'game.exe+0x2a1000:256=units'`
+logs each read and write of a block of memory with the instruction that made it, which finds
+the code behind a value seen in a memory scan. Frida is installed by
+`scripts/setup.sh --install`. It runs on Windows, Linux, macOS and Android. Some protected games
+detect it. On macOS, signed programs need a copy without the hardened runtime.
+
+## Adding code to the original
+
+Some answers need code inside the original game. Examples are writing the game state to a
+file every frame, or logging each message a function sends. On your own copy, for analysis
+only, there are three ways in:
+
+- **Frida**, above. It needs no change to the files and is the first choice.
+- **A proxy DLL.** Windows loads a DLL from the game's folder before the system's copy. A DLL
+  named like one the game imports (`dinput8.dll`, `d3d9.dll`, `winmm.dll`) can pass every call
+  on to the real one and log what it needs. Graphics tools such as apitrace work this way.
+- **A code cave.** Unused bytes in the executable, often padding at the end of a section, can
+  hold a few new instructions. A jump placed over an existing instruction leads there. The new
+  code repeats the instruction it replaced, does its work, and jumps back. Record each change
+  as for any patch.
+
+## Going backwards: time-travel debugging
+
+A recording debugger saves everything a program does, then lets you step backwards as well as
+forwards. The common question becomes one step. A value is wrong now, so which instruction
+last wrote it? Set a watchpoint on the value and run backwards.
+
+- **WinDbg's Time Travel Debugging** records a Windows process into a trace file. Queries over
+  the trace list every call to a function, or every write to an address, across the whole run.
+- **rr** records a Linux x86 process. `gdb` then runs over the recording with `reverse-continue`
+  and `reverse-step`.
+- **Emulators.** Many console and computer emulators can rewind, and some write a trace log of
+  every instruction. A save state taken just before the moment, with a trace log, gives the same
+  answer for older games.
+
+A recording is large and the program runs slower while it records. Record only the few seconds
+around the event, starting from a save that reaches it quickly.
+
+## Following a value: taint
+
+Coverage shows which code ran. Taint shows which code used a value. Mark some bytes as the
+source: a field read from the save file, the result of the random generator, a key press. Then
+follow each instruction. When an instruction reads a marked byte, the bytes it writes are
+marked too. At the end, the marked memory and the instructions that touched it are the value's
+path through the game.
+
+- **Questions it answers.** Which code reads this byte of the save file? Which decisions does
+  this random draw affect? Which part of the score comes from the difficulty setting?
+- **Tools.** libdft (on Intel Pin) taints a running x86 program on Linux. On other platforms,
+  use an emulator. `tools/emu/mem_trace.py` marks memory in `pe_emu.py`, calls a function, and
+  lists each instruction that read or wrote the marked bytes. With `registers=True` it also
+  follows values through registers, using Capstone to know what each instruction reads and
+  writes, and marks the memory they reach. It can mark too much, never too little.
+- **Several sources at once.** Give each source its own colour (a bit in the mark). One pass
+  then shows which values come from the save file, which from the random generator, and which
+  from both.
+- **The static view.** Ghidra's decompiler can highlight a variable's backward slice: every
+  earlier operation that helped compute it. The forward slice shows everything it later
+  affects. A slice covers one function and every possible path. Taint covers one run across
+  the whole program.
+- **Limits.** Taint follows data. It does not follow a decision. If the value only chooses a
+  branch, the values written in that branch are not marked. Mark the branch's condition as a
+  second source when that matters. Tables indexed by a marked value spread the mark widely, so
+  start with few marked bytes.
+
+## Solving for an input: symbolic execution
+
+Symbolic execution runs code with unknown inputs. It keeps each value as a formula of the
+inputs. At each branch it records the condition. A solver such as Z3 then finds inputs that
+make a chosen path run. angr and Triton do this for x86 and other processors.
+
+It suits small pieces of code with a clear goal: a password or level code check, a checksum
+over a save file, a key derived from a serial number, a branch that the tests never reach.
+It can also show that a branch can never run, when the solver finds no input that reaches it.
+Run it on one function at a time, with the memory it needs set up. Whole games are too large.
+The number of paths doubles at each branch that depends on an input. The result is an input
+that you then try in the original. The solver's answer is evidence only after that run
+([Passwords, level codes and cheat codes](../GAME-PATTERNS.md#passwords-level-codes-and-cheat-codes)).
+
 ## Patching a copy
 
 Some questions are quicker to answer by changing the game. Examples are skipping a long intro

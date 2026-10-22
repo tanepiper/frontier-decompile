@@ -81,6 +81,8 @@ scripts/ghidra-run.sh boot.bin blocks    analysis/notes/blocks.txt derived/loadm
   referring function decompiled: the fastest way to find who uses a constant or a singleton.
 - `vtable` lists a table of function pointers. `tools/pe/vtable.py BINARY 0xTABLE --names
   analysis/export/BINARY/functions.tsv` does the same without Ghidra.
+  `tools/pe/relocs.py BINARY` finds every table of pointers in the data from the base
+  relocations, including tables of functions that no call reaches directly.
 
 - `callargs` lists every call to the named functions with the constant, string and global
   arguments at each call, from P-Code, for any processor: every sound and its id, every file

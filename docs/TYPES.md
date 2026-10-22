@@ -17,7 +17,7 @@ Use the best source that exists, in this order:
 | Debug symbols | Everything: a PDB from a demo or a leaked build, Borland Turbo Debugger records ([DOS games](DOS.md)), DWARF in a Linux or Mac build, a linker map file. A related build with symbols (a demo, a port, a sequel on the same engine) carries over with `match_functions.py` |
 | RTTI | Class names and the class tree. MSVC writes a type descriptor named `.?AVName@@` for each class with virtual functions. GCC and Clang write `_ZTS` names. Ghidra applies MSVC's RTTI on its own |
 | Mangled names | Exports and imports with C++ names give each parameter's type |
-| The program's own text | Assertions with expressions (`pUnit->m_health > 0`), log messages that print fields, serialisers that write field names to text files, script bindings that register fields by name |
+| The program's own text | Assertions with expressions (`pUnit->m_health > 0`), log messages that print fields (each `%d`, `%u`, `%f`, `%s` or `%p` in the format string gives the type of one argument), serialisers that write field names to text files, script bindings that register fields by name |
 | Data files and saves | A record in a file is often the structure in memory, written whole. Its layout fixes the order and sizes of the fields |
 | The code | Every access to a field: its offset, its size, its type, and whether it is read or written. The rest of this page |
 
@@ -54,6 +54,7 @@ Use the best source that exists, in this order:
 | Enumeration | Comparisons with small constants, switches, and tables indexed by the value (often a table of name strings, which names every value) |
 | Fixed point | Shifts by 8, 12 or 16 after multiplications, and multiplications by 256 or 65536 ([Compiled code](COMPILED-CODE.md)) |
 | String | A pointer passed to string functions, or a small buffer passed with its size |
+| A header before the data | Reads at negative offsets from a pointer (`[eax-4]`). The pointer points past a header: an allocator's block size, a string's length or reference count, an array's element count. Pascal code can also point one element before an array so that indices start at 1 |
 
 ## The C++ standard containers
 
@@ -79,6 +80,27 @@ checking, which moves every field by 8 bytes. Older compilers have their own lay
 6.0 programs from the late 1990s use a different `std::string`. A game's own containers, which
 many engines wrote to avoid the standard library, have their own layouts: find them with
 the shapes above.
+
+## Dates and times in data
+
+Saves, archives, high-score tables and replays often hold a date. The load menu shows it, or the
+game uses it to order saves. The port must read and write the same form.
+
+| Form | Size | Counts from | Seen in |
+|---|---|---|---|
+| Unix time | 4 or 8 bytes | seconds since 1970-01-01 | C `time_t`. A 32-bit value ends in January 2038 |
+| Unix milliseconds | 8 bytes | milliseconds since 1970-01-01 | Java, JavaScript, many engines' save headers |
+| FILETIME | 8 bytes | 100 ns units since 1601-01-01 | Windows file times, `GetSystemTimeAsFileTime` |
+| SYSTEMTIME | 16 bytes | eight 16-bit fields: year, month, weekday, day, hour, minute, second, ms | Windows saves that store `GetLocalTime`'s result whole |
+| DOS date and time | 2 + 2 bytes | year from 1980 in 7 bits, month, day; hour, minute, seconds halved | FAT, ZIP, DOS games' saves |
+| HFS | 4 bytes, big-endian | seconds since 1904-01-01 | Classic Mac OS files and games |
+| OLE `DATE` | 8-byte float | days since 1899-12-30 | Windows COM, MFC `COleDateTime` |
+| ISO 9660 | 7 bytes | years since 1900, then month, day, hour, minute, second, time zone | CD directory records |
+
+To find one, save the game, note the time, and run `tools/triage/dates.py SAVE --near
+2026-10-22T14:30`. It reads every offset in each form and lists the values within a day of that
+time. Save again a few minutes later. The offset whose value moved by those minutes is the
+date. Check whether the game stores local time or UTC. Their difference is the time zone.
 
 ## Working through a program
 

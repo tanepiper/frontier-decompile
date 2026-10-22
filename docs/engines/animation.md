@@ -57,6 +57,10 @@ Details that change what the player sees:
   one clip to the next over a fixed time, a partial blend that uses one clip for the upper
   body and another for the legs, and additive clips that add a difference on top (breathing,
   aiming). Record the weights and the order of the blends.
+- **After blending.** Many engines adjust the blended pose before skinning: feet placed on
+  the ground (inverse kinematics), a head turned toward a target, a hand held on a weapon.
+  Each step has its own order and limits on angles. A pose taken before these steps differs
+  from the one on screen.
 - **Root motion.** Whether the clip's root movement moves the character in the world, or the
   game moves it and the clip only plays in place. With root motion, the animation decides
   where a character stands, and a port must match it exactly.

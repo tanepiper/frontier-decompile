@@ -1,6 +1,6 @@
 ---
 name: re-setup
-description: Install and check the reverse-engineering toolchain (Ghidra, JDK 21, Python with Unicorn/pefile/capstone, objdump, Node for REA, Zig for the sample) and register the REA MCP server for the agent. Use at the start of a project, when a tool is missing or fails to start, or when REA tools do not appear in the session.
+description: Install and check the reverse-engineering toolchain (Ghidra, JDK 21, Python with Unicorn/pefile/capstone and optional Frida, objdump, Node for REA, Zig for the sample) and register the REA MCP server for the agent. Use at the start of a project, when a tool is missing or fails to start, or when REA tools do not appear in the session.
 ---
 
 # Set up the toolchain
@@ -117,6 +117,8 @@ If REA tools do not appear: restart the agent (MCP servers start with the sessio
 | `Unable to lock project` | Another headless job uses the same Ghidra project: wait, or pass `--project` |
 | `pip install unicorn` fails to build | Use a Python version that has a Unicorn wheel (3.10 to 3.13 are safest): `PYTHON=python3.12` |
 | The sample game does not build | Install Zig (`brew install zig`, or https://ziglang.org/download) |
+| `frida` MISSING in the check | Optional, for live tracing: `scripts/setup.sh --install`, or `.venv/bin/pip install -r requirements-live.txt` |
+| Frida cannot attach on macOS | The program is signed with the hardened runtime. Trace a copy re-signed without it, or one you built |
 
 ## Working in a git worktree
 

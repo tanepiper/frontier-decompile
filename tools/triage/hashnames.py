@@ -21,7 +21,7 @@ strings of PATH itself are left out: data files are full of text that is not a n
 --aligned, only values at offsets divisible by 4 are read, as in most structured data. Each is
 tried as it is, in lower case and in upper case. The functions are CRC-32 (and CRC-32 without
 its final inversion), FNV-1 and FNV-1a (32-bit), djb2, djb2 with xor, sdbm, the Java string
-hash (x31) and the ELF hash. Strings are also hashed as UTF-16LE for CRC-32 and FNV-1a.
+hash (x31), the ELF hash and ROR-13 (used to find imports by hash). Strings are also hashed as UTF-16LE for CRC-32 and FNV-1a.
 
 The first table counts how often each function's hashes occur, and compares the count with
 chance. A real hash often occurs many times (a type id in the header of every resource). Only a
@@ -102,9 +102,17 @@ def elf(b):
     return h
 
 
+def ror13(b):
+    """Rotate right by 13, then add each byte: the usual hash for import names found at run time."""
+    h = 0
+    for c in b:
+        h = (((h >> 13) | (h << 19)) + c) & M32
+    return h
+
+
 FUNCTIONS = [('crc32', crc32, False), ('crc32-noinv', crc32_noinv, False), ('fnv1-32', fnv1, False),
              ('fnv1a-32', fnv1a, False), ('djb2', djb2, False), ('djb2-xor', djb2x, False), ('sdbm', sdbm, False),
-             ('java-x31', java, False), ('elf', elf, False), ('crc32-utf16', crc32, True), ('fnv1a-utf16', fnv1a, True)]
+             ('java-x31', java, False), ('elf', elf, False), ('ror13', ror13, False), ('crc32-utf16', crc32, True), ('fnv1a-utf16', fnv1a, True)]
 CASES = [('as is', lambda t: t), ('lower', str.lower), ('upper', str.upper)]
 
 

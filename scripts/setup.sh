@@ -14,6 +14,7 @@
 #   Zig (~200 MB, optional)                              builds the sample games from any host
 #   DOSBox-X (~50 MB, optional)                          runs DOS games for ground truth (DOS only)
 #   innoextract, 7-Zip (~5 MB, optional)                 extract installers (scripts/extract-installer.sh)
+#   Frida in .venv (~40 MB, optional)                    traces a running game (tools/live/frida_trace.py)
 # Nothing is installed without --install. On Linux, Ghidra is not in apt: the script prints the
 # download page instead of fetching a large archive itself.
 set -uo pipefail
@@ -70,6 +71,15 @@ if "$PYTHON" -c "import unicorn, pefile, capstone" 2>/dev/null; then
   row .venv ok "unicorn $("$PYTHON" -c 'import unicorn; print(unicorn.__version__)'), pefile, capstone"
 else
   row .venv MISSING "run scripts/setup.sh --install (python3 -m venv .venv; pip install -r requirements.txt)"
+  missing=$((missing + 1))
+fi
+if [[ -x "$ROOT/.venv/bin/python" && $install == 1 ]] && ! "$PYTHON" -c "import frida" 2>/dev/null; then
+  "$ROOT/.venv/bin/pip" install -q -r "$ROOT/requirements-live.txt"
+fi
+if "$PYTHON" -c "import frida" 2>/dev/null; then
+  row frida ok "$("$PYTHON" -c 'import frida; print(frida.__version__)') (live tracing)"
+else
+  row frida MISSING "optional: traces a running game (pip install -r requirements-live.txt into .venv)"
   missing=$((missing + 1))
 fi
 

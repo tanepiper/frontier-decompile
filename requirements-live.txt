@@ -1,0 +1,2 @@
+# Optional: live tracing of a running game (scripts/setup.sh --install puts this into .venv, ~40 MB)
+frida>=17.0       # instruments a running process: tools/live/frida_trace.py

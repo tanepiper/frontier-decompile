@@ -3,7 +3,7 @@
 To install and check everything:
 
 ```bash
-scripts/setup.sh --install   # Ghidra, JDK 21, objdump, Node, Zig; .venv with unicorn, pefile, capstone
+scripts/setup.sh --install   # Ghidra, JDK 21, objdump, Node, Zig; .venv with unicorn, pefile, capstone, Frida
 tests/run.sh --ghidra        # proves every tool against the sample game (~1½ min)
 ```
 
@@ -31,10 +31,10 @@ counts the checks that passed and failed. With `--ghidra` the run has more check
 | objdump (binutils or LLVM) | Reading instructions exactly | Homebrew `binutils`/`llvm`, apt `binutils`; Xcode's on macOS |
 | Node.js 18+ | REA (`npx -y rea-agents@6.4.0 mcp`) | https://nodejs.org |
 | Zig (optional) | Building the sample game for Windows from any host | https://ziglang.org |
+| Frida (optional, about 40 MB) | Tracing calls in a running game (`tools/live/frida_trace.py`) | `requirements-live.txt` into `.venv` |
 | REA (optional, recommended) | Evidence-backed inspection of binaries, packages, apps, runtimes | https://github.com/morluto/rea |
 
 Other tools that fit the method, for targets the toolkit does not cover itself: ILSpy or
 dnSpyEx (.NET), Il2CppDumper or Cpp2IL (Unity IL2CPP), unluac (Lua bytecode), FModel and UE4SS
-(Unreal), RenderDoc and apitrace (graphics frames), x64dbg or Frida (debugging and run-time
-hooks, on your own copy only), binwalk (unknown archives), Wine or a Windows machine with Steam
+(Unreal), RenderDoc and apitrace (graphics frames), x64dbg (debugging, on your own copy only), binwalk (unknown archives), Wine or a Windows machine with Steam
 Remote Play (running the original next to the reimplementation).

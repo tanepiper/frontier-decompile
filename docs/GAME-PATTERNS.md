@@ -66,6 +66,28 @@ range, a "tolerance" around a value) each have their own rounding; emulate them 
   one type in a fixed order. Keep that order in the reimplementation.
 - **Handles:** an index plus a generation counter, packed into 32 or 64 bits.
 
+## Update order
+
+![Objects added and removed during one pass of the update loop, and which ones run this frame](assets/diagrams/update-order.svg)
+
+A game updates its objects one at a time, even when they seem to act together. The small
+decisions around that loop decide what the player sees. Every one of them is in the binary,
+and a port must copy each.
+
+| Decision | What changes with it | Where to find it |
+|---|---|---|
+| An object added during the update | Whether it acts in the frame it was made. A loop that reads the count once at the start stops before new objects. A loop that compares with the current count each pass reaches them | Where the loop reads the count: before the loop or at each test |
+| An object removed during the update | Whether the next object is skipped. Removal by moving the last object into the gap changes the order of all later passes. Marking the object dead and removing it after the loop keeps the order | The remove function: a copy from the last slot, a shift of the array, or a flag |
+| State read by other objects | Whether object B sees A's new state or the state from the last frame. A double-buffered game writes into a second copy and swaps after the loop | Two copies of the same structure, and a swap or copy at the end of the frame |
+| A pool of fixed size | Which slot a new object takes, and so its id and its place in the update order. A free list reuses the last freed slot first. A scan reuses the lowest free slot | The allocate function. The full case matters too: refuse, remove the oldest or quietest, or grow |
+| An event or message queue | Whether a reaction happens at once or at a later point in the frame. Events sent while the queue is processed may run in the same pass or the next one. Listeners run in the order they registered | The send function: a direct call, or a write into a ring buffer read later |
+| A value cached with a dirty flag | When the value is computed again: when it is read, or at a fixed point in the frame. If the computation uses random numbers or rounds floats, the moment matters | A flag set by the setters and tested before the computation |
+| Groups updated in turn | Whether a rider sees its vehicle's new position. Some engines update objects in groups (buckets): vehicles and platforms, then characters, then objects attached to them. An object read by one in an earlier group is a frame behind | A loop over a short list of lists, or several update passes with a group number |
+| A spatial grid | The order of objects found near a point: the order of the cells, then the order within each cell. A list that adds at its head returns objects in reverse order of insertion | The query function's loops, and how objects are linked into a cell |
+
+Record each decision with the address that shows it. A port that gets one of these wrong can
+look right for minutes, then drift once an object dies in the middle of a frame.
+
 ## Resources and data
 
 ![An archive: a header, an entry table and the data](assets/diagrams/package-archive.svg)
@@ -80,6 +102,25 @@ range, a "tolerance" around a value) each have their own rounding; emulate them 
   stream.
 - **Scripts and tables:** rules may live in data (XML, JSON, Lua, custom binary tables) rather
   than code. Read the data before reimplementing a rule by hand.
+- **Types defined in data:** a monster or building type is often a record in a data file, with
+  a parent type for the values it does not set. Many loaders copy the parent's values into the
+  child once, when the file is read. Two details then become rules of the game. A loader that
+  treats 0 or an empty string as "not set" gives the parent's value to a child that set 0. The
+  order the loader reads the types decides which parent values exist yet. Copy both.
+- **Start-up order:** an engine starts its subsystems in a fixed order, usually by explicit
+  calls from `main` or the engine's start function. A subsystem that reads another's value
+  before that one has started sees a default value. That is the original's behaviour. Copy the
+  order from the start function's calls.
+- **Tables in place of maths:** sine and cosine tables, square roots, reciprocals, distances.
+  The table decides the result, including its rounding and how the angle becomes an index.
+  Copy the table from the binary, and copy the index arithmetic.
+- **Actors as coroutines:** some games give each actor or script its own small stack. The actor
+  runs until it waits for something, then saves its stack pointer and switches to the next
+  one. In the code, a `mov` into `esp` or `sp` from an object's field marks the switch. The
+  order in which the actors are resumed is their update order.
+- **Objects made from a template:** a spawner can copy a whole template object, then change a
+  few fields. Every field the template holds, including counters and timers, starts with the
+  template's value. The port must copy all of them.
 
 ## Time
 
@@ -88,6 +129,12 @@ range, a "tolerance" around a value) each have their own rounding; emulate them 
 Games keep time as integer ticks (milliseconds or microseconds) or as float seconds, and the
 calendar of a simulation (days, seasons, years) is derived from it. Float time gathers
 rounding error. If the original keeps time as a float, the reimplementation must do the same.
+
+Many games keep more than one clock. Real time drives the menus, the cursor and the sound.
+Game time drives the simulation. It stops when the game is paused and runs faster or slower
+with the speed setting. The game loop keeps running while game time is stopped. Record which
+clock each system reads. A port that pauses the whole loop stops animations that the original
+kept running.
 
 Use the game's own calendar and its own names. A game's year may have twelve "months" that are
 seasons (Early Spring to Late Winter), or eight, or none; its tenth month is not October. Read the names from the game's string tables. Use them in docs, tests and examples.
@@ -116,6 +163,17 @@ same steps in the same order with the same numbers, or objects drift apart withi
   against B gives different positions from the reverse. Record the order and the sort.
 - **Iterations.** Solvers for stacked or jointed objects repeat a fixed number of times. The
   count is part of the rule.
+- **Angles as integers.** Many games store an angle as a fraction of a full turn, not in
+  degrees or radians. Doom uses 32 bits for one turn, so an angle wraps by itself when it
+  overflows. The PlayStation's geometry hardware uses 4096 units for one turn. 8-bit and 16-bit
+  games often use 256. A shift turns the angle into an index into a sine table. Keep the
+  original's unit and its wrap. A port that converts to floating-point radians rounds
+  differently and drifts.
+- **The order of rotations.** Yaw, pitch and roll give different results depending on the
+  order they are applied. Read the order from the code that builds the matrix, and from which
+  sine and cosine meet in each element. Quaternions and matrices give the same rotation in
+  theory, but each conversion rounds. Keep the form the original stores, and convert where it
+  converts.
 
 ## Passwords, level codes and cheat codes
 

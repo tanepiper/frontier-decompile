@@ -14,9 +14,11 @@ Commands:
   run NAME [ARGS]       run a tool or script: Python tools with GameFrame's .venv
   find WORD             which skills and tools mention WORD, line by line
       --max N           lines shown per skill or tool (default 3)
+  agents                every agent: its skills, the tools it cannot use, its hand-offs
+      --table           the Markdown table that docs/working/agents.md holds
   doctor [ARGS]         check the toolchain (scripts/setup.sh; ARGS such as --install pass on)
 
-steps, skills, tools, tool and find take --json, for agents and scripts.
+steps, skills, agents, tools, tool and find take --json, for agents and scripts.
 
 Examples:
   gameframe steps
@@ -56,6 +58,9 @@ def parser():
     s.add_argument('name', help='re-trace, or just trace')
     s.add_argument('--section', metavar='TITLE', help='only the section whose heading contains TITLE')
     s.add_argument('--sections', action='store_true', help='only the headings')
+    s = sub.add_parser('agents', help='every agent and how it is configured')
+    s.add_argument('--json', action='store_true')
+    s.add_argument('--table', action='store_true')
     s = sub.add_parser('tools', help='every tool and script')
     s.add_argument('--json', action='store_true')
     s = sub.add_parser('tool', help='one tool\'s own help')
@@ -90,7 +95,7 @@ def main(argv):
             print(__doc__.rstrip())
         return 0
     return {'steps': commands.steps, 'skills': commands.list_skills, 'skill': commands.skill,
-            'tools': commands.list_tools, 'tool': commands.tool, 'find': commands.find,
+            'agents': commands.list_agents, 'tools': commands.list_tools, 'tool': commands.tool, 'find': commands.find,
             }[args.command](args)
 
 

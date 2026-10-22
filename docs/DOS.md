@@ -44,6 +44,12 @@ different times.
   [Getting more from Ghidra](working/ghidra.md#code-that-is-not-an-executable-file)).
 - Label each stub with the entry point it leads to. Calls through stubs then read as calls to
   the real functions.
+- Some schemes keep data in the overlaid parts as well as code. Borland's keep only code.
+  Data in an overlaid part is reloaded from the file each time the part comes back, so a
+  counter or a flag kept there returns to its first value. If the game depends on that, the
+  port must reset the value at the same moment.
+- A function can be copied into two parts, so that each part has it without calling another
+  part. Two identical functions in two parts are one function in the source.
 - The port has no need for overlays. Port the functions. Record each part's number and file
   offset, so that every address in the findings can be traced to its bytes.
 

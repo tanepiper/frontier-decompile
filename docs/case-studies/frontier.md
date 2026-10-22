@@ -46,6 +46,14 @@ registers.
 | Replace routines one at a time | hooks at the original's addresses, with parity checks and shadow verification (run both, compare) |
 | Analyse the overlays | Ghidra scripts that seed functions from the overlay tables and export ranges |
 
+## Brought up to GameFrame's standard
+
+In October 2026 the project took on GameFrame's toolkit, skills, agents, gates and guides with
+`scripts/update-project.sh`, and gained an `AGENTS.md`, which it had not had. Its labels are kept
+one file per binary, because every overlay is numbered from `1000:0000`. Made from the port's
+own citations by `tools/triage/cite_labels.py --module`, they label 97.8 % of `EL2MATH3`'s code,
+97.6 % of `EL2ADLIB` and 23.0 % of `EL2MCGA3`, where before nothing was labelled.
+
 ## What it teaches
 
 - When the original is small enough to emulate, running it inside the port gives a playable

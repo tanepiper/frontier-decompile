@@ -29,7 +29,7 @@ Record the exact build: the file hashes (`tools/triage/compare_trees.py` and
 
 | Question | How |
 |---|---|
-| Which files changed? | `tools/triage/compare_trees.py OLD NEW` compares two copies file by file |
+| Which files changed? | `tools/triage/compare_trees.py OLD NEW` compares two copies file by file. `--similar` says how much of each changed file is shared, and pairs files that were renamed |
 | How much of a file changed? | `tools/triage/similar.py` measures what two binaries share, even when everything has moved |
 | Which functions are the same? | `tools/triage/match_functions.py` matches the functions of two Ghidra exports and carries your labels to the new build. BinDiff and Diaphora do the same inside a disassembler |
 | What changed in one function? | Compare the two pseudocode listings. Most changes are a constant, a new condition or a new call |

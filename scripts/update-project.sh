@@ -40,7 +40,7 @@ for sub in ('tools', 'scripts'):
     pairs += [(f, f) for f in tracked(sub)]
 pairs += [(f, f) for f in tracked('.claude/skills') if f.split('/')[2].startswith('re-')]
 pairs += [(f, '.claude/' + f) for f in tracked('agents')]
-pairs += [(f, f) for f in ('gameframe', 'requirements.txt', '.mcp.json')]
+pairs += [(f, f) for f in ('gameframe', 'requirements.txt', 'requirements-live.txt', '.mcp.json')]
 for f in ('ABI', 'GAME-PATTERNS', 'DOS', 'LEGAL', 'OUTPUTS', 'SETUP', 'COMPILED-CODE', 'TYPES'):
     pairs.append((f'docs/{f}.md', f'docs/{f}.md'))
 for d in ('games', 'observe', 'engines', 'hardware', 'consoles', 'handhelds', 'computers', 'arcade', 'media',

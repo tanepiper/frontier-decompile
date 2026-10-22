@@ -108,6 +108,16 @@ the file's fields onto the game's structures. A memory breakpoint on one of thos
 finds the code that uses the field. Plant markers in a few fields at a time. A marker in a
 count, an offset or a checksum can make the game reject the file or crash.
 
+## From memory to the screen
+
+Finding the camera helps to check positions against what the screen shows. The view and
+projection matrices are 16 floats each, near the camera's position. They change every time
+the camera moves and stay still otherwise. Multiply an object's position by them, divide by
+the last component, and scale to the screen size. The result is where the game draws it.
+`tools/triage/screenmarks.py SHOT.png --view ... --proj ... --points objects.txt` marks each
+object found in memory on a screenshot. A wrong guess about a field, a matrix or its layout
+becomes visible at once. Direct3D games multiply row vectors; give `--column` for OpenGL.
+
 ## Getting dumps
 
 | Where the game runs | How to dump |

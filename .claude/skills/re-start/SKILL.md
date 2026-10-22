@@ -79,6 +79,10 @@ GameFrame also has one agent per stage, in `agents/` (a project has them in
 Each one has its skills preloaded, does only its stage, and ends with a
 `## Hand-off` block that names the next agent and gives it a one-line brief. You, the main
 session, send the agents: read each hand-off, check its evidence, and send the next one.
+Show the user each hand-off's `Decisions` line and anything under `Open` that asks them a
+question, before you send the next agent. Agents do not start other agents. They stop and ask
+before downloading, working around protection, writing outside the project or choosing a
+version of the game.
 
 | Agent | Stage | Usually hands off to |
 |---|---|---|

@@ -75,6 +75,22 @@ tearing and to time their frames.
 - Port `3DAh` bit 0 is set while the display is blanked, in either retrace. Games use it for
   horizontal timing in raster effects.
 
+## Split screens
+
+The VGA can show two parts of video memory at once. The CRTC line compare register (with its
+high bits in the overflow and maximum scan line registers) gives the scan line where the
+display starts again from address 0. A status bar at the bottom then stays still while the
+playfield above it scrolls. Games write the register once per frame, often during the
+retrace. Read the value the game writes. It fixes the height of each part.
+
+## What stays on the screen
+
+Many games redraw only what changed: the area under each moving sprite, a changed score, a
+dirty rectangle. Everything else on the screen is left from earlier frames. If the original
+forgets an area, a trail or a stale digit stays visible, and the player sees it. A port that
+redraws the whole screen each frame hides that. Find the list of rectangles the game redraws.
+When a capture of the original shows leftovers, the port must leave the same pixels.
+
 ## Text modes
 
 ![A text-mode cell: a character byte and an attribute byte](../assets/diagrams/text-cell.svg)
