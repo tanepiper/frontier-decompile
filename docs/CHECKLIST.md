@@ -21,7 +21,8 @@ original on the runtime). Keep it short. Details belong in the topic documents.
 - [x] `EL2ADLIB`: the AdLib sound driver ported, identical to the original, with an OPL2 model ([AUDIO.md](AUDIO.md))
 - [ ] `EL2MCGA3`: the span filler, flat triangles, quadrilaterals and lines ported; the rest of the renderer
 - [x] The random number generators: `random(n)` `1000:069b`, `random32` `1000:0645`, `mix` `1000:066a`, ported and verified ([RNG.md](RNG.md))
-- [ ] The galaxy and star-system generation (`EL2M02:2537`, `EL2M06:3eb9` traced; the procedural generator not found yet, [RNG.md](RNG.md); leads: the routines only a hyperspace jump runs, in `EL2M00` and `FRONTIER.EXE`, [COVERAGE.md](COVERAGE.md))
+- [x] Galaxy: the density map (`EL2M19`), sector density `EL2M02:3b34`, sector seed `EL2M02:3abe` and sector star list `EL2M02:3c2f`, ported and verified ([GALAXY.md](GALAXY.md))
+- [ ] Star systems: from a star in the list to its system, type, name and planets ([GALAXY.md](GALAXY.md); leads: the routines only a hyperspace jump runs, in `EL2M00` and `FRONTIER.EXE`, [COVERAGE.md](COVERAGE.md))
 - [ ] The data files: `EL2G.GRF`, the models, saves
 
 ## Systems
