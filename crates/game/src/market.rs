@@ -307,13 +307,13 @@ fn advert_kind(c: &mut Cpu, bus: &mut dyn Bus, target: u16) -> Option<u64> {
         Some(n + 1)
     };
     match target {
-        // 0ce9: random(8) of the adverts from string 9957h.
+        // `EL2M07:0ce9`: random(8) of the adverts from string 9957h.
         0x0ce9 => {
             c.set_x(EAX, 8);
             w16(c, bus, 0x07cc, 0x9957);
             Some(3 + transport(c, bus)?)
         }
-        // 0cf4: random(4) from 995Fh, when DS:07d8 > 10h.
+        // `EL2M07:0cf4`: random(4) from 995Fh, when DS:07d8 > 10h.
         0x0cf4 => {
             if room <= 0x10 {
                 return ret(c, bus, 2);
@@ -322,7 +322,7 @@ fn advert_kind(c: &mut Cpu, bus: &mut dyn Bus, target: u16) -> Option<u64> {
             w16(c, bus, 0x07cc, 0x995f);
             Some(5 + transport(c, bus)?)
         }
-        // 0d0d: random(4) from 9963h, when DS:07d8 > 51h.
+        // `EL2M07:0d0d`: random(4) from 9963h, when DS:07d8 > 51h.
         0x0d0d => {
             if room <= 0x51 {
                 return ret(c, bus, 2);
@@ -331,6 +331,7 @@ fn advert_kind(c: &mut Cpu, bus: &mut dyn Bus, target: u16) -> Option<u64> {
             w16(c, bus, 0x07cc, 0x9963);
             Some(4 + transport(c, bus)?)
         }
+        // `EL2M07:0bb0`, `EL2M07:0c19`, `EL2M07:0c81`: military adverts.
         0x0bb0 => military(c, bus, 0x100, 3, 0x067b, 0x99a5, 0x9856),
         0x0c19 => military(c, bus, 0x271, 1, 0x068b, 0x994f, 0x9854),
         0x0c81 => military(c, bus, 0x510, 1, 0x069b, 0x994f, 0x9855),
@@ -364,7 +365,7 @@ fn transport(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
     n += 2;
     let sp = c.x(ESP);
     if c.x(EAX) == 0 {
-        // 0d09: ADD SP,6; RET.
+        // `EL2M07:0d09`: ADD SP,6; RET.
         c.set_x(ESP, sp.wrapping_add(6));
         near_ret(c, bus);
         return Some(n + 2);
@@ -377,7 +378,7 @@ fn transport(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
     n += 4 + system_data(c, bus, 0x0d6e)?;
     n += 2;
     let refuse = |c: &mut Cpu, bus: &mut dyn Bus, n: u64| {
-        // 0d06: ADD SP,4; ADD SP,6; RET.
+        // `EL2M07:0d06`: ADD SP,4; ADD SP,6; RET.
         let sp = c.x(ESP);
         c.set_x(ESP, sp.wrapping_add(10));
         near_ret(c, bus);
@@ -709,7 +710,7 @@ fn event_kind(c: &mut Cpu, bus: &mut dyn Bus, target: u16) -> Option<u64> {
     };
     let si = c.x(ESI);
     match target {
-        // 12dc: once per station (flag bit 0), when a commodity is flagged: string 9828h with the
+        // `EL2M07:12dc`: once per station (flag bit 0), when a commodity is flagged: string 9828h with the
         // station object's ES:[SI+76h] rotated left by 17 in DS:07c0 and 07e4.
         0x12dc => {
             let f = bus.read8(lin(c.ds, si.wrapping_add(0x7d)));
@@ -750,7 +751,7 @@ fn event_kind(c: &mut Cpu, bus: &mut dyn Bus, target: u16) -> Option<u64> {
             n += 3 + 5 + 8;
             Some(n + write_event(c, bus))
         }
-        // 132b: once per station (flag bit 1), when a commodity is flagged: string 9828h with
+        // `EL2M07:132b`: once per station (flag bit 1), when a commodity is flagged: string 9828h with
         // DS:07c4 = FFFFFFFFh.
         0x132b => {
             let mut n = call_random32(c, bus, 0x132f);
@@ -770,7 +771,7 @@ fn event_kind(c: &mut Cpu, bus: &mut dyn Bus, target: u16) -> Option<u64> {
             c.set_x(EAX, 0x9828);
             Some(n + 4 + write_event(c, bus))
         }
-        // 139f: once per station, by allegiance: 2 → 9826h (flag bit 2), 1 → 9827h (bit 3).
+        // `EL2M07:139f`: once per station, by allegiance: 2 → 9826h (flag bit 2), 1 → 9827h (bit 3).
         0x139f => {
             let al = r16(c, bus, 0x2243);
             let mut n = 2;
@@ -790,7 +791,7 @@ fn event_kind(c: &mut Cpu, bus: &mut dyn Bus, target: u16) -> Option<u64> {
             c.set_x(EAX, code);
             Some(n + 2 + write_event(c, bus))
         }
-        // 10b2: take the newest of the four dwords DS:460f, 460b, 4607, 4603 (clearing it) into
+        // `EL2M07:10b2`: take the newest of the four dwords DS:460f, 460b, 4607, 4603 (clearing it) into
         // DS:07e4, then a passenger or delivery item (*inferred*) to a neighbour.
         0x10b2 => {
             w32(c, bus, 0x07cc, 2);
@@ -816,7 +817,7 @@ fn event_kind(c: &mut Cpu, bus: &mut dyn Bus, target: u16) -> Option<u64> {
             }
             Some(n + neighbour_item(c, bus)?)
         }
-        // 118e: the same with a random32 draw in DS:07e4 and DS:07cc = 0.
+        // `EL2M07:118e`: the same with a random32 draw in DS:07e4 and DS:07cc = 0.
         0x118e => {
             let mut n = call_random32(c, bus, 0x1192);
             w32(c, bus, 0x07e4, c.r[EAX]);
@@ -824,8 +825,9 @@ fn event_kind(c: &mut Cpu, bus: &mut dyn Bus, target: u16) -> Option<u64> {
             n += 3;
             Some(n + neighbour_item(c, bus)?)
         }
+        // `EL2M07:11ac`.
         0x11ac => trip(c, bus),
-        // 135e: a commodity with no stock (the random(12)-th such from the top) at twice its
+        // `EL2M07:135e`: a commodity with no stock (the random(12)-th such from the top) at twice its
         // price: string 9829h, DS:07c4 = 8E00h + the commodity.
         0x135e => {
             let mut cx: u16 = 0x1f;
@@ -867,8 +869,9 @@ fn event_kind(c: &mut Cpu, bus: &mut dyn Bus, target: u16) -> Option<u64> {
                 }
             }
         }
+        // `EL2M07:13cd`.
         0x13cd => contract(c, bus),
-        // 14d0: string 9822h + (a random32 draw >> 16) & 3, the draw in DS:07e4.
+        // `EL2M07:14d0`: string 9822h + (a random32 draw >> 16) & 3, the draw in DS:07e4.
         0x14d0 => {
             let mut n = call_random32(c, bus, 0x14d4);
             let v = c.r[EAX];
@@ -878,7 +881,7 @@ fn event_kind(c: &mut Cpu, bus: &mut dyn Bus, target: u16) -> Option<u64> {
             n += 5;
             Some(n + write_event(c, bus))
         }
-        // 14e4 (reached only through the table): string 982Bh + bit 16 of a random32 draw,
+        // `EL2M07:14e4` (reached only through the table): string 982Bh + bit 16 of a random32 draw,
         // DS:07c4 = 99C0h + its low 3 bits.
         0x14e4 => {
             let mut n = call_random32(c, bus, 0x14e8);
