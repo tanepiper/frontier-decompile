@@ -140,12 +140,37 @@ Parity (`station_lists_match_original`). The test makes 4,000 calls for kinds 0,
 random allegiances, `DS:2239` values, list lengths and generator states. 1,734 calls added an
 entry. All matched the original: **0 mismatches.**
 
+## Station events: `EL2M07:0923` (ported)
+
+Each station has up to 18 events of 16 bytes from `+7Eh`, counted in `+19Eh` (*observed*). The
+builder calls `EL2M07:0923` 4·`DS:2239` + 1 times per station. A `random32` draw picks one of 32
+entries of the jump table at `EL2M07:03a1`. The draw's `EDX` goes to `DS:07c0`. The writer
+`EL2M07:1506` stores the string word, the words `DS:07c4`, `07c8` and `07cc`, and the dwords
+`DS:07c0` and `07e4`. Strings `9819h`–`982Ch` are the event texts (*inferred*).
+
+| Entries | Routine | Event |
+|---|---|---|
+| 0–4 | `12dc` | 9828h, once per station (flag bit 0 of `+7Dh`), when a commodity byte at `DS:2219` has bit 7 set. Its data is a dword of the station object (`ES:[obj+76h]` rotated left by 17), found through `CALLF [00b4]` (`1000:085a`) |
+| 5 | `132b` | 9828h, once (bit 1), with `DS:07c4` = FFFFFFFFh |
+| 6–9 | `139f` | 9826h for allegiance 2 (bit 2), 9827h for allegiance 1 (bit 3) |
+| 10 | `10b2` | the newest non-zero dword of `DS:460f`, `460b`, `4607`, `4603` (cleared), then `111b` |
+| 11, 12 | `118e` | a `random32` draw, then `111b`: 981Ch or 981Dh to a system one sector away, reward 40·(draw & 3 + 2) |
+| 13–23 | `11ac` | up to four tries for a system within `random(3)` sectors whose record byte `+4` is at least 3: 9819h or 981Ah, rewards from `EL2M07:03e1`, `0401`, `0421` |
+| 24–26 | `135e` | 9829h: the `random(12)`-th commodity with no stock, at twice its price (none if that overflows) |
+| 27 | `14e4` | 982Bh or 982Ch, `DS:07c4` = 99C0h + draw & 7. This entry is reached only through the table |
+| 28, 29 | `13cd` | up to four tries as in `11ac`: 981Eh–9821h, reward 1000·range + `EL2M07:06ab`[k], text 999Dh + `06ad`[k] |
+| 30, 31 | `14d0` | 9822h–9825h |
+
+Parity (`station_events_match_original`). The test makes 6,000 calls in the cockpit with random
+generator states, station flags, event counts, commodity flags, stocks, the dwords at
+`DS:4603`, allegiances, and the current system or a random one. 18 event strings were written.
+All matched the original: **0 mismatches.**
+
 ## Open questions
 
 - The meaning of each byte of the system record (economy, government, population, tech level are
   likely, *inferred*), and of the commodity tables in `EL2M07`.
-- The rest of the market builder: random events (`EL2M07:0923`, the jump table at `03a1`), the
-  builder `EL2M07:0949` itself, and the daily update `EL2M07:0e1a`. The daily update ages the
+- The builder `EL2M07:0949` itself and the daily update `EL2M07:0e1a`. The daily update ages the
   adverts, moves each price and stock a quarter of the way to a new draw, and adds events and
   list entries (*observed*, not ported).
 - What `DS:43a3` and `DS:43a5` (the "room" that gates each advert kind) measure.

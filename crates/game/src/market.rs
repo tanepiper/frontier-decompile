@@ -642,8 +642,577 @@ fn list_pick(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
     n + 6
 }
 
+/// Port of `EL2M07:0923`, *observed*: one station event. A `random32` draw picks one of 32 entries
+/// of the jump table at `EL2M07:03a1` (`EAX & 3Eh`), with `DS:07c0` = the draw's `EDX`;
+/// `DS:07d4` and `DS:07d8` are kept. `SI` is the station record, `DI` the next free event entry
+/// (16 bytes each from `[SI+7Eh]`, counted in `[SI+19Eh]`). A near routine. Declines when module
+/// 2 or 6 is not resident, or the slot `DS:00b4` is not the main program's object lookup.
+pub fn event_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    event(c, bus).unwrap_or(DECLINE)
+}
+
+fn event(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let mut n = call_random32(c, bus, 0x0927);
+    let k = c.r[EAX] & 0x3e;
+    c.r[EAX] = k;
+    w32(c, bus, 0x07c0, c.r[EDX]);
+    for off in [0x07d4, 0x07d8] {
+        let v = r16(c, bus, off);
+        push16(c, bus, v);
+    }
+    let target = bus.read16(lin(c.cs, 0x03a1 + k as u16));
+    push16(c, bus, 0x0940);
+    n += 5 + event_kind(c, bus, target)?;
+    for off in [0x07d8, 0x07d4] {
+        let v = pop16(c, bus);
+        w16(c, bus, off, v);
+    }
+    near_ret(c, bus);
+    Some(n + 3)
+}
+
+/// `BTS word [SI+7Dh],bit`: sets the bit and returns its old value.
+fn bts_flag(c: &Cpu, bus: &mut dyn Bus, bit: u16) -> bool {
+    let a = c.x(ESI).wrapping_add(0x7d);
+    let v = r16(c, bus, a);
+    w16(c, bus, a, v | 1 << bit);
+    v & 1 << bit != 0
+}
+
+/// The commodity bytes from the system record (`DS:2219`, 31 of them): the highest index with bit
+/// 7 set, scanning down from 30 (`MOV BX,1Eh` … `DEC BX; JNS`). Returns the instructions and
+/// whether one was found.
+fn scan_flagged(c: &mut Cpu, bus: &mut dyn Bus) -> (u64, bool) {
+    let mut bx: u16 = 0x1e;
+    let mut n = 1;
+    loop {
+        n += 2;
+        if bus.read8(lin(c.ds, 0x2219u16.wrapping_add(bx))) & 0x80 != 0 {
+            c.set_x(EBX, bx);
+            return (n, true);
+        }
+        bx = bx.wrapping_sub(1);
+        n += 2;
+        if bx & 0x8000 != 0 {
+            c.set_x(EBX, bx);
+            return (n, false);
+        }
+    }
+}
+
+/// The entries of the jump table at `EL2M07:03a1`, each ending in `RET` (most through the
+/// writer [`write_event`]).
+fn event_kind(c: &mut Cpu, bus: &mut dyn Bus, target: u16) -> Option<u64> {
+    let ret = |c: &mut Cpu, bus: &mut dyn Bus, n: u64| {
+        near_ret(c, bus);
+        Some(n + 1)
+    };
+    let si = c.x(ESI);
+    match target {
+        // 12dc: once per station (flag bit 0), when a commodity is flagged: string 9828h with the
+        // station object's ES:[SI+76h] rotated left by 17 in DS:07c0 and 07e4.
+        0x12dc => {
+            let f = bus.read8(lin(c.ds, si.wrapping_add(0x7d)));
+            if f & 1 != 0 {
+                return ret(c, bus, 2);
+            }
+            bus.write8(lin(c.ds, si.wrapping_add(0x7d)), f | 1);
+            push16(c, bus, si);
+            let (m, found) = scan_flagged(c, bus);
+            let mut n = 4 + m;
+            if !found {
+                // JMP 1327; ADD SP,2; RET.
+                let sp = c.x(ESP);
+                c.set_x(ESP, sp.wrapping_add(2));
+                return ret(c, bus, n + 2);
+            }
+            let slot_off = r16(c, bus, 0x00b4);
+            if slot_off != 0x085a {
+                return None;
+            }
+            let bx = bus.read8(lin(c.ds, si.wrapping_add(0x7c))) as u16;
+            let p = r32(c, bus, 0x56fb);
+            c.r[EAX] = p;
+            w32(c, bus, 0x07ec, p);
+            // CALLF [00b4] = FRONTIER.EXE 1000:085a: SHL BX,1; LES SI,[07ec]; ADD SI,[BX+06d6]; RETF.
+            let bx = bx << 1;
+            c.set_x(EBX, bx);
+            c.es = r16(c, bus, 0x07ee);
+            let obj = r16(c, bus, 0x07ec).wrapping_add(r16(c, bus, 0x06d6u16.wrapping_add(bx)));
+            let v = bus.read32(lin(c.es, obj.wrapping_add(0x76))).rotate_left(17);
+            c.r[EAX] = v;
+            w32(c, bus, 0x07c0, v);
+            w32(c, bus, 0x07e4, v);
+            let si = pop16(c, bus);
+            c.set_x(ESI, si);
+            w32(c, bus, 0x07c4, 0);
+            c.set_x(EAX, 0x9828);
+            n += 3 + 5 + 8;
+            Some(n + write_event(c, bus))
+        }
+        // 132b: once per station (flag bit 1), when a commodity is flagged: string 9828h with
+        // DS:07c4 = FFFFFFFFh.
+        0x132b => {
+            let mut n = call_random32(c, bus, 0x132f);
+            let edx = c.r[EDX];
+            w32(c, bus, 0x07c0, edx);
+            let (m, found) = scan_flagged(c, bus);
+            n += 1 + m;
+            if !found {
+                return ret(c, bus, n + 1);
+            }
+            n += 2;
+            if bts_flag(c, bus, 1) {
+                return ret(c, bus, n);
+            }
+            w32(c, bus, 0x07c4, 0xffff_ffff);
+            w32(c, bus, 0x07e4, edx);
+            c.set_x(EAX, 0x9828);
+            Some(n + 4 + write_event(c, bus))
+        }
+        // 139f: once per station, by allegiance: 2 → 9826h (flag bit 2), 1 → 9827h (bit 3).
+        0x139f => {
+            let al = r16(c, bus, 0x2243);
+            let mut n = 2;
+            let (bit, code) = if al == 2 {
+                (2, 0x9826)
+            } else {
+                n += 2;
+                if al != 1 {
+                    return ret(c, bus, n);
+                }
+                (3, 0x9827)
+            };
+            n += 2;
+            if bts_flag(c, bus, bit) {
+                return ret(c, bus, n);
+            }
+            c.set_x(EAX, code);
+            Some(n + 2 + write_event(c, bus))
+        }
+        // 10b2: take the newest of the four dwords DS:460f, 460b, 4607, 4603 (clearing it) into
+        // DS:07e4, then a passenger or delivery item (*inferred*) to a neighbour.
+        0x10b2 => {
+            w32(c, bus, 0x07cc, 2);
+            let mut n = 1;
+            let mut got = false;
+            for (k, off) in [0x460fu16, 0x460b, 0x4607, 0x4603].iter().enumerate() {
+                let v = r32(c, bus, *off);
+                c.r[EAX] = v;
+                w32(c, bus, 0x07e4, v);
+                w32(c, bus, *off, 0);
+                n += 5;
+                if v != 0 {
+                    got = true;
+                    if k == 3 {
+                        w16(c, bus, 0x07cc, 1);
+                        n += 1;
+                    }
+                    break;
+                }
+            }
+            if !got {
+                return ret(c, bus, n);
+            }
+            Some(n + neighbour_item(c, bus)?)
+        }
+        // 118e: the same with a random32 draw in DS:07e4 and DS:07cc = 0.
+        0x118e => {
+            let mut n = call_random32(c, bus, 0x1192);
+            w32(c, bus, 0x07e4, c.r[EAX]);
+            w16(c, bus, 0x07cc, 0);
+            n += 3;
+            Some(n + neighbour_item(c, bus)?)
+        }
+        0x11ac => trip(c, bus),
+        // 135e: a commodity with no stock (the random(12)-th such from the top) at twice its
+        // price: string 9829h, DS:07c4 = 8E00h + the commodity.
+        0x135e => {
+            let mut cx: u16 = 0x1f;
+            c.set_x(EAX, 0x0c);
+            let mut n = 2 + callf(c, bus, crate::rng::random_port, 0x1368);
+            let mut ax = c.x(EAX);
+            loop {
+                let bx = cx << 2;
+                c.set_x(EBX, bx);
+                n += 4;
+                if r16(c, bus, bx.wrapping_add(si)) == 0 {
+                    ax = ax.wrapping_sub(1);
+                    n += 2;
+                    if ax & 0x8000 != 0 {
+                        c.set_x(EAX, ax);
+                        c.set_x(ECX, cx);
+                        let price = r16(c, bus, bx.wrapping_add(si).wrapping_add(2));
+                        let v = price << 1;
+                        w16(c, bus, 0x07c8, v);
+                        c.set_x(EAX, v);
+                        n += 4;
+                        if (price ^ v) & 0x8000 != 0 {
+                            return ret(c, bus, n);
+                        }
+                        w16(c, bus, 0x07c4, cx.wrapping_add(0x8e00));
+                        let v = r32(c, bus, 0x1fd9);
+                        c.r[EAX] = v;
+                        w32(c, bus, 0x07e4, v);
+                        c.set_x(EAX, 0x9829);
+                        return Some(n + 7 + write_event(c, bus));
+                    }
+                }
+                cx = cx.wrapping_sub(1);
+                n += 2;
+                if cx & 0x8000 != 0 {
+                    c.set_x(EAX, ax);
+                    c.set_x(ECX, cx);
+                    return ret(c, bus, n + 1);
+                }
+            }
+        }
+        0x13cd => contract(c, bus),
+        // 14d0: string 9822h + (a random32 draw >> 16) & 3, the draw in DS:07e4.
+        0x14d0 => {
+            let mut n = call_random32(c, bus, 0x14d4);
+            let v = c.r[EAX];
+            w32(c, bus, 0x07e4, v);
+            c.r[EAX] = (v >> 16) & 3;
+            c.set_x(EAX, ((v >> 16) as u16 & 3).wrapping_add(0x9822));
+            n += 5;
+            Some(n + write_event(c, bus))
+        }
+        // 14e4 (reached only through the table): string 982Bh + bit 16 of a random32 draw,
+        // DS:07c4 = 99C0h + its low 3 bits.
+        0x14e4 => {
+            let mut n = call_random32(c, bus, 0x14e8);
+            let v = c.r[EAX];
+            w32(c, bus, 0x07c0, c.r[EDX]);
+            w32(c, bus, 0x07e4, v);
+            w16(c, bus, 0x07c4, (v as u16 & 7).wrapping_add(0x99c0));
+            c.r[EAX] = (v & 0xffff_0000 | (v & 7)) >> 16;
+            c.set_x(EAX, ((v >> 16) as u16 & 1).wrapping_add(0x982b));
+            n += 9;
+            Some(n + write_event(c, bus))
+        }
+        _ => None,
+    }
+}
+
+/// `EL2M07:111b`, *observed*: an item to a neighbouring system (`random` within 1 sector of
+/// `DS:208b`, through module 2): string 981Ch (981Dh when `DS:07e6` is negative), `DS:07c0` = the
+/// system, reward `DS:07c8` = 40·(`DS:07e4` & 3 + 2). Ends in `RET`.
+fn neighbour_item(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let v = r16(c, bus, 0x07cc);
+    push16(c, bus, v);
+    let here = r32(c, bus, 0x208b);
+    c.r[EAX] = here;
+    w32(c, bus, 0x07c0, here);
+    w16(c, bus, 0x07c4, 1);
+    c.set_x(EAX, 1);
+    let (di, si) = (c.x(EDI), c.x(ESI));
+    push16(c, bus, di);
+    push16(c, bus, si);
+    for off in [0x07d4, 0x07d8] {
+        let v = r16(c, bus, off);
+        push16(c, bus, v);
+    }
+    let mut n = 9 + nearby(c, bus, 0x1149)?;
+    for off in [0x07d8, 0x07d4] {
+        let v = pop16(c, bus);
+        w16(c, bus, off, v);
+    }
+    let si = pop16(c, bus);
+    c.set_x(ESI, si);
+    let di = pop16(c, bus);
+    c.set_x(EDI, di);
+    let v = pop16(c, bus);
+    w16(c, bus, 0x07cc, v);
+    n += 7;
+    if c.x(EAX) == 0 {
+        near_ret(c, bus);
+        return Some(n + 1);
+    }
+    let id = r32(c, bus, 0x07bc);
+    c.r[EAX] = id;
+    w32(c, bus, 0x07c0, id);
+    let mut code = 0x981c;
+    n += 5;
+    if r16(c, bus, 0x07e6) & 0x8000 != 0 {
+        code = 0x981d;
+        n += 1;
+    }
+    let p = ((r16(c, bus, 0x07e4) & 3) + 2) as u32 * 0x28;
+    w16(c, bus, 0x07c8, p as u16);
+    w16(c, bus, 0x07ca, (p >> 16) as u16);
+    c.set_x(EDX, (p >> 16) as u16);
+    c.set_x(EAX, code);
+    n += 10;
+    Some(n + write_event(c, bus))
+}
+
+/// `EL2M07:11ac`, *observed*: up to four tries for a system within `random(3)` sectors of
+/// `DS:208b` (module 2) whose record byte `+4` is at least 3 (module 6). A found one gets string
+/// 9819h or 981Ah (bit 12 of a `random32` draw), with a reward from the tables at `EL2M07:03e1`,
+/// `0401` and `0421` (by the draw, the sector range and `DS:223b`), and a kind in `DS:07cc`; a
+/// draw past 10h in the kind's high bits also stores the draw in `DS:4603`. Ends in `RET`.
+fn trip(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    w16(c, bus, 0x07d8, 3);
+    let mut n = 1;
+    loop {
+        let here = r32(c, bus, 0x208b);
+        c.r[EAX] = here;
+        w32(c, bus, 0x07c0, here);
+        c.set_x(EAX, 3);
+        n += 3 + callf(c, bus, crate::rng::random_port, 0x11c1);
+        let r3 = c.x(EAX);
+        push16(c, bus, r3);
+        w16(c, bus, 0x07c4, r3);
+        c.set_x(EAX, 1);
+        let (di, si) = (c.x(EDI), c.x(ESI));
+        push16(c, bus, di);
+        push16(c, bus, si);
+        for off in [0x07d4, 0x07d8] {
+            let v = r16(c, bus, off);
+            push16(c, bus, v);
+        }
+        n += 7 + nearby(c, bus, 0x11e1)?;
+        let restore = |c: &mut Cpu, bus: &mut dyn Bus| {
+            for off in [0x07d8, 0x07d4] {
+                let v = pop16(c, bus);
+                w16(c, bus, off, v);
+            }
+            let si = pop16(c, bus);
+            c.set_x(ESI, si);
+            let di = pop16(c, bus);
+            c.set_x(EDI, di);
+        };
+        restore(c, bus);
+        n += 6;
+        let mut drop = 2u16;
+        if c.x(EAX) != 0 {
+            let id = r32(c, bus, 0x07bc);
+            push32(c, bus, id);
+            c.r[EAX] = id;
+            w32(c, bus, 0x07c0, id);
+            c.set_l(EAX, 1);
+            let (di, si) = (c.x(EDI), c.x(ESI));
+            push16(c, bus, di);
+            push16(c, bus, si);
+            for off in [0x07d4, 0x07d8] {
+                let v = r16(c, bus, off);
+                push16(c, bus, v);
+            }
+            n += 8 + system_data(c, bus, 0x121b)?;
+            restore(c, bus);
+            n += 6;
+            if c.l(EAX) >= 3 {
+                break;
+            }
+            drop = 6;
+            n += 1; // ADD SP,4
+        }
+        let sp = c.x(ESP);
+        c.set_x(ESP, sp.wrapping_add(drop));
+        let cnt = r16(c, bus, 0x07d8).wrapping_sub(1);
+        w16(c, bus, 0x07d8, cnt);
+        n += 3;
+        if cnt & 0x8000 != 0 {
+            near_ret(c, bus);
+            return Some(n + 1);
+        }
+    }
+    // Found: the stack holds the target id (dword) above the sector range (word).
+    n += call_random32(c, bus, 0x1233);
+    let (eax, edx) = (c.r[EAX], c.r[EDX]);
+    w32(c, bus, 0x07bc, eax);
+    w32(c, bus, 0x07e4, eax);
+    w32(c, bus, 0x07c0, edx);
+    let r3 = bus.read16(crate::math3::lin32(c.ss, c.r[ESP].wrapping_add(4)));
+    let base = r3.wrapping_add(3);
+    w16(c, bus, 0x07c8, base);
+    n += 6;
+    let mut bx = (edx as u16) & 0x1c;
+    let cs = c.cs;
+    let v = bus.read16(lin(cs, 0x03e1 + bx));
+    w16(c, bus, 0x07c4, v);
+    let p = bus.read16(lin(cs, 0x03e3 + bx)) as u32 * base as u32;
+    w16(c, bus, 0x07c8, p as u16);
+    n += 9;
+    if bx >= 0x1c {
+        bx |= 0x2000;
+        n += 1;
+    }
+    let lo = r16(c, bus, 0x07c0);
+    let sq = lo as u32 * lo as u32;
+    let hi = (sq >> 16) as u16;
+    let q = hi as u32 * hi as u32;
+    let dx = (((q >> 16) as u16) >> 3) & 0x1e00;
+    let kind = bx.wrapping_add(dx);
+    w16(c, bus, 0x07cc, kind);
+    let bl = dx >> 8;
+    c.set_x(EBX, bl);
+    let add = bus.read16(lin(cs, 0x0401 + bl));
+    let rw = r16(c, bus, 0x07c8).wrapping_add(add);
+    w16(c, bus, 0x07c8, rw);
+    c.set_x(EAX, add);
+    c.set_x(EDX, dx);
+    n += 14;
+    if bl >= 0x10 {
+        n += 2;
+        if bus.read8(lin(c.ds, 0x07cd)) & 0x20 == 0 {
+            let v = r32(c, bus, 0x07e4);
+            c.r[EAX] = v;
+            w32(c, bus, 0x4603, v);
+            n += 2;
+        }
+    }
+    let bx = ((r16(c, bus, 0x07bc) & 7).wrapping_add(r16(c, bus, 0x223b))).wrapping_shl(1);
+    c.set_x(EBX, bx);
+    let f = bus.read16(lin(cs, 0x0421u16.wrapping_add(bx)));
+    let p = f as u32 * r16(c, bus, 0x07c8) as u32;
+    w16(c, bus, 0x07c8, p as u16);
+    c.set_x(EDX, (p >> 16) as u16);
+    let v = pop32(c, bus);
+    w32(c, bus, 0x07c0, v);
+    let sp = c.x(ESP);
+    c.set_x(ESP, sp.wrapping_add(2));
+    let code = if r16(c, bus, 0x07e4) & 0x1000 == 0 { 0x9819 } else { 0x981a };
+    c.set_x(EAX, code);
+    n += 11 + 2;
+    Some(n + write_event(c, bus))
+}
+
+/// `EL2M07:13cd`, *observed*: up to four tries for a system within `random(3)` sectors of
+/// `DS:208b` (module 2) whose record byte `+4` is at least 3 (module 6). A found one gets string
+/// 981Eh + (`DS:07be` & 3), a reward 1000·range + `EL2M07:06ab`[k], text `999Dh` +
+/// `EL2M07:06ad`[k] (k from a `random32` draw & 3Ch) and a date from `DS:1fc5` in `DS:07cc`.
+/// Ends in `RET`.
+fn contract(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    w16(c, bus, 0x07d8, 3);
+    let mut n = 1;
+    loop {
+        let here = r32(c, bus, 0x208b);
+        c.r[EAX] = here;
+        w32(c, bus, 0x07c0, here);
+        c.set_x(EAX, 3);
+        n += 3 + callf(c, bus, crate::rng::random_port, 0x13e2);
+        let r3 = c.x(EAX);
+        push16(c, bus, r3);
+        let (di, si) = (c.x(EDI), c.x(ESI));
+        push16(c, bus, di);
+        push16(c, bus, si);
+        w16(c, bus, 0x07c4, r3);
+        c.set_x(EAX, 1);
+        n += 5 + nearby(c, bus, 0x13fa)?;
+        let si = pop16(c, bus);
+        c.set_x(ESI, si);
+        let di = pop16(c, bus);
+        c.set_x(EDI, di);
+        n += 4;
+        let mut drop = 2;
+        if c.x(EAX) != 0 {
+            let id = r32(c, bus, 0x07bc);
+            c.r[EAX] = id;
+            push32(c, bus, id);
+            w32(c, bus, 0x07c0, id);
+            c.set_l(EAX, 1);
+            for off in [0x07d0, 0x07d4, 0x07d8] {
+                let v = r32(c, bus, off);
+                push32(c, bus, v);
+            }
+            let (di, si) = (c.x(EDI), c.x(ESI));
+            push16(c, bus, di);
+            push16(c, bus, si);
+            n += 9 + system_data(c, bus, 0x1432)?;
+            let si = pop16(c, bus);
+            c.set_x(ESI, si);
+            let di = pop16(c, bus);
+            c.set_x(EDI, di);
+            for off in [0x07d8, 0x07d4, 0x07d0] {
+                let v = pop32(c, bus);
+                w32(c, bus, off, v);
+            }
+            n += 7;
+            if c.l(EAX) >= 3 {
+                break;
+            }
+            drop = 6;
+            n += 1;
+        }
+        let sp = c.x(ESP);
+        c.set_x(ESP, sp.wrapping_add(drop));
+        let cnt = r16(c, bus, 0x07d8).wrapping_sub(1);
+        w16(c, bus, 0x07d8, cnt);
+        n += 3;
+        if cnt & 0x8000 != 0 {
+            near_ret(c, bus);
+            return Some(n + 1);
+        }
+    }
+    n += call_random32(c, bus, 0x144f);
+    w32(c, bus, 0x07e4, c.r[EAX]);
+    let k = c.x(EDX) & 0x3c;
+    c.set_x(EDX, k);
+    w16(c, bus, 0x07cc, k);
+    n += 3 + call_random32(c, bus, 0x145e);
+    w32(c, bus, 0x07bc, c.r[EAX]);
+    let date = r32(c, bus, 0x1fc5).wrapping_sub(0x0011_d5a0);
+    let dl = c.x(EDX) & 0x3f;
+    c.set_x(EDX, dl);
+    let d = (date as u16).wrapping_add(7).wrapping_add(dl);
+    c.r[EAX] = date & 0xffff_0000 | d as u32;
+    w16(c, bus, 0x07d0, d);
+    n += 7;
+    let v = pop32(c, bus);
+    w32(c, bus, 0x07c0, v);
+    let r3 = pop16(c, bus);
+    let p = r3 as u32 * 0x3e8;
+    c.set_x(EDX, (p >> 16) as u16);
+    w16(c, bus, 0x07c8, p as u16);
+    n += 5;
+    let bx = r16(c, bus, 0x07cc);
+    c.set_x(EBX, bx);
+    let cs = c.cs;
+    let add = bus.read16(lin(cs, 0x06abu16.wrapping_add(bx)));
+    let rw = (p as u16).wrapping_add(add);
+    w16(c, bus, 0x07c8, rw);
+    let t = bus.read16(lin(cs, 0x06adu16.wrapping_add(bx))).wrapping_add(0x999d);
+    w16(c, bus, 0x07c4, t);
+    let v = r16(c, bus, 0x07d0);
+    w16(c, bus, 0x07cc, v);
+    let code = (r16(c, bus, 0x07be) & 3).wrapping_add(0x981e);
+    c.set_x(EAX, code);
+    n += 6 + 6;
+    Some(n + write_event(c, bus))
+}
+
+/// `EL2M07:1506`, *observed*: when the station has fewer than 18 events (`[SI+19Eh]`, signed),
+/// count one and write 16 bytes at `DS:DI`: `AX`, the words `DS:07c4`, `07c8`, `07cc`, the dwords
+/// `DS:07c0` and `07e4`; `DI` moves on by 16. Ends in `RET`.
+fn write_event(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let si = c.x(ESI);
+    let count = r16(c, bus, si.wrapping_add(0x19e));
+    if (count as i16) >= 0x12 {
+        near_ret(c, bus);
+        return 3;
+    }
+    w16(c, bus, si.wrapping_add(0x19e), count.wrapping_add(1));
+    let di = c.x(EDI);
+    w16(c, bus, di, c.x(EAX));
+    for (k, off) in [0x07c4u16, 0x07c8, 0x07cc].iter().enumerate() {
+        let v = r16(c, bus, *off);
+        w16(c, bus, di.wrapping_add(2 + 2 * k as u16), v);
+        c.set_x(EAX, v);
+    }
+    let a = r32(c, bus, 0x07c0);
+    w32(c, bus, di.wrapping_add(8), a);
+    let e = r32(c, bus, 0x07e4);
+    w32(c, bus, di.wrapping_add(0x0c), e);
+    c.r[EAX] = e;
+    c.set_x(EDI, di.wrapping_add(0x10));
+    near_ret(c, bus);
+    16
+}
+
 /// Every ported routine of `EL2M07` (near routines: slot 0).
 pub const PORTS_M07: &[(u16, u16, &str, Port)] = &[(0x0855, 0, "price", price_port), (0x08c0, 0, "stock", stock_port)];
 
 /// The bulletin board's routines in `EL2M07`, which need modules 2 and 6 resident (near routines).
-pub const BOARD_M07: &[(u16, u16, &str, Port)] = &[(0x0b03, 0, "advert", advert_port), (0x101a, 0, "station_list", station_list_port)];
+pub const BOARD_M07: &[(u16, u16, &str, Port)] = &[(0x0b03, 0, "advert", advert_port), (0x101a, 0, "station_list", station_list_port), (0x0923, 0, "event", event_port)];

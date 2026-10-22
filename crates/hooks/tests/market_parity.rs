@@ -184,3 +184,77 @@ fn station_lists_match_original() {
     assert!(added > 1000, "too few entries added");
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
+
+/// `EL2M07:0923` (a station event, through the jump table at `03a1` and the writer `1506`) with
+/// random generator states, station flags, event counts, commodity flags and stocks, the four
+/// dwords at `DS:4603`, allegiances, and the current system or a random one.
+#[test]
+fn station_events_match_original() {
+    let Some((mut m, ds)) = in_cockpit() else { return };
+    let m07 = m.image_segment("EL2M07.OVL").unwrap();
+    let port = frontier_game::market::BOARD_M07.iter().find(|p| p.2 == "event").unwrap().3;
+    let here = m.cpu.mem.rd(lin(ds, 0x208b));
+    let mut x = X(0x0923_03A1_5EED_0003);
+    let (mut compared, mut declined, mut failures) = (0, 0, Vec::new());
+    let mut kinds = std::collections::BTreeMap::<u16, u32>::new();
+    for i in 0..6000 {
+        m.cpu.mem.wd(lin(ds, 0x1fd9), x.next());
+        m.cpu.mem.wd(lin(ds, 0x1fdd), x.next());
+        m.cpu.mem.ww(lin(ds, 0x2243), (x.next() % 3) as u16);
+        m.cpu.mem.ww(lin(ds, 0x223b), (x.next() % 4) as u16);
+        m.cpu.mem.wd(lin(ds, 0x208b), if i % 2 == 0 { here } else { x.next() });
+        for a in [0x07d4u32, 0x07d8, 0x07cc, 0x07c4, 0x07c8, 0x07e4] {
+            m.cpu.mem.wd(lin(ds, a), x.next());
+        }
+        for k in 0..4 {
+            m.cpu.mem.wd(lin(ds, 0x4603 + 4 * k), if x.next() % 3 == 0 { x.next() } else { 0 });
+        }
+        for k in 0..31 {
+            let b = x.next() as u8;
+            m.cpu.mem.wb(lin(ds, 0x2219 + k), if i % 3 == 0 { b & 0x7f } else { b });
+        }
+        let si = 0x224d + 0x1da * (x.next() % 4);
+        for k in 0..31 {
+            m.cpu.mem.ww(lin(ds, si + 4 * k), if x.next() % 4 == 0 { 0 } else { x.next() as u16 });
+            m.cpu.mem.ww(lin(ds, si + 4 * k + 2), x.next() as u16);
+        }
+        m.cpu.mem.wb(lin(ds, si + 0x7d), (x.next() & 0x1f) as u8);
+        let count = x.next() % 20;
+        m.cpu.mem.ww(lin(ds, si + 0x19e), count as u16);
+        for r in 0..8 {
+            m.cpu.r[r] = x.next();
+        }
+        m.cpu.r[ESI] = si;
+        m.cpu.r[7] = si + 0x7e + 0x10 * count.min(17);
+        m.cpu.r[ESP] = 0xFFF0;
+        m.cpu.s[SS] = 0xA000;
+        m.cpu.s[DS] = ds;
+        m.cpu.push16(0x0a2d);
+        m.cpu.s[CS] = m07;
+        m.cpu.ip = 0x0923;
+        let out = run_port(&m.cpu, port);
+        if out.steps == DECLINE {
+            declined += 1;
+            continue;
+        }
+        compared += 1;
+        let di = m.cpu.r[7] & 0xffff;
+        if let (Some(&lo), Some(&hi)) = (out.writes.get(&lin(ds, di)), out.writes.get(&lin(ds, di + 1))) {
+            *kinds.entry(lo as u16 | (hi as u16) << 8).or_default() += 1;
+        }
+        let diff = match record_original_until(&mut m.cpu, 5_000_000, out.cpu.cs, out.cpu.ip, out.cpu.r[4] as u16) {
+            Some(orig) => compare(&out, &orig, &m.cpu.mem),
+            None => Some("the original did not return".into()),
+        };
+        if let Some(d) = diff {
+            if failures.len() < 6 {
+                failures.push(format!("case {i}: {d}"));
+            }
+        }
+    }
+    eprintln!("event: {compared} compared, {declined} declined, {} mismatches", failures.len());
+    eprintln!("event strings written: {kinds:x?}");
+    assert!(compared > 4000, "too few cases compared");
+    assert!(kinds.len() >= 14, "too few kinds of event written");
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}
