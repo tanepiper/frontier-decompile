@@ -63,8 +63,38 @@ sets flag bit 4 unless the object's byte `+118h` has bit 5 set. The object comes
 main program's lookup `CALLF [00b4]` (`1000:085a`): `[07ec]` + the word at `DS:06d6` + 2·index.
 Parity (`market_builder_matches_original`). The test makes 300 whole builds for the current
 system and random ones, with 0 to 4 stations and random generator states. **0 mismatches.**
-Steps 1 and 2 (`EL2M07:0818` with its callback `0831`, and the rotation of `DS:4603`–`460f`)
-are not ported yet.
+Steps 1 and 2 are ported too, so module 7's handler `+0c` runs natively from start to end
+(`market::handler_0c_port`).
+
+## Handler `+0c`, the station count and the daily update (ported)
+
+- **Handler `+0c` (`EL2M07:1551`)** saves `AX`–`DX`. With `AX` = 2 it counts the stations, shifts
+  `DS:4603`, `4607`, `460b` up into `4607`, `460b`, `460f` (0 into `4603`), sets `DS:07c0` =
+  `DS:208b` and runs the builder. With `AX` = 0Fh it runs the daily update unless byte
+  `DS:2075` = 8. Other values return at once.
+- **The station count (`EL2M07:0818`, callback `0831`)** walks the object block `[DS:56fb]`
+  through the main program's iterator (`CALLF [0000]` = `1000:0cff`). The iterator visits the
+  73h slot bytes from the top. A slot that is non-zero and has bit 5 clear gets its object from
+  `1000:084f`, `[56f7]` + the word at `DS:06d6` + 2·slot. An object with bit 4 of `+118h` set is a
+  station. Its byte `+5Dh` goes to `+7Ch` of the next station record, and `DS:2247` counts up to
+  18.
+- **The daily update (`EL2M07:0e1a`)**:
+  1. It removes the first advert whose deadline is before the date + 4, and moves the later
+     ones up.
+  2. It makes up to three new adverts, each when `random(25)` ≤ `DS:43a1`.
+  3. For each station:
+     - Every price and stock moves to (new + 3·old)/4 in 32-bit arithmetic, from a new draw of
+       the formulas.
+     - When `random(7)` < `DS:2239`, a random event is cleared, with its once-only flag for
+       9826h–9828h, and a new one ([`event_port`]) is written in its place.
+     - `random(14)` picks a list entry to remove.
+     - `random(9)` < `DS:223d`, `random(9)` < `DS:223f` and `random(27)` < `DS:2247` each add an
+       entry, of kinds 0, 1 and 9.
+
+Parity (`arrival_and_daily_update_match_original`). The test makes 400 calls: handler `+0c` with
+`AX` = 2, 0Fh and 7, the daily update and the station count on their own, with random generator
+states, dates up to 63 days ahead, the `DS:2075` = 8 case and random `DS:4603` dwords. **0
+mismatches.** With one instruction miscounted in the daily update, the test fails.
 
 ## Price and stock: `EL2M07:0855`, `EL2M07:08c0` (ported)
 
@@ -179,7 +209,5 @@ All matched the original: **0 mismatches.**
 
 - The meaning of each byte of the system record (economy, government, population, tech level are
   likely, *inferred*), and of the commodity tables in `EL2M07`.
-- The daily update `EL2M07:0e1a`, the station count `EL2M07:0818`, and handler `+0c` itself. The daily update ages the
-  adverts, moves each price and stock a quarter of the way to a new draw, and adds events and
-  list entries (*observed*, not ported).
+- What the station lists (kinds 0, 1, 9) and the dwords at `DS:4603`–`460f` hold.
 - What `DS:43a3` and `DS:43a5` (the "room" that gates each advert kind) measure.

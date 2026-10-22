@@ -1430,8 +1430,406 @@ fn station(c: &mut Cpu, bus: &mut dyn Bus, si: u16) -> Option<u64> {
     Some(n)
 }
 
+/// Port of `EL2M07:0818` with its callback `0831`, *observed*: count the stations. `DS:2247` = 0,
+/// then the main program's object iterator (`CALLF [0000]` = `1000:0cff`) walks the 73h slot
+/// bytes of the object block `[DS:56fb]` from the top. Each non-zero slot without bit 5 gets its
+/// object from `1000:084f` (`[56f7]` + the word at `DS:06d6` + 2·slot) and the callback: an object
+/// with bit 4 of its byte `+118h` is a station; its byte `+5Dh` goes to `+7Ch` of station record
+/// `DS:2247` (from `DS:224d`, 1DAh bytes each), and the count goes up while it is below 18. The
+/// iterator leaves `[DS:07ec]` and `[DS:56f7]` = the block and `DS:07c0` = the last slot's word.
+/// A near routine. Declines when the slots `DS:0000` and `DS:00b0` are not those routines.
+pub fn station_count_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    station_count(c, bus).unwrap_or(DECLINE)
+}
+
+fn station_count(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    if r16(c, bus, 0x0000) != 0x0cff || r16(c, bus, 0x00b0) != 0x084f {
+        return None;
+    }
+    w16(c, bus, 0x2247, 0);
+    let si = r16(c, bus, 0x56fb);
+    let es = r16(c, bus, 0x56fd);
+    c.set_x(ESI, si);
+    c.es = es;
+    w16(c, bus, 0x07e8, 0x0831);
+    w16(c, bus, 0x07ea, c.cs);
+    // The iterator, 1000:0cff.
+    w16(c, bus, 0x07ec, si);
+    w16(c, bus, 0x07ee, es);
+    w16(c, bus, 0x56f7, si);
+    w16(c, bus, 0x56f9, es);
+    let mut n: u64 = 5 + 5;
+    let mut bx: u16 = 0x72;
+    loop {
+        let b = bus.read8(lin(es, bx.wrapping_add(si)));
+        n += 2;
+        if b != 0 {
+            n += 2;
+            if b & 0x20 == 0 {
+                let w = bus.read16(lin(es, bx.wrapping_add(si)));
+                w16(c, bus, 0x07c0, w);
+                // CALLF [00b0] = 1000:084f: SHL BX,1; LES SI,[56f7]; ADD SI,[BX+06d6]; RETF.
+                let obj_es = r16(c, bus, 0x56f9);
+                let obj = r16(c, bus, 0x56f7).wrapping_add(r16(c, bus, 0x06d6u16.wrapping_add(bx << 1)));
+                c.set_x(EBX, bx << 1);
+                c.set_x(ESI, obj);
+                c.es = obj_es;
+                n += 5 + 5 + 1 + station_callback(c, bus) + 3;
+                c.set_x(ESI, si);
+                c.es = es;
+            }
+        }
+        bx = bx.wrapping_sub(1);
+        c.set_x(EBX, bx);
+        n += 2;
+        if bx & 0x8000 != 0 {
+            break;
+        }
+    }
+    near_ret(c, bus);
+    Some(n + 1 + 1)
+}
+
+/// `EL2M07:0831`, the station callback of [`station_count_port`], through its `RETF`.
+fn station_callback(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let (es, si) = (c.es, c.x(ESI));
+    if bus.read8(lin(es, si.wrapping_add(0x118))) & 0x10 == 0 {
+        return 3;
+    }
+    let count = r16(c, bus, 0x2247);
+    let mut n = 5;
+    if count < 0x12 {
+        w16(c, bus, 0x2247, count + 1);
+        n += 1;
+    }
+    let p = count as u32 * 0x1da;
+    c.set_x(EDX, (p >> 16) as u16);
+    c.set_x(EBX, p as u16);
+    let b = bus.read8(lin(es, si.wrapping_add(0x5d)));
+    c.set_x(EAX, (p as u16 & 0xff00) | b as u16);
+    bus.write8(lin(c.ds, (p as u16).wrapping_add(0x22c9)), b);
+    n + 6
+}
+
+/// `(new + 3·old) >> 2` in 32 bits, as `EL2M07:0ed3`–`0ef3` computes it with `CWD`, `ADC` and
+/// two `SAR`/`RCR` pairs: (`AX`, `DX`, `BX` = 2·old).
+fn blend(new: u16, old: u16) -> (u16, u16, u16) {
+    let sum = new as i16 as i32 + 3 * (old as i16 as i32);
+    let r = sum >> 2;
+    (r as u16, (r >> 16) as u16, old.wrapping_shl(1))
+}
+
+/// Port of `EL2M07:0e1a`, *observed*: the daily update of the current system's markets
+/// (module 7's handler `+0c` with `AX` = 0Fh).
+/// 1. The first advert whose deadline is before the date + 4 (`DS:1fc5`) is removed; the
+///    adverts after it move up one slot.
+/// 2. Three times: when `random(25)` is at most `DS:43a1`, a new advert ([`advert_port`]).
+/// 3. Each station: every price and stock moves to (new + 3·old)/4 with a new draw
+///    ([`price_port`], [`stock_port`]); when `random(7)` < `DS:2239`, a random event is cleared
+///    (with its station flag) and replaced by a new one ([`event_port`]); `random(14)` removes a
+///    list entry; and `random(9)` < `DS:223d`, `random(9)` < `DS:223f`, `random(27)` < `DS:2247`
+///    each add one to the lists of kinds 0, 1 and 9 ([`station_list_port`]).
+///
+/// A near routine.
+pub fn daily_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    daily(c, bus).unwrap_or(DECLINE)
+}
+
+fn daily(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let soon = r32(c, bus, 0x1fc5).wrapping_add(4);
+    c.r[EAX] = soon;
+    let mut si: u16 = 0x438f;
+    let mut n = 3;
+    loop {
+        si = si.wrapping_add(0x18);
+        n += 3;
+        if r32(c, bus, si) == 0 {
+            break;
+        }
+        n += 2;
+        if soon < r32(c, bus, si.wrapping_add(8)) {
+            continue;
+        }
+        si = si.wrapping_add(0x18);
+        n += 1;
+        loop {
+            for o in [4u16, 8, 0x0c, 0x10, 0x14] {
+                let v = r32(c, bus, si.wrapping_add(o));
+                w32(c, bus, si.wrapping_add(o).wrapping_sub(0x18), v);
+            }
+            let v = r32(c, bus, si);
+            w32(c, bus, si.wrapping_sub(0x18), v);
+            c.r[EAX] = v;
+            si = si.wrapping_add(0x18);
+            n += 15;
+            if v == 0 {
+                break;
+            }
+        }
+        break;
+    }
+    c.set_x(ESI, si);
+    w16(c, bus, 0x07d4, 2);
+    n += 1;
+    loop {
+        c.set_x(EAX, 0x19);
+        n += 1 + callf(c, bus, crate::rng::random_port, 0x0e7b) + 2;
+        let make = c.x(EAX) <= r16(c, bus, 0x43a1);
+        if make {
+            push16(c, bus, 0x0e8c);
+            n += 1 + advert(c, bus)?;
+        }
+        let left = r16(c, bus, 0x07d4).wrapping_sub(1);
+        w16(c, bus, 0x07d4, left);
+        n += 2;
+        if left & 0x8000 != 0 {
+            if !make {
+                n += 1; // JMP 0e92
+            }
+            break;
+        }
+    }
+    let v = r16(c, bus, 0x2239) << 1;
+    w16(c, bus, 0x07bc, v);
+    let v = r16(c, bus, 0x223b) << 1;
+    c.set_x(EAX, v);
+    w16(c, bus, 0x07c0, v);
+    let stations = r16(c, bus, 0x2247);
+    c.set_x(ECX, stations);
+    n += 9;
+    if stations != 0 {
+        w16(c, bus, 0x07d8, stations);
+        let mut si: u16 = 0x224d;
+        c.set_x(ESI, si);
+        n += 2;
+        loop {
+            n += daily_station(c, bus, si)?;
+            si = c.x(ESI).wrapping_add(0x1da);
+            c.set_x(ESI, si);
+            let left = r16(c, bus, 0x07d8).wrapping_sub(1);
+            w16(c, bus, 0x07d8, left);
+            n += 5;
+            if left == 0 {
+                break;
+            }
+        }
+    }
+    near_ret(c, bus);
+    Some(n + 1)
+}
+
+/// One station of [`daily`] (`EL2M07:0eb3` to `1005`), with `SI` at its record.
+fn daily_station(c: &mut Cpu, bus: &mut dyn Bus, si: u16) -> Option<u64> {
+    c.set_x(EDI, si);
+    c.set_x(EBP, 0x02a9);
+    c.set_x(EBX, 0x2219);
+    w16(c, bus, 0x07d4, 0x1e);
+    let mut n = 4;
+    loop {
+        let bx = c.x(EBX);
+        let cl = bus.read8(lin(c.ds, bx));
+        c.set_l(ECX, cl);
+        c.set_x(EBX, bx.wrapping_add(1));
+        let dx = ((cl & 7) as u16) << 1;
+        c.set_x(EDX, dx);
+        w16(c, bus, 0x07c8, dx);
+        push16(c, bus, bx.wrapping_add(1));
+        push16(c, bus, 0x0ed3);
+        n += 8 + price_port(c, bus);
+        let di = c.x(EDI);
+        let (ax, dx, b) = blend(c.x(EDX), r16(c, bus, di.wrapping_add(2)));
+        c.set_x(EAX, ax);
+        c.set_x(EDX, dx);
+        c.set_x(EBX, b);
+        w16(c, bus, di.wrapping_add(2), ax);
+        push16(c, bus, 0x0efc);
+        n += 22 + stock_port(c, bus);
+        let (ax, dx, _) = blend(c.x(EDX), r16(c, bus, di));
+        c.set_x(EAX, ax);
+        c.set_x(EDX, dx);
+        w16(c, bus, di, ax);
+        let bx = pop16(c, bus);
+        c.set_x(EBX, bx);
+        c.set_x(EDI, di.wrapping_add(4));
+        let bp = c.x(EBP);
+        c.set_x(EBP, bp.wrapping_add(8));
+        let left = r16(c, bus, 0x07d4).wrapping_sub(1);
+        w16(c, bus, 0x07d4, left);
+        n += 21 + 5;
+        if left & 0x8000 != 0 {
+            break;
+        }
+    }
+    for off in [0x07bc, 0x07c0] {
+        let v = r16(c, bus, off);
+        push16(c, bus, v);
+    }
+    c.set_x(EAX, 7);
+    n += 3 + callf(c, bus, crate::rng::random_port, 0x0f3c) + 2;
+    if (c.x(EAX) as i16) < (r16(c, bus, 0x2239) as i16) {
+        let count = r16(c, bus, si.wrapping_add(0x19e));
+        c.set_x(EAX, count);
+        n += 1 + callf(c, bus, crate::rng::random_port, 0x0f4a);
+        let bx = c.x(EAX) << 4;
+        c.set_x(EAX, bx);
+        c.set_x(EBX, bx);
+        let di = bx.wrapping_add(si).wrapping_add(0x7e);
+        c.set_x(EDI, di);
+        let ax = r16(c, bus, di);
+        c.set_x(EAX, ax);
+        n += 6;
+        let flag = |c: &Cpu, bus: &mut dyn Bus, mask: u8| {
+            let a = lin(c.ds, si.wrapping_add(0x7d));
+            let v = bus.read8(a);
+            bus.write8(a, v & mask);
+        };
+        if ax == 0x9828 {
+            n += 2 + 1;
+            if r16(c, bus, di.wrapping_add(2)) & 0x8000 == 0 {
+                flag(c, bus, 0xfe);
+                n += 1;
+            } else {
+                flag(c, bus, 0xfd);
+            }
+        } else {
+            n += 2;
+            if ax == 0x9826 {
+                flag(c, bus, 0xfb);
+                n += 2;
+            }
+        }
+        n += 2;
+        if ax == 0x9827 {
+            flag(c, bus, 0xf7);
+            n += 1;
+        }
+        w16(c, bus, di, 0);
+        let count = r16(c, bus, si.wrapping_add(0x19e));
+        push16(c, bus, count);
+        w16(c, bus, si.wrapping_add(0x19e), count.wrapping_sub(1));
+        push16(c, bus, 0x0f8c);
+        n += 4 + event(c, bus)?;
+        let v = pop16(c, bus);
+        w16(c, bus, si.wrapping_add(0x19e), v);
+        n += 1;
+    }
+    let di = si.wrapping_add(0x1a0);
+    c.set_x(EDI, di);
+    c.set_x(EAX, 0x0e);
+    n += 2 + callf(c, bus, crate::rng::random_port, 0x0f9b);
+    let ax = c.x(EAX);
+    let count = r16(c, bus, si.wrapping_add(0x1d8));
+    let cx = count.wrapping_sub(ax);
+    c.set_x(ECX, cx);
+    n += 3;
+    if (cx as i16) > 0 {
+        let mut bx = di.wrapping_add(ax << 2);
+        c.set_x(EAX, ax << 2);
+        n += 3;
+        for _ in 0..cx {
+            let v = r32(c, bus, bx.wrapping_add(4));
+            w32(c, bus, bx, v);
+            c.r[EAX] = v;
+            bx = bx.wrapping_add(4);
+            n += 4;
+        }
+        c.set_x(EBX, bx);
+        c.set_x(ECX, 0);
+        w16(c, bus, si.wrapping_add(0x1d8), count.wrapping_sub(1));
+        n += 1;
+    }
+    let count = r16(c, bus, si.wrapping_add(0x1d8));
+    c.set_x(EAX, count << 2);
+    c.set_x(EDI, di.wrapping_add(count << 2));
+    n += 3;
+    for (range, limit, kind, ret_ip) in [(9u16, 0x223du16, 0u16, 0x0fca), (9, 0x223f, 1, 0x0fe0), (0x1b, 0x2247, 9, 0x0ff6)] {
+        c.set_x(EAX, range);
+        n += 1 + callf(c, bus, crate::rng::random_port, ret_ip) + 2;
+        if (c.x(EAX) as i16) < (r16(c, bus, limit) as i16) {
+            w16(c, bus, 0x07d0, kind);
+            push16(c, bus, ret_ip.wrapping_add(0x0f));
+            n += 2 + station_list_port(c, bus);
+        }
+    }
+    let v = pop16(c, bus);
+    w16(c, bus, 0x07c0, v);
+    let v = pop16(c, bus);
+    w16(c, bus, 0x07bc, v);
+    Some(n)
+}
+
+/// Port of `EL2M07:1551` (module 7, handler `+0c`), *observed*. `AX` = 2 (arrival): count the
+/// stations ([`station_count_port`]), shift the four dwords `DS:4603`–`460f` up one (0 in
+/// `4603`), and build the markets of system `DS:208b` ([`builder_port`]). `AX` = 0Fh: the daily
+/// update ([`daily_port`]) unless byte `DS:2075` = 8. `AX`, `BX`, `CX` and `DX` are kept on
+/// those paths. Other values do nothing. Ends in `RETF`.
+pub fn handler_0c_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    handler_0c(c, bus).unwrap_or(DECLINE)
+}
+
+fn handler_0c(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let ax = c.x(EAX);
+    let saved = [c.x(EAX), c.x(EBX), c.x(ECX), c.x(EDX)];
+    let restore = |c: &mut Cpu| {
+        c.set_x(EAX, saved[0]);
+        c.set_x(EBX, saved[1]);
+        c.set_x(ECX, saved[2]);
+        c.set_x(EDX, saved[3]);
+    };
+    let mut n = 2;
+    if ax == 2 {
+        for v in saved {
+            push16(c, bus, v);
+        }
+        push16(c, bus, 0x1563);
+        n += 4 + 1 + station_count(c, bus)?;
+        let mut eax = 0;
+        for off in [0x4603u16, 0x4607, 0x460b] {
+            let v = r32(c, bus, off);
+            w32(c, bus, off, eax);
+            eax = v;
+        }
+        w32(c, bus, 0x460f, eax);
+        let here = r32(c, bus, 0x208b);
+        c.r[EAX] = here;
+        w32(c, bus, 0x07c0, here);
+        push16(c, bus, 0x1584);
+        n += 5 + 2 + 1 + builder(c, bus)?;
+        for _ in 0..4 {
+            pop16(c, bus);
+        }
+        restore(c);
+        c.retf(bus);
+        return Some(n + 5);
+    }
+    n += 2;
+    if ax != 0x0f {
+        c.retf(bus);
+        return Some(n + 1);
+    }
+    n += 2;
+    if bus.read8(lin(c.ds, 0x2075)) == 8 {
+        c.retf(bus);
+        return Some(n + 1);
+    }
+    for v in saved {
+        push16(c, bus, v);
+    }
+    let here = r32(c, bus, 0x208b);
+    c.r[EAX] = here;
+    w32(c, bus, 0x07c0, here);
+    push16(c, bus, 0x159f);
+    n += 4 + 2 + 1 + daily(c, bus)?;
+    for _ in 0..4 {
+        pop16(c, bus);
+    }
+    restore(c);
+    c.retf(bus);
+    Some(n + 5)
+}
+
 /// Every ported routine of `EL2M07` (near routines: slot 0).
 pub const PORTS_M07: &[(u16, u16, &str, Port)] = &[(0x0855, 0, "price", price_port), (0x08c0, 0, "stock", stock_port)];
 
 /// The bulletin board's routines in `EL2M07`, which need modules 2 and 6 resident (near routines).
-pub const BOARD_M07: &[(u16, u16, &str, Port)] = &[(0x0b03, 0, "advert", advert_port), (0x101a, 0, "station_list", station_list_port), (0x0923, 0, "event", event_port), (0x0949, 0, "builder", builder_port)];
+pub const BOARD_M07: &[(u16, u16, &str, Port)] = &[(0x0b03, 0, "advert", advert_port), (0x101a, 0, "station_list", station_list_port), (0x0923, 0, "event", event_port), (0x0949, 0, "builder", builder_port), (0x0818, 0, "station_count", station_count_port), (0x0e1a, 0, "daily", daily_port), (0x1551, 0, "handler_0c", handler_0c_port)];

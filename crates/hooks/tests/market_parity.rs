@@ -314,3 +314,65 @@ fn market_builder_matches_original() {
     assert!(compared > 250, "too few cases compared");
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
+
+/// Module 7's handler `+0c` (`EL2M07:1551`): `AX` = 2 (station count, the shift of `DS:4603`,
+/// the whole builder), `AX` = 0Fh (the daily update) and other values, with random generator
+/// states, advert tables and dates, against the original. The station count and the daily update
+/// are also called on their own.
+#[test]
+fn arrival_and_daily_update_match_original() {
+    let Some((mut m, ds)) = in_cockpit() else { return };
+    let m07 = m.image_segment("EL2M07.OVL").unwrap();
+    let find = |name: &str| frontier_game::market::BOARD_M07.iter().find(|p| p.2 == name).unwrap().3;
+    let mut x = X(0x1551_0E1A_5EED_0005);
+    let (mut compared, mut declined, mut failures) = (0, 0, Vec::new());
+    let date = m.cpu.mem.rd(lin(ds, 0x1fc5));
+    let mut per: std::collections::BTreeMap<&str, u32> = Default::default();
+    for i in 0..400 {
+        let (name, entry, far, ax) = match i % 4 {
+            0 => ("handler_0c", 0x1551u16, true, 2u32),
+            1 => ("handler_0c", 0x1551, true, [0x0f, 0x0f, 0x0f, 7][(i / 4) % 4]),
+            2 => ("daily", 0x0e1a, false, 0),
+            _ => ("station_count", 0x0818, false, 0),
+        };
+        m.cpu.mem.wd(lin(ds, 0x1fd9), x.next());
+        m.cpu.mem.wd(lin(ds, 0x1fdd), x.next());
+        m.cpu.mem.wd(lin(ds, 0x1fc5), date.wrapping_add(x.next() % 64));
+        m.cpu.mem.wb(lin(ds, 0x2075), if i % 16 == 5 { 8 } else { 0 });
+        for k in 0..4 {
+            m.cpu.mem.wd(lin(ds, 0x4603 + 4 * k), if x.next() % 3 == 0 { x.next() } else { 0 });
+        }
+        for r in 0..8 {
+            m.cpu.r[r] = x.next();
+        }
+        m.cpu.r[0] = (m.cpu.r[0] & 0xffff_0000) | ax;
+        m.cpu.r[ESP] = 0xFFF0;
+        m.cpu.s[SS] = 0xA000;
+        m.cpu.s[DS] = ds;
+        if far {
+            m.cpu.push16(0x1234);
+        }
+        m.cpu.push16(0x0abc);
+        m.cpu.s[CS] = m07;
+        m.cpu.ip = entry as u32;
+        let out = run_port(&m.cpu, find(name));
+        if out.steps == DECLINE {
+            declined += 1;
+            continue;
+        }
+        compared += 1;
+        *per.entry(name).or_default() += 1;
+        let diff = match record_original_until(&mut m.cpu, 100_000_000, out.cpu.cs, out.cpu.ip, out.cpu.r[4] as u16) {
+            Some(orig) => compare(&out, &orig, &m.cpu.mem),
+            None => Some("the original did not return".into()),
+        };
+        if let Some(d) = diff {
+            if failures.len() < 6 {
+                failures.push(format!("case {i} {name} AX {ax:x}: {d}"));
+            }
+        }
+    }
+    eprintln!("handler_0c/daily/station_count: {compared} compared {per:?}, {declined} declined, {} mismatches", failures.len());
+    assert!(compared > 350, "too few cases compared");
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}
