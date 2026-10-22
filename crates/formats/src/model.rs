@@ -329,8 +329,9 @@ fn polygon_extra(sub: u8) -> usize {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Prim {
     Line([u8; 2]),
-    Tri([u8; 3]),
-    Quad([u8; 4]),
+    /// Corners in drawing order, and the face's normal number (`face_shade`, [`normals`]).
+    Tri([u8; 3], u8),
+    Quad([u8; 4], u8),
     /// Outline of a polygon (*inferred*: the vertex bytes of sub-commands 2 and 3, and the
     /// four bytes of a sub-command 1 as curve control points).
     Polygon(Vec<u8>),
@@ -382,9 +383,60 @@ pub struct Mesh {
     pub stopped: Option<String>,
 }
 
-/// Walk a mesh command list from `start` (image offset). Conditional commands are followed
-/// through (every level of detail is drawn): this is a viewer choice, not the game's.
+/// Which way a walk takes the conditional commands (`0B`, `0C`, `13`, `14`).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Branches {
+    /// Follow every command in order: every level of detail at once. For listing a model.
+    All,
+    /// Take the branches the original takes for a model seen close up with all its variables
+    /// zero (*assumed* state): `0B` (skip if far) falls through, `0C` (skip if near) skips, `13`
+    /// skips when its variable is 0 (`1000:7f0b`), `14` falls through when it is 0
+    /// (`1000:7f6a`). A skip of 0 bytes ends the model (`1000:7e3d`).
+    Near,
+}
+
+/// The model colour while a model is drawn: the double word `[BP-9Eh]` (low word a colour, high
+/// word a texture entry), here as one 12-bit colour field (`Exxh` for a texture, see
+/// [`texture_entry`]). The object renderer starts it at `111h` (`1000:3abe`); a sub-object
+/// starts with its parent's (`1000:7c2b`, `7daf`); opcode `1A` sets it ([`walk_with`]).
+pub const START_COLOUR: u16 = 0x111;
+
+/// Walk a mesh command list from `start` (image offset), following every command
+/// ([`Branches::All`]), with the starting model colour and livery 0.
 pub fn walk(image: &[u8], start: usize) -> Mesh {
+    walk_with(image, start, Branches::All, &mut Paint { colour: START_COLOUR, livery: 0 })
+}
+
+/// The model colour ([`START_COLOUR`]) and the livery: the value (0–7) of the variable a `1A`
+/// command consults. 0 keeps each `1A`'s own colour (*assumed* default; the game reads an
+/// object variable, a ship's paint).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Paint {
+    pub colour: u16,
+    pub livery: u8,
+}
+
+/// The colour a drawing command uses: a colour with bit 4 set takes the model colour
+/// (`1000:5203`–`5211`): its texture, or its colour added to the command's with bits 4 and 8
+/// cleared (bit 8 means unshaded). Others are their own colour.
+pub fn resolve_colour(c: u16, paint: &Paint) -> u16 {
+    if c & 0x10 == 0 || texture_entry(c).is_some() {
+        return c;
+    }
+    if texture_entry(paint.colour).is_some() {
+        return paint.colour;
+    }
+    (c & !0x110).wrapping_add(paint.colour) & 0xfff
+}
+
+/// Walk a mesh command list from `start` (image offset), taking the conditional commands as
+/// `branches` says and keeping the model colour in `paint`. Drawing commands get their
+/// colours resolved ([`resolve_colour`]).
+///
+/// `1A` (`1000:8c8b`): its colour field, bit 0 cleared, is the new model colour; when the high
+/// byte of its operand names a variable, seven alternative colours follow, and a variable value
+/// v of 1–7 picks the v-th (`1000:8ce8`). Here v is `paint.livery`.
+pub fn walk_with(image: &[u8], start: usize, branches: Branches, paint: &mut Paint) -> Mesh {
     let mut m = Mesh::default();
     let mut p = start;
     let w = |p: usize| le16(image, p).ok();
@@ -422,7 +474,7 @@ pub fn walk(image: &[u8], start: usize) -> Mesh {
                     }
                     ops.extend(extra);
                 }
-                m.prims.push((Prim::Polygon(outline), (word >> 4) & 0xfff));
+                m.prims.push((Prim::Polygon(outline), resolve_colour((word >> 4) & 0xfff, paint)));
             }
             _ => {
                 let Some(len) = length(image, at) else {
@@ -434,7 +486,33 @@ pub fn walk(image: &[u8], start: usize) -> Mesh {
                     ops.push(w(p + i * 2).unwrap_or(0));
                 }
                 p = at + len;
-                let c = (word >> 4) & 0xfff;
+                if branches == Branches::Near && matches!(op, 0x0b | 0x0c | 0x13 | 0x14) {
+                    // 1000:7e37: skip (word >> 4) & !1 bytes after the operand; 0 ends the model.
+                    // A negative operand of 0B / 0C picks another test (1000:7de0, 7e66): taken
+                    // as falling through.
+                    let skip = match op {
+                        0x0b | 0x14 => false,
+                        0x0c => ops[0] & 0x8000 == 0,
+                        _ => true,
+                    };
+                    if skip {
+                        let n = ((word >> 4) & !1) as usize;
+                        m.commands.push(Command { offset: at, word, operands: ops });
+                        if n == 0 {
+                            return m;
+                        }
+                        p += n;
+                        continue;
+                    }
+                }
+                if op == 0x1a {
+                    let mut c = (word >> 4) & 0xffe;
+                    if ops[0] >> 8 != 0 && ops.len() == 8 && (1..=7).contains(&paint.livery) {
+                        c = ops[paint.livery as usize] & 0xfff;
+                    }
+                    paint.colour = c;
+                }
+                let c = resolve_colour((word >> 4) & 0xfff, paint);
                 let b = |w: u16| [w as u8, (w >> 8) as u8];
                 match op {
                     0x01 => m.prims.push((Prim::Disc { at: ops[0] as u8, size: ops[1] }, c)),
@@ -443,9 +521,10 @@ pub fn walk(image: &[u8], start: usize) -> Mesh {
                         // 1000:54c4: CX = (v1, v2), DX = (normal, v3). *Checked*: the vertex a
                         // face's normal names is one of these corners in 153 of 200 triangles.
                         let t = [ops[0] as u8, (ops[0] >> 8) as u8, (ops[1] >> 8) as u8];
-                        m.prims.push((Prim::Tri(t), c));
+                        let n = ops[1] as u8;
+                        m.prims.push((Prim::Tri(t, n), c));
                         if op == 0x07 {
-                            m.prims.push((Prim::Tri(t.map(|v| v ^ 1)), c));
+                            m.prims.push((Prim::Tri(t.map(|v| v ^ 1), n ^ 1), c));
                         }
                     }
                     0x04 | 0x08 => {
@@ -454,9 +533,10 @@ pub fn walk(image: &[u8], start: usize) -> Mesh {
                         // 325 quads with four distinct plain corners are then flat and uncrossed,
                         // 142 in the byte order).
                         let q = [ops[0] as u8, ops[1] as u8, (ops[0] >> 8) as u8, (ops[1] >> 8) as u8];
-                        m.prims.push((Prim::Quad(q), c));
+                        let n = ops[2] as u8;
+                        m.prims.push((Prim::Quad(q, n), c));
                         if op == 0x08 {
-                            m.prims.push((Prim::Quad(q.map(|v| v ^ 1)), c));
+                            m.prims.push((Prim::Quad(q.map(|v| v ^ 1), n ^ 1), c));
                         }
                     }
                     0x09 => m.prims.push((Prim::Thruster { from: ops[0] as u8, to: (ops[0] >> 8) as u8, size: ops[1] }, c)),
@@ -476,11 +556,11 @@ pub fn walk(image: &[u8], start: usize) -> Mesh {
     m
 }
 
-/// `1ea9:0788` (second data segment): a list of `00h`-separated texts, "CORE", "SYSTEMS",
-/// "IMPERIAL\rSYSTEMS", "YOU ARE HERE", then the object names "Mine" … "Long-range Cruiser"
-/// (*observed* in the file). A ship's data block names its entry as text `4000h + index`
-/// ([`ship_name`]).
-pub const TEXTS_AT: usize = 0x1ea9 * 16 + 0x0788;
+/// `1ea9:06aa` (second data segment): the table of texts `4000h`–`7FFFh`, word offsets relative
+/// to the table, each to a `00h`-terminated string. `1000:18de` points `[DS:5703]` at it, and the
+/// text expander reads text `4000h + n` through it ([TEXT.md](../../../docs/TEXT.md)). Entry 0 is
+/// "CORE", 4 "Mine", 12h "Eagle long range fighter" … 2Bh "Long-range Cruiser" (*observed*).
+pub const TEXTS_AT: usize = 0x1ea9 * 16 + 0x06aa;
 /// Models 2–8 of the main table: missile and mine bodies and the missiles and mines drawn with
 /// them (*inferred*: 5–8 all draw model 2, 4 draws model 3; they have no ship data block).
 pub const WEAPONS: std::ops::RangeInclusive<usize> = 2..=8;
@@ -488,24 +568,20 @@ pub const WEAPONS: std::ops::RangeInclusive<usize> = 2..=8;
 /// buildings (45–58). *Inferred* from drawing them (docs/FORMATS.md §4).
 pub const STRUCTURES: std::ops::RangeInclusive<usize> = 42..=58;
 
-/// The texts of `FRONTIER.EXE`'s list at [`TEXTS_AT`], in order, up to "Long-range Cruiser".
+/// The texts of `FRONTIER.EXE`'s table at [`TEXTS_AT`], by number (`4000h` + index). The table
+/// ends where its first string begins.
 pub fn texts(exe: &[u8]) -> Vec<String> {
     let Ok(h) = mz::parse(exe) else { return Vec::new() };
     let image = &exe[h.header_size().min(exe.len())..];
-    let Some(list) = image.get(TEXTS_AT..) else { return Vec::new() };
-    if !list.starts_with(b"CORE\0") {
-        return Vec::new();
-    }
-    let mut out = Vec::new();
-    for s in list.split(|&b| b == 0) {
-        let s = String::from_utf8_lossy(s).into_owned();
-        let last = s == "Long-range Cruiser";
-        out.push(s);
-        if last || out.len() > 64 {
-            break;
-        }
-    }
-    out
+    let Ok(first) = le16(image, TEXTS_AT) else { return Vec::new() };
+    (0..first as usize / 2)
+        .map(|i| {
+            let at = le16(image, TEXTS_AT + i * 2).map_or(usize::MAX, |o| TEXTS_AT + o as usize);
+            let s = image.get(at..).unwrap_or_default();
+            let end = s.iter().position(|&b| b == 0).unwrap_or(s.len());
+            String::from_utf8_lossy(&s[..end]).into_owned()
+        })
+        .collect()
 }
 
 /// The text number of a ship's name, from its data block (the header word `+1Ah`, relative to
@@ -513,7 +589,7 @@ pub fn texts(exe: &[u8]) -> Vec<String> {
 /// `8080h` with 2 words, `80A0h` with 3, and `8010h`, `8050h` or `80D0h` with byte pairs up to a
 /// word below 100h; a zero word (or a zero word ending a pair list) ends the list. Then come a
 /// double word, a word, four words (mass in tonnes and internal capacity first) and the name as
-/// text `4000h + n`.
+/// text `4000h + n` ([`texts`]).
 ///
 /// *Measured* on the runtime: the game drew model 16 on the F3 status screen of the player's
 /// "Eagle long range fighter" (text 18), and models 27 (twice), 31 and 36 for a shipyard list of
@@ -624,6 +700,66 @@ pub fn roles(image: &[u8], table: &Table, texts: &[String]) -> Vec<Option<Role>>
         .collect()
 }
 
+/// Face normals by normal number: number k is at `normals + (k >> 1) × 4 − 4`, bytes
+/// `[x, a vertex on the face, z, y]`, odd k with x negated (*observed*, `EL2MATH3:1bcd`,
+/// [MATH3.md](../../../docs/MATH3.md)). Numbers 0 and 1 have no normal: the face is always drawn.
+pub fn normals(image: &[u8], h: &Header) -> Vec<Option<[f32; 3]>> {
+    let count = h.normal_bytes as usize / 2;
+    (0..count)
+        .map(|k| {
+            if k < 2 {
+                return None;
+            }
+            let at = h.offset + h.normals as usize + (k >> 1) * 4 - 4;
+            let b = image.get(at..at + 4)?;
+            let x = b[0] as i8 as f32;
+            Some([if k & 1 == 1 { -x } else { x }, b[3] as i8 as f32, b[2] as i8 as f32])
+        })
+        .collect()
+}
+
+/// `CS:25c4` in `FRONTIER.EXE`: the face texture table, 16 bytes per entry (entry 0 is not
+/// used): a bitmap number of `EL2G.GRF` (`D0h`–`DCh`, 64 × 64, texels 0–6) and seven 12-bit
+/// colour offsets, one per texel (*observed*: `1000:6037`–`60a8` adds texel t's offset to the
+/// face's colour per channel, clamped at Fh, and hands the seven colours to the textured fills
+/// through `DS:1fb1`, [VIDEO.md](../../../docs/VIDEO.md) §5.3).
+pub const TEXTURES_AT: usize = 0x25c4;
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Texture {
+    /// The `EL2G.GRF` entry (the bitmap table at `DS:5813`).
+    pub bitmap: u16,
+    pub offsets: [u16; 7],
+}
+
+/// The texture table of `FRONTIER.EXE`'s load image, from entry 1 up to the first entry whose
+/// bitmap is not one of the 64 × 64 texture bitmaps.
+pub fn textures(image: &[u8]) -> Vec<Option<Texture>> {
+    let mut out = vec![None];
+    for k in 1..64 {
+        let at = TEXTURES_AT + k * 16;
+        let Some(b) = image.get(at..at + 16) else { break };
+        let w = |i: usize| u16::from_le_bytes([b[i * 2], b[i * 2 + 1]]);
+        if !(0xd0..=0xdf).contains(&w(0)) {
+            break;
+        }
+        out.push(Some(Texture { bitmap: w(0), offsets: std::array::from_fn(|i| w(i + 1)) }));
+    }
+    out
+}
+
+/// The texture entry a colour field names: colours `E00h`–`EFFh` (*observed*: `1000:54da`
+/// moves bits 1–3 and 5–7 into the high word, which `1000:6037` uses as the entry number).
+pub fn texture_entry(colour: u16) -> Option<u8> {
+    (colour & 0xf00 == 0xe00).then_some((((colour >> 1) & 7) | (((colour >> 5) & 7) << 3)) as u8)
+}
+
+/// Add two 12-bit colours channel by channel, each capped at Fh (`1000:6055`–`60a0`).
+pub fn add_rgb12(a: u16, b: u16) -> u16 {
+    let ch = |s: u16| (((a >> s) & 15) + ((b >> s) & 15)).min(15) << s;
+    ch(0) | ch(4) | ch(8)
+}
+
 /// The 12-bit colour field as 8-bit RGB (*inferred*: 4 bits per channel, `0RGB`).
 pub fn rgb12(c: u16) -> [u8; 3] {
     [((c >> 8) & 15) as u8 * 17, ((c >> 4) & 15) as u8 * 17, (c & 15) as u8 * 17]
@@ -647,14 +783,24 @@ mod tests {
     }
 
     #[test]
+    fn model_colour_and_textures() {
+        let paint = Paint { colour: 0xe22, livery: 0 };
+        // Bit 4 set: the model colour's texture; bit 4 clear: the command's own colour.
+        assert_eq!(resolve_colour(0x0f0, &paint), 0xe22);
+        assert_eq!(resolve_colour(0x0e0, &paint), 0x0e0);
+        assert_eq!(texture_entry(0xe22), Some(9));
+        assert_eq!(add_rgb12(0x9f8, 0x8a9), 0xfff);
+    }
+
+    #[test]
     fn walks_triangles_and_stops_at_end() {
-        // tri (op 3) colour 0F0h, vertices 0,2 / normal 1, vertex 4; then end.
+        // tri (op 3) colour 0E0h, vertices 0,2 / normal 1, vertex 4; then end.
         let mut img = vec![];
-        for w in [0x0f03u16, 0x0200, 0x0401, 0x0000] {
+        for w in [0x0e03u16, 0x0200, 0x0401, 0x0000] {
             img.extend_from_slice(&w.to_le_bytes());
         }
         let m = walk(&img, 0);
         assert_eq!(m.stopped, None);
-        assert_eq!(m.prims, vec![(Prim::Tri([0, 2, 4]), 0x0f0)]);
+        assert_eq!(m.prims, vec![(Prim::Tri([0, 2, 4], 1), 0x0e0)]);
     }
 }

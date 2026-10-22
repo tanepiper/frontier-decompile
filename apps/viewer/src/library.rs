@@ -44,6 +44,10 @@ pub struct Library {
     pub palette: [[u8; 3]; 256],
     pub palette_source: &'static str,
     pub models: Vec<ModelSet>,
+    /// The face texture table of `FRONTIER.EXE` (`model::textures`), by entry.
+    pub textures: Vec<Option<model::Texture>>,
+    /// `EL2G.GRF`'s pictures by entry number, for the textures.
+    pub bitmaps: Vec<Option<grf::Image>>,
 }
 
 impl Library {
@@ -67,6 +71,18 @@ impl Library {
             }
         }
         let mut models = Vec::new();
+        let mut textures = Vec::new();
+        if let Some(exe) = files.iter().find(|f| f.kind == Kind::Program) {
+            if let Ok((image, _)) = model::main_table(&exe.data) {
+                textures = model::textures(&image);
+            }
+        }
+        let bitmaps = files
+            .iter()
+            .find(|f| f.kind == Kind::ImageArchive)
+            .and_then(|f| grf::parse_archive(&f.data).ok())
+            .map(|e| e.iter().map(|e| e.image().and_then(Result::ok)).collect())
+            .unwrap_or_default();
         if let Some(exe) = files.iter().find(|f| f.kind == Kind::Program) {
             if let Ok((image, table)) = model::main_table(&exe.data) {
                 let texts = model::texts(&exe.data);
@@ -80,7 +96,7 @@ impl Library {
                 }
             }
         }
-        Library { files, parsed: HashMap::new(), palette, palette_source, models }
+        Library { files, parsed: HashMap::new(), palette, palette_source, models, textures, bitmaps }
     }
 
     pub fn find(&self, name: &str) -> Option<&Resource> {
@@ -110,6 +126,21 @@ impl Library {
                 Kind::Position | Kind::Unknown => Parsed::Raw,
             }
         });
+    }
+
+    /// Texture-table entry `entry` as RGBA on the 12-bit base colour `base`: texel t gets
+    /// `base + offset t`, channel by channel (`model::add_rgb12`). `None` if the entry or its
+    /// bitmap is missing.
+    pub fn texture_rgba(&self, entry: u8, base: u16) -> Option<(usize, usize, Vec<u8>)> {
+        let t = self.textures.get(entry as usize).copied().flatten()?;
+        let img = self.bitmaps.get(t.bitmap as usize)?.as_ref()?;
+        let mut out = Vec::with_capacity(img.pixels.len() * 4);
+        for &p in &img.pixels {
+            let c = model::add_rgb12(base, t.offsets.get(p as usize).copied().unwrap_or(0));
+            let [r, g, b] = model::rgb12(c);
+            out.extend_from_slice(&[r, g, b, 255]);
+        }
+        Some((img.width, img.height, out))
     }
 
     /// Palette indices as RGBA, colour 0 clear if `transparent`.

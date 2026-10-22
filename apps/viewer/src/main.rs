@@ -3,12 +3,18 @@
 //! Native:  `cargo run -p frontier-viewer --release [-- path/to/game]` (default
 //!          `game-data/original`).
 //! Browser: `tools/dev-web.sh --app viewer`, then open `/?data=/game-data/` or pick the files.
+//! Files:   `frontier-viewer --render TABLE N[,N…] OUT.png [--dir DIR] [--yaw R] [--pitch R]
+//!          [--livery 0-7] [--wire] [--no-textures] [--back-faces] [--all-branches] [--thrusters]` draws models
+//!          of TABLE (`main` for FRONTIER.EXE, `intro` for EL2M08) into a PNG, 320×240 each, for
+//!          agents and tests that cannot look at a window.
 //!
 //! What each view shows and how it is known is in docs/FORMATS.md. Nothing the viewer reads
 //! leaves the machine or the browser.
 
 mod gpu;
 mod library;
+#[cfg(not(target_arch = "wasm32"))]
+mod raster;
 mod scene;
 mod sound;
 mod ui;
@@ -165,9 +171,83 @@ fn new_app(proxy: EventLoopProxy<UserEvent>) -> App {
     App { proxy, window: None, gpu: None, egui: None, ctx: egui::Context::default(), ui: None, pending: None, last: None }
 }
 
+/// `--render`: draw models into a PNG without a window.
+#[cfg(not(target_arch = "wasm32"))]
+fn render(args: &[String]) -> Result<(), String> {
+    let flag = |f: &str| args.iter().any(|a| a == f);
+    let value = |f: &str| args.iter().position(|a| a == f).and_then(|i| args.get(i + 1)).cloned();
+    // Positional arguments after `--render`, skipping the values of `--dir`, `--yaw`, `--pitch`.
+    let mut pos: Vec<&String> = Vec::new();
+    let mut i = 1;
+    while i < args.len() {
+        match args[i].as_str() {
+            "--dir" | "--yaw" | "--pitch" | "--livery" => i += 2,
+            a if a.starts_with("--") => i += 1,
+            _ => {
+                pos.push(&args[i]);
+                i += 1;
+            }
+        }
+    }
+    let [table, models, out] = [pos.first(), pos.get(1), pos.get(2)].map(|a| a.map(|s| s.as_str()));
+    let (Some(table), Some(models), Some(out)) = (table, models, out) else {
+        return Err("usage: --render TABLE N[,N…] OUT.png".into());
+    };
+    let dir = value("--dir").unwrap_or_else(|| "game-data/original".into());
+    let lib = library::Library::new(frontier_platform::files::read_dir(std::path::Path::new(&dir)));
+    let set = lib
+        .models
+        .iter()
+        .find(|m| m.label.starts_with(if table == "intro" { "EL2M08" } else { "FRONTIER" }))
+        .ok_or("no such model table")?;
+    let numbers: Vec<usize> = models.split(',').filter_map(|n| n.parse().ok()).collect();
+    let o = scene::Options {
+        filled: !flag("--wire"),
+        thrusters: flag("--thrusters"),
+        textures: !flag("--no-textures"),
+        back_faces: flag("--back-faces"),
+        yaw: value("--yaw").and_then(|v| v.parse().ok()).unwrap_or(0.6),
+        pitch: value("--pitch").and_then(|v| v.parse().ok()).unwrap_or(0.35),
+        zoom: 1.0,
+    };
+    let branches = if flag("--all-branches") { frontier_formats::model::Branches::All } else { frontier_formats::model::Branches::Near };
+    let (cw, ch, cols) = (320usize, 240usize, numbers.len().clamp(1, 4));
+    let rows = numbers.len().div_ceil(cols);
+    let mut sheet = raster::Canvas::new(cw * cols, ch * rows, egui::Color32::BLACK);
+    for (k, &n) in numbers.iter().enumerate() {
+        let default = set
+            .table
+            .models
+            .get(n)
+            .copied()
+            .flatten()
+            .and_then(|o| frontier_formats::model::header(&set.image, o).ok())
+            .and_then(|h| h.colour())
+            .unwrap_or(0x666);
+        let livery = value("--livery").and_then(|v| v.parse().ok()).unwrap_or(0);
+        let sc = scene::build(set, n, branches, livery);
+        let items = scene::project(egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(cw as f32, ch as f32)), &sc, default, o);
+        let mut cell = raster::Canvas::new(cw, ch, egui::Color32::from_rgb(8, 10, 16));
+        cell.draw(&items, &mut |e, base| lib.texture_rgba(e, base));
+        sheet.blit(&cell, (k % cols) * cw, (k / cols) * ch);
+    }
+    std::fs::write(out, sheet.png()).map_err(|e| format!("{out}: {e}"))?;
+    println!("wrote {out}: {} model(s) of {}", numbers.len(), set.label);
+    Ok(())
+}
+
 #[cfg(not(target_arch = "wasm32"))]
 fn main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
+    let args: Vec<String> = std::env::args().collect();
+    if args.iter().any(|a| a == "--render") {
+        let rest: Vec<String> = args[args.iter().position(|a| a == "--render").unwrap()..].to_vec();
+        if let Err(e) = render(&rest) {
+            eprintln!("frontier-viewer: {e}");
+            std::process::exit(2);
+        }
+        return;
+    }
     let dir = std::env::args()
         .skip(1)
         .find(|a| !a.starts_with("--"))

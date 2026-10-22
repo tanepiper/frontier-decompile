@@ -94,7 +94,7 @@ fn model_tables_resolve() {
 
     let texts = model::texts(&exe);
     assert_eq!(texts.get(4).map(String::as_str), Some("Mine"));
-    assert_eq!(texts.last().map(String::as_str), Some("Long-range Cruiser"));
+    assert_eq!(texts.get(0x2b).map(String::as_str), Some("Long-range Cruiser"));
     let roles = model::roles(&image, &table, &texts);
     // Measured in the game (docs/FORMATS.md §4): the F3 status screen and a shipyard list.
     let named = |n: usize| match &roles[n] {
@@ -107,7 +107,7 @@ fn model_tables_resolve() {
     assert_eq!(named(36), "Puma Clipper");
     // Every ship name in the list names one model of 9–41, except ". IXI ." (text 17), which no
     // model's data block names.
-    for t in &texts[10..] {
+    for t in &texts[10..=0x2b] {
         if !t.contains("__") && t != ". IXI ." {
             assert!((9..=41).any(|n| named(n) == t), "no model of 9–41 is named {t}");
         }

@@ -100,6 +100,27 @@ fn main() {
             false
         }),
     );
+    // The colour double word `[BP-9Eh]` a face adds when its colour has bit 4 set (`1000:5211`):
+    // low word a colour, high word a texture entry. Printed as `dw:value(model offset)`.
+    let colours: Seen = Rc::default();
+    // The sites that add it: line 5211, triangle 554c, quad 5cf5, polygon 4c1f / 4f12, and the
+    // second halves of the mirrored triangle and quad, 568b / 5e88.
+    for site in [0x5211, 0x554c, 0x5cf5, 0x4c1f, 0x4f12, 0x568b, 0x5e88] {
+        let c2 = colours.clone();
+        m.hook(
+            "FRONTIER.EXE",
+            site,
+            Box::new(move |cpu, _| {
+                let ss = cpu.s[2] as u32;
+                let bp = cpu.r[5] as u16;
+                let dw_lo = cpu.mem.rw((ss << 4) + bp.wrapping_sub(0x9e) as u32);
+                let dw_hi = cpu.mem.rw((ss << 4) + bp.wrapping_sub(0x9c) as u32);
+                let model = cpu.mem.rw((ss << 4) + bp.wrapping_sub(4) as u32);
+                *c2.borrow_mut().entry((dw_hi, dw_lo, model)).or_default() += 1;
+                false
+            }),
+        );
+    }
     let out = Path::new("game-data/derived/captures");
     std::fs::create_dir_all(out).unwrap();
     let slice = (m.dev.ips / 100.0) as u64;
@@ -139,7 +160,9 @@ fn main() {
                 })
                 .collect();
             let objs: Vec<String> = objects.borrow().iter().map(|(&(_, _, n), c)| format!("obj:{n}×{c}")).collect();
-            println!("{shot:3} {:6.1}s  {}  |  {}", m.now(), objs.join(" "), list.join(" "));
+            let dws: Vec<String> = colours.borrow().iter().map(|(&(hi, lo, md), c)| format!("dw:{hi:04x}{lo:04x}({md:04x})×{c}")).collect();
+            println!("{shot:3} {:6.1}s  {}  |  {}  |  {}", m.now(), objs.join(" "), list.join(" "), dws.join(" "));
+            colours.borrow_mut().clear();
             seen.borrow_mut().clear();
             objects.borrow_mut().clear();
             shot += 1;

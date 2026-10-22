@@ -38,6 +38,11 @@ pub struct Ui {
     filled: bool,
     spin: bool,
     thrusters: bool,
+    show_textures: bool,
+    back_faces: bool,
+    all_branches: bool,
+    livery: u8,
+    model_textures: HashMap<(u8, u16), TextureHandle>,
     message: String,
 }
 
@@ -64,6 +69,11 @@ impl Ui {
             filled: true,
             spin: false,
             thrusters: false,
+            show_textures: true,
+            back_faces: false,
+            all_branches: false,
+            livery: 0,
+            model_textures: HashMap::new(),
             message: String::new(),
         }
     }
@@ -417,7 +427,8 @@ impl Ui {
         let defs = model::vertex_defs(&set.image, &h).unwrap_or_default();
         let pos = model::resolve(&defs);
         let mesh = model::walk(&set.image, off + h.mesh as usize);
-        let scene = scene::build(set, self.model);
+        let branches = if self.all_branches { model::Branches::All } else { model::Branches::Near };
+        let scene = scene::build(set, self.model, branches, self.livery);
         let title = match set.roles.get(self.model).cloned().flatten() {
             Some(model::Role::Named(n)) => format!("{n} (model {})", self.model),
             Some(r) => format!("Model {} · {}", self.model, r.group()),
@@ -428,6 +439,10 @@ impl Ui {
             ui.checkbox(&mut self.filled, "flat shaded");
             ui.checkbox(&mut self.spin, "spin");
             ui.checkbox(&mut self.thrusters, "thruster flames");
+            ui.checkbox(&mut self.show_textures, "textures");
+            ui.checkbox(&mut self.back_faces, "back faces");
+            ui.checkbox(&mut self.all_branches, "every level of detail");
+            ui.add(egui::Slider::new(&mut self.livery, 0..=7).text("livery"));
             ui.add(egui::Slider::new(&mut self.zoom, 0.2..=5.0).text("zoom"));
         });
         match &mesh.stopped {
@@ -456,7 +471,32 @@ impl Ui {
             self.yaw += ui.input(|i| i.stable_dt).min(0.1) * 0.6;
         }
         let default = h.colour().unwrap_or(0x666);
-        scene::draw(&ui.painter_at(rect), rect, &scene, default, self.yaw, self.pitch, self.zoom, self.filled, self.thrusters);
+        let options = scene::Options {
+            filled: self.filled,
+            thrusters: self.thrusters,
+            textures: self.show_textures,
+            back_faces: self.back_faces,
+            yaw: self.yaw,
+            pitch: self.pitch,
+            zoom: self.zoom,
+        };
+        let ctx = ui.ctx().clone();
+        let (lib, cache) = (&self.lib, &mut self.model_textures);
+        let mut texture = |entry: u8, base: u16| -> Option<egui::TextureId> {
+            if let Some(t) = cache.get(&(entry, base)) {
+                return Some(t.id());
+            }
+            let (w, h, rgba) = lib.texture_rgba(entry, base)?;
+            let t = ctx.load_texture(
+                format!("tex{entry}-{base:03x}"),
+                egui::ColorImage::from_rgba_unmultiplied([w, h], &rgba),
+                TextureOptions::NEAREST,
+            );
+            let id = t.id();
+            cache.insert((entry, base), t);
+            Some(id)
+        };
+        scene::draw(&ui.painter_at(rect), rect, &scene, default, options, &mut texture);
         if matches!(set.roles.get(self.model), Some(Some(model::Role::Named(_)))) {
             ui.label("Name: from the ship's data block in FRONTIER.EXE (checked in the game for the Eagle, Constrictor, Tiger Trader and Puma Clipper; docs/FORMATS.md §4). Other groups are inferred.");
         }

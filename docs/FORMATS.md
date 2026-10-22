@@ -172,8 +172,8 @@ at a ship data block (`1ee8:63e3` reads it). The block starts with tagged items 
 2 words, `80A0h` with 3; `8010h`, `8050h` and `80D0h` with byte pairs up to a word below
 100h; a zero word ends the list). Then come a double word, a word, four words that begin with
 the mass and the internal capacity in tonnes, and the name as text `4000h + n` in the list at
-`1ea9:0788` ("CORE", "SYSTEMS", "IMPERIAL / SYSTEMS", "YOU ARE HERE", "Mine", …,
-"Long-range Cruiser"). `crates/formats::model::ship_name` reads it.
+`1ea9:06aa`, the table the text expander uses for texts `4000h`–`7FFFh` ([TEXT.md](TEXT.md);
+entry 0 "CORE", 4 "Mine", 12h "Eagle long range fighter", … 2Bh "Long-range Cruiser"). `crates/formats::model::ship_name` reads it.
 
 Checked in the game with `model_census` on the runtime (Escape at 3 s, space at 5 s, start
 option 1 at 8 s; landed at Merlin, Ross 154):
@@ -199,9 +199,30 @@ Other groups, for the main table:
 | header scale 19 and up | planets, stars and terrain (most use `1F`) | *inferred* |
 | the rest | parts drawn by other models through `0E`, and others | *observed* in the mesh lists |
 
-The viewer follows every conditional (it draws every level of detail at once), places
-sub-objects at their vertex scaled by 2^(their scale − the parent's), and draws with its own
-flat shading: a viewer's picture, not the game's renderer.
+**Colours, textures and liveries.** A drawing command's colour field is `0RGBh`; bit 4 says
+"use the model colour" and bit 8 "unshaded" (`1000:51c2`–`5211`). Colours `E00h`–`EFFh` are
+textures: entry `((c >> 1) & 7) | ((c >> 5) & 7) << 3` of the table at `CS:25c4` (16 bytes per
+entry: an `EL2G.GRF` bitmap number `D0h`–`DCh`, a 64 × 64 picture with texels 0–6, and seven
+12-bit colour offsets, one per texel, added to the face's shade channel by channel and capped
+at Fh, `1000:6037`–`60a8`). The drawing commands hand them to the textured fills
+([VIDEO.md](VIDEO.md) §5.3, §7). The model colour is a double word `[BP-9Eh]` (colour, texture
+entry): the object renderer starts it at `111h` (`1000:3abe`), a sub-object inherits its
+parent's (`1000:7c2b`, `7daf`), and opcode `1A` sets it (`1000:8c8b`): its own colour field, or,
+when its operand's high byte names a variable whose value v is 1–7, the v-th of the seven
+colours that follow. That variable is the ship's paint: *measured* with `model_census` (hooks
+at the seven sites that add the double word), the shipyard's Tiger Trader (model 31) is drawn
+with `00090000h`, texture entry 9, which is the Tiger Trader's livery 2. The viewer offers the
+livery as a choice (0 = each `1A`'s own colour).
+
+The viewer draws the near branches with every variable 0 (*assumed*; every level of detail on
+request), hides faces whose stored normal points away as `face_shade` does (back faces on
+request), places sub-objects at their vertex scaled by 2^(their scale − the parent's), stretches
+each texture over its whole face (the game picks one of 8 orientations), and lights with its own
+base grey: a viewer's picture, not the game's renderer. `frontier-viewer --render main 31 out.png
+--livery 2` draws the same picture into a file.
+
+The ship names come from the text table at `1ea9:06aa` (texts `4000h`–`7FFFh`,
+[TEXT.md](TEXT.md)).
 
 ## 5. Text
 
@@ -234,7 +255,7 @@ trace that read.
 - **The `.ROL` songs:** tracks and events. They can be played on the OPL2 with one generic FM
   voice: a deviation for listening, since the game plays them only on an MT-32.
 - **3D models:** both tables, grouped by what the models are (ships and craft named from their
-  data blocks,
+  data blocks, textured hulls with a livery choice,
   missiles, stations and starports, planets, parts), each drawn with its sub-objects (flat
   shaded or wireframe, thruster flames on request, turn with the mouse), with its header, vertex
   definitions and mesh commands.
@@ -245,7 +266,9 @@ with `tools/dev-web.sh --app viewer`.
 
 ## Open questions
 
-- What opcodes `0F`–`12`, `15`–`19`, `1A`–`1C` and `1E` draw (their lengths are known), and
+- Which variable each model's `1A` reads for its livery, and the conditions that hide parts
+  (the Tiger Trader's window parts 120–127 are not drawn in the viewer's near state).
+- What opcodes `0F`–`12`, `15`–`19`, `1B`, `1C` and `1E` draw (their lengths are known), and
   the second model table `0A` uses (`1000:190a`): the intro's ships draw their hulls through it.
 - Which of models 2–8 is which missile or mine, and what models 39, 60, 92 and 110 are.
 - The palette the game sets for the GRF pictures (`EL2MCGA3:0234` and the colour allocator).
