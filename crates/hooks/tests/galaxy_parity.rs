@@ -9,6 +9,7 @@ use frontier_dos::mem::lin;
 use frontier_dos::{Machine, Vfs};
 use frontier_game::galaxy::PORTS_M02;
 use frontier_game::names::PORTS_M09;
+use frontier_game::system::PORTS_M00;
 use frontier_game::math3::DECLINE;
 use frontier_hooks::{compare, record_original_until, regs_from, run_port};
 
@@ -31,7 +32,7 @@ fn booted() -> Option<Machine> {
     // Load modules 2 (EL2M02) and 19 (EL2M19) the way the game does: call handler +04 through
     // the module table, which reaches the lazy-load thunk while the module is not resident
     // (docs/OVERLAYS.md §4). AL = 0 makes EL2M02's handler +04 do nothing.
-    for slot in [19u16, 2, 9] {
+    for slot in [19u16, 2, 9, 0] {
         let si = slot * 8;
         let hdr_off = m.cpu.mem.rw(lin(ds, 0x0396 + si as u32));
         let hdr_seg = m.cpu.mem.rw(lin(ds, 0x0398 + si as u32));
@@ -67,7 +68,8 @@ fn galaxy_ports_match_original() {
     let mut x = X(0x5DEE_CE66_D1CE_4E5B);
     let mut failures = Vec::new();
     let m09 = m.image_segment("EL2M09.OVL").expect("EL2M09 resident");
-    let tables: Vec<(u16, &[(u16, u16, &str, frontier_game::math3::Port)])> = vec![(m02, PORTS_M02), (m09, PORTS_M09)];
+    let m00 = m.image_segment("EL2M00.OVL").expect("EL2M00 resident");
+    let tables: Vec<(u16, &[(u16, u16, &str, frontier_game::math3::Port)])> = vec![(m02, PORTS_M02), (m09, PORTS_M09), (m00, PORTS_M00)];
     for &(seg, ports) in &tables {
     for &(off, _slot, name, port) in ports {
         let (mut mismatches, mut declined, mut compared, mut nonzero) = (0, 0, 0, 0);
@@ -112,6 +114,22 @@ fn galaxy_ports_match_original() {
                 m.cpu.pop16();
                 m.cpu.push16(m.cpu.s[CS]);
                 m.cpu.push16(0x1234);
+            }
+            if seg == m00 {
+                // A body record at ES:SI = B000:0100, its temperature, seed and flags; the
+                // parent value DS:2049; the system seed.
+                m.cpu.s[ES] = 0xB000;
+                m.cpu.r[6] = (m.cpu.r[6] & 0xFFFF_0000) | 0x0100;
+                let rec = lin(0xB000, 0x0100);
+                for k in 0..0x20 {
+                    m.cpu.mem.ww(rec + 2 * k, x.next() as u16);
+                }
+                m.cpu.mem.ww(rec + 0x20, (x.next() % 0x240) as u16);
+                m.cpu.mem.ww(lin(ds, 0x2049), (x.next() % 0x140) as u16);
+                m.cpu.mem.wd(lin(ds, 0x2021), x.next());
+                m.cpu.mem.wd(lin(ds, 0x2025), x.next());
+                m.cpu.r[0] = (m.cpu.r[0] & 0xFFFF_0000) | (x.next() % 16);
+                m.cpu.flags &= !0x0400;
             }
             m.cpu.s[CS] = seg;
             m.cpu.ip = off as u32;
