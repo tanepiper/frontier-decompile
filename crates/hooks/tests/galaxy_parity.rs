@@ -224,3 +224,91 @@ fn galaxy_ports_match_original() {
     }
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
+
+/// `EL2M00:50d6` (binary stars) needs a whole generated system around it, so it is checked in the
+/// system the game generates at the start (Ross 154): the game is driven into the cockpit, then
+/// the routine is called with masses across its bands (single star plus a quarter-mass companion,
+/// and the barycentre pair) against the original.
+#[test]
+fn binary_matches_original_in_a_generated_system() {
+    // A plain boot: the game is only played, never interrupted by test calls, until the cockpit.
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../game-data/original");
+    let Ok(entries) = std::fs::read_dir(&dir) else {
+        eprintln!("skipping: {} missing (run tools/extract-assets.sh)", dir.display());
+        return;
+    };
+    let mut vfs = Vfs::new();
+    for e in entries.flatten() {
+        if e.file_type().map(|t| t.is_file()).unwrap_or(false) {
+            vfs.insert(&e.file_name().to_string_lossy(), std::fs::read(e.path()).unwrap());
+        }
+    }
+    let mut m = Machine::new(vfs);
+    m.boot("FRONTIER.EXE").unwrap();
+    let second = m.dev.ips as u64;
+    assert_eq!(m.run(20 * second), frontier_dos::Stop::Budget);
+    m.key(0x39);
+    m.key(0xB9);
+    assert_eq!(m.run(4 * second), frontier_dos::Stop::Budget);
+    m.key(0x02);
+    m.key(0x82);
+    assert_eq!(m.run(9 * second), frontier_dos::Stop::Budget);
+    let ds0 = m.images().iter().find(|i| i.name == "FRONTIER.EXE").unwrap().seg + 0x1615;
+    eprintln!("at {:.1} virtual s; bodies counted: {}", m.now(), m.cpu.mem.rw(lin(ds0, 0x202d)));
+    let ds = m.images().iter().find(|i| i.name == "FRONTIER.EXE").unwrap().seg + 0x1615;
+    // EL2M00 may have been evicted after generating the system: load it through its own thunk
+    // (handler +04 of slot 0), with the game's registers saved around the call.
+    if m.image_segment("EL2M00.OVL").is_none() {
+        let (r, sg, ip, fl) = (m.cpu.r, m.cpu.s, m.cpu.ip, m.cpu.flags);
+        let hdr_off = m.cpu.mem.rw(lin(ds, 0x0396));
+        let hdr_seg = m.cpu.mem.rw(lin(ds, 0x0398));
+        let off = m.cpu.mem.rw(lin(hdr_seg, hdr_off as u32 + 4));
+        let seg = m.cpu.mem.rw(lin(hdr_seg, hdr_off as u32 + 6));
+        m.cpu.s[DS] = ds;
+        m.cpu.r[ESI] = 0;
+        m.call(seg, off, 50_000_000).expect("load EL2M00");
+        (m.cpu.r, m.cpu.s, m.cpu.ip, m.cpu.flags) = (r, sg, ip, fl);
+    }
+    let m00 = m.image_segment("EL2M00.OVL").expect("EL2M00 resident");
+    let port = frontier_game::system::PORTS_M00.iter().find(|p| p.2 == "binary").unwrap().3;
+    let mut x = X(0x0BAD_5EED_1234_5678);
+    let (mut compared, mut failures) = (0, Vec::new());
+    for i in 0..400 {
+        let mass: u32 = match i % 4 {
+            0 => 0x0a21_fe80 + x.next() % (0x0a6e_49c0 - 0x0a21_fe80),
+            1 => 0x0103_6640 + x.next() % 0x0900_0000,
+            2 => 0x0a6e_49c0 + x.next() % 0x1000_0000,
+            _ => 0xffff_ffef + x.next() % 0x10,
+        };
+        m.cpu.r[0] = mass & 0xffff;
+        m.cpu.r[2] = mass >> 16;
+        m.cpu.r[ESP] = 0xFFF0;
+        m.cpu.s[SS] = 0xA000;
+        m.cpu.s[DS] = ds;
+        m.cpu.flags &= !0x0400;
+        // Keep the body pointer inside the record block between calls.
+        let base = m.cpu.mem.rw(lin(ds, 0x203f));
+        m.cpu.mem.ww(lin(ds, 0x07dc), base.wrapping_add(0x40 * (2 + x.next() % 6) as u16));
+        m.cpu.mem.ww(lin(ds, 0x202d), 2 + (x.next() % 6) as u16);
+        m.cpu.push16(0x1234);
+        m.cpu.s[CS] = m00;
+        m.cpu.ip = 0x50d6;
+        let out = run_port(&m.cpu, port);
+        if out.steps == DECLINE {
+            continue;
+        }
+        compared += 1;
+        let diff = match record_original_until(&mut m.cpu, 2_000_000, out.cpu.cs, out.cpu.ip, out.cpu.r[4] as u16) {
+            Some(orig) => compare(&out, &orig, &m.cpu.mem),
+            None => Some("the original did not return".into()),
+        };
+        if let Some(d) = diff {
+            if failures.len() < 3 {
+                failures.push(format!("mass {mass:08x}: {d}"));
+            }
+        }
+    }
+    eprintln!("binary: {compared} compared, {} mismatches", failures.len());
+    assert!(compared > 100, "too few cases compared");
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}

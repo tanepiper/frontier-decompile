@@ -61,6 +61,26 @@ functions. `tools/ghidra/DisasmAt.java` makes them.
 | `EL2M00:468a` | `setup_body_port` | Set up a body from its mass `DS:07bc`: the class is the first threshold in `EL2M00:00ff` above the mass (1, 5, 12, 50, 200, …, `0103_6640h` for stars, …). It selects `+18h`, `+0Ah`, the temperature, `DS:07e4`, the classifier `DS:07e8` and the type `+0Ch` from the tables at `01b7`, `00a3`, `0189`, `015b`, `0213`, `00d1`. Type 0 returns with ZF set. Stars are named after the system (`[DS:2029]`), with a letter for a companion. Other bodies get their own kind-10 name when the parent is named, otherwise the parent's name plus a number or letter (`DS:2031`–`2033` by `DS:2034`). Then `47d8` |
 | `EL2M00:47d8` | `finish_body_port` | Mass `DS:07c0` × `DS:07c8` as a float, radius from the mass and the parent, seed, parent index, orbit `DS:07bc` as a float, fields from the seed. Below a temperature of 3E8h, it adds the heat of every body up the parent chain (records at `[DS:2041]:[DS:203f]`, their `+18h`, summed in float) to the temperature. Then `DS:204b` = `DS:202d` and `CALL [DS:07e8]` (one of the classifiers above). Returns `AX` = FFFFh, ZF clear |
 
+## The orbit builder: `EL2M00:4e3f` and binaries: `EL2M00:50d6`
+
+Ported as `orbits_port` and `binary_port`. `4e3f` builds the bodies around the current one, from
+the inside out. Each pass works like this:
+
+1. Step the system seed.
+2. Move the orbit position `DS:07d8` out by a seeded amount scaled by the spacing table at
+   `EL2M00:3c39` (through `4e29`).
+3. Derive the next body's mass from `DS:07cc`. Small results are shifted down, and a seeded value
+   is used when stars are not allowed.
+4. Set the body up with `468a`. Then save the whole working set on the stack (`DS:07c0`–`07e2`,
+   the seeds, `DS:2031`) and recurse into the body's own satellites, with its mass scale capped at
+   the parent's (`[ESP+1Ah] >> 6`).
+
+It stops when the orbit passes FFE0h, the orbit position overflows, or 60 (3Ch) bodies exist.
+While `DS:203a` allows, a body above the star threshold becomes a binary through `50d6`. Masses up
+to FFFF_FFEEh outside `0A21_FE80h`–`0A6E_49BFh` make a star and a quarter-mass companion. Masses
+inside that band make a barycentre body (type 20h, named after the system with "A,B" letters from
+`DS:2030`) and two stars that share the mass in a seeded ratio (at least `0103_6640h`).
+
 ## How parity was proven
 
 `crates/hooks/tests/galaxy_parity.rs`, in the booted game with `EL2M00`, `EL2M09` and the maths
@@ -74,9 +94,19 @@ of records whose parent indices point strictly backwards. A chain that loops nev
 original, so the port gives up after 256 links and leaves such a call to the original.
 **All match.**
 
+`4e3f` and `50d6` need a whole generated system around them.
+
+- `4e3f` was shadow-verified on the two systems the play script generates
+  (`cargo run -p frontier-hooks --example play_verify` with the hyperspace scenario of
+  [COVERAGE.md](COVERAGE.md)). The start at Ross 154 and the jump to Barnard's Star give **8
+  calls of the orbit builder (each with its whole recursion), 0 mismatches**, and 67 system calls
+  in all with 0 mismatches.
+- Neither system has a binary, so `50d6` was tested in the system the game generated at Ross 154
+  (`binary_matches_original_in_a_generated_system`). The game is played into the cockpit,
+  `EL2M00` is reloaded through its own module thunk, and 400 calls with masses across every band
+  are compared. **0 mismatches.**
+
 ## Open questions
 
-- The orbit builder `EL2M00:4e3f` (663 bytes), which calls `468a` per body. It saves its whole
-  working set (`DS:07c0`–`07e4`, the seeds, `DS:2031`) before generating children, so it is
-  recursive. Also open: the handler that starts a system on arrival.
+- The handler that starts a system on arrival and calls the orbit builder.
 - What `+02h`, `+0Ah`, `+12h` and `+1Eh` hold. The renderer and the system map read them.

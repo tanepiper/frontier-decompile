@@ -11,3 +11,5 @@
 1000:4db8	body_name	crates/game/src/system.rs
 1000:4df5	sys_step	crates/game/src/system.rs
 1000:4e29	lookup_3c39_port	crates/game/src/system.rs
+1000:4e3f	orbits	crates/game/src/system.rs
+1000:50d6	binary	crates/game/src/system.rs
