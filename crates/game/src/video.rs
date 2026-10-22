@@ -17,11 +17,13 @@
 
 mod raster;
 mod screen;
+mod driver;
 mod palette;
 mod shapes;
 mod sprite;
 pub use raster::*;
 pub use screen::*;
+pub use driver::*;
 pub use palette::*;
 pub use shapes::*;
 pub use sprite::*;
@@ -287,4 +289,23 @@ pub const EXPORTS: &[(u16, u16, &str, Port)] = &[
     (0x1432, 0, "load_high_colours@1432", high_after_reset),
     (0x34e7, 0x0250, "load_colours", load_colours),
     (0x34f0, 0, "load_colours@34f0", colours_after_reset),
+    (0x0796, 0x025c, "flip", flip),
+    (0x079a, 0, "flip@079a", flip_after_shape),
+    (0x07ab, 0, "flip@07ab", flip_after_position),
+    (0x07cb, 0, "flip@07cb", flip_after_save),
+    (0x07d4, 0, "flip@07d4", flip_after_pointer),
+    (0x07d8, 0, "flip@07d8", flip_after_hook),
+    (0x0807, 0, "flip@0807", flip_after_restore),
+    (0x05b8, 0x020c, "init", init),
+    (0x05d1, 0, "init@05d1", init_after_alloc),
+    (0x0619, 0, "init@0619", init_after_mode),
+    (0x0623, 0, "init@0623", init_after_palette),
+    (0x062a, 0, "init@062a", init_after_target),
+    (0x0636, 0, "init@0636", init_after_open),
+    (0x063f, 0, "init@063f", init_after_read),
+    (0x0648, 0, "init@0648", init_after_pointer),
+    (0x064c, 0, "init@064c", init_after_show),
+    (0x065b, 0, "init@065b", init_after_clear),
+    (0x065f, 0, "init@065f", init_after_flip),
+    (0x066e, 0, "init@066e", retf_after_call),
 ];

@@ -325,6 +325,23 @@ fn setup(m: &mut Machine, rng: &mut Rng, name: &str, ds: u16) -> bool {
             }
             true
         }
+        _ if name.starts_with("flip") || name.starts_with("init") => {
+            for r in [EAX, EBX, ECX, EDX, ESI, EDI, EBP] {
+                m.cpu.r[r] = rng.dword();
+            }
+            for i in 0..0x20u32 {
+                m.cpu.mem.ww(lin(STACK, 0xFF00 + 2 * i), rng.next());
+            }
+            let f = m.cpu.mem.rb(lin(STACK, 0xfa06 as u32));
+            m.cpu.mem.wb(lin(STACK, 0xfa06), (f & !2) | (rng.below(2) as u8) << 1);
+            if name == "init@05d1" {
+                // The cache segment DOS gave, or a failure.
+                let cache = m.cpu.mem.rw(lin(ds, video::CACHE_SEGMENT as u32));
+                m.cpu.r[EAX] = (m.cpu.r[EAX] & 0xFFFF_0000) | cache as u32;
+                m.cpu.flags = (m.cpu.flags & !1) | (rng.below(8) == 0) as u32;
+            }
+            true
+        }
         _ => false,
     }
 }
