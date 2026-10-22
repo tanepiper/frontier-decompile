@@ -103,6 +103,47 @@ fn setup(m: &mut Machine, rng: &mut Rng, name: &str, ds: u16) -> bool {
             m.cpu.mem.wb(lin(ds, video::COLOUR as u32), rng.next() as u8);
             true
         }
+        "disc" | "disc_clipped" => {
+            let size = match rng.below(6) {
+                0 => rng.below(8),
+                1 => rng.next(),
+                2 => 0x3e0 + rng.below(32),
+                _ => rng.below(200),
+            };
+            m.cpu.r[EBX] = (rng.dword() & 0xFFFF_0000) | rng.coord(video::WIDTH) as u32;
+            m.cpu.r[ECX] = (rng.dword() & 0xFFFF_0000) | rng.coord(video::VIEW_HEIGHT) as u32;
+            if name == "disc" && rng.below(2) == 0 {
+                // The unchecked entry: keep the disc touching the view.
+                m.cpu.r[ECX] = (m.cpu.r[ECX] & 0xFFFF_0000) | rng.below(video::VIEW_HEIGHT) as u32;
+            }
+            m.cpu.r[EDX] = (rng.dword() & 0xFFFF_0000) | size as u32;
+            m.cpu.r[EAX] = rng.dword();
+            m.cpu.r[ESI] = rng.dword();
+            m.cpu.r[EBP] = rng.dword();
+            m.cpu.mem.ww(lin(ds, video::TARGET as u32), target);
+            m.cpu.mem.wb(lin(ds, video::COLOUR as u32), rng.next() as u8);
+            true
+        }
+        "blob" => {
+            // Start at a shape: the byte after a terminator (or the table start).
+            let seg = m.image_segment("EL2MCGA3.OVL").unwrap();
+            let base = lin(seg, video::BLOB_TABLE as u32);
+            let mut starts = vec![0u16];
+            for i in 0..0x1c0u16 {
+                if (m.cpu.mem.rb(base + i as u32) as i8) < 0 {
+                    starts.push(i + 1);
+                }
+            }
+            starts.pop();
+            let bp = starts[rng.below(starts.len() as u16) as usize];
+            m.cpu.r[EBP] = (rng.dword() & 0xFFFF_0000) | bp as u32;
+            m.cpu.r[EBX] = (rng.dword() & 0xFFFF_0000) | rng.coord(video::WIDTH) as u32;
+            m.cpu.r[EDI] = (rng.dword() & 0xFFFF_0000) | rng.coord(video::VIEW_HEIGHT) as u32;
+            m.cpu.r[EAX] = rng.dword();
+            m.cpu.mem.ww(lin(ds, video::TARGET as u32), target);
+            m.cpu.mem.wb(lin(ds, video::COLOUR as u32), rng.next() as u8);
+            true
+        }
         _ => false,
     }
 }

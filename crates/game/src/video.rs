@@ -16,7 +16,9 @@
 //! Parity against the original running on the reference runtime: `crates/hooks/tests/mcga3_parity.rs`.
 
 mod raster;
+mod shapes;
 pub use raster::*;
+pub use shapes::*;
 
 pub use crate::math3::{lin, lin32, Bus, Cpu, DIVIDE_HANDLER_STEPS, DIVIDE_RESUME, EAX, EBP, EBX, ECX, EDI, EDX, ESI, ESP};
 
@@ -169,4 +171,7 @@ pub const EXPORTS: &[(u16, u16, &str, Port)] = &[
     (0x1e74, 0x022c, "quad", quad),
     (0x1e41, 0x0228, "quad_clipped", quad_clipped),
     (0x28f9, 0x0210, "line", line),
+    (0x2f4e, 0x01d4, "disc_clipped", disc_clipped),
+    (0x2f5a, 0x01d8, "disc", disc),
+    (0x2dd1, 0x0214, "blob", blob),
 ];

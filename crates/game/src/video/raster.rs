@@ -872,9 +872,10 @@ pub fn line(x: &mut Ctx) -> Result<(), Decline> {
     loop {
         if steep {
             // ADD DX,[57e9]; JLE; SUB DX,[57ed]; INC BP (leftward: DEC SI)
+            let total = super::shapes::sum(err, dx);
             err = err.wrapping_add(dx);
             x.steps += 2;
-            if (err as i16) > 0 {
+            if total > 0 {
                 err = err.wrapping_sub(dy);
                 run = run.wrapping_add(1);
                 x.steps += 2;
@@ -893,11 +894,12 @@ pub fn line(x: &mut Ctx) -> Result<(), Decline> {
                 x.set(ESI, x.si().wrapping_sub(1));
                 x.steps += 1;
             }
+            let total = super::shapes::sum(err, dy);
             err = err.wrapping_add(dy);
             x.set(ECX, err);
             x.set(EBP, run);
             x.steps += 2;
-            if (err as i16) <= 0 {
+            if total <= 0 {
                 // DEC AX; JNS
                 count = count.wrapping_sub(1);
                 x.set(EAX, count);
