@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360" role="img" aria-label="The logic rate stays the same on a faster display, with a lag frame shown as a frame without an update">
+<title>The logic rate stays the same on a faster display, with a lag frame shown as a frame without an update</title>
+<rect x="0.5" y="0.5" width="899" height="359" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">LOGIC RATE AND DISPLAY RATE</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The logic runs at the original rate, such as 60.0988 Hz for an NTSC NES. Only the picture follows the display.</text>
+<text x="40.0" y="108.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">logic updates</text>
+<text x="40.0" y="168.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">a faster display</text>
+<rect x="160.0" y="92.0" width="112.7" height="26.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="168.0" y="110.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">update 1</text>
+<rect x="276.7" y="92.0" width="112.7" height="26.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="284.7" y="110.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">update 2</text>
+<rect x="393.3" y="92.0" width="112.7" height="26.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="401.3" y="110.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">update 3</text>
+<rect x="510.0" y="92.0" width="112.7" height="26.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="518.0" y="110.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">update 4</text>
+<rect x="626.7" y="92.0" width="112.7" height="26.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="634.7" y="110.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">update 5</text>
+<rect x="743.3" y="92.0" width="112.7" height="26.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="751.3" y="110.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">update 6</text>
+<rect x="160.0" y="152.0" width="66.0" height="26.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="193.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">shows 1</text>
+<rect x="230.0" y="152.0" width="66.0" height="26.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="263.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">shows 1</text>
+<rect x="300.0" y="152.0" width="66.0" height="26.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="333.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">shows 2</text>
+<rect x="370.0" y="152.0" width="66.0" height="26.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="403.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">shows 2</text>
+<rect x="440.0" y="152.0" width="66.0" height="26.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="473.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">shows 3</text>
+<rect x="510.0" y="152.0" width="66.0" height="26.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="543.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">shows 3</text>
+<rect x="580.0" y="152.0" width="66.0" height="26.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="613.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">shows 4</text>
+<rect x="650.0" y="152.0" width="66.0" height="26.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="683.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">shows 5</text>
+<rect x="720.0" y="152.0" width="66.0" height="26.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="753.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">shows 5</text>
+<rect x="790.0" y="152.0" width="66.0" height="26.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="823.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">shows 6</text>
+<rect x="160" y="86" width="2" height="98" fill="#f59e0b"><animate attributeName="x" values="160;860" dur="5s" repeatCount="indefinite"/></rect>
+<text x="40.0" y="238.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">a lag frame</text>
+<rect x="160.0" y="222.0" width="112.7" height="26.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="168.0" y="240.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">update 1</text>
+<rect x="276.7" y="222.0" width="112.7" height="26.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="284.7" y="240.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">update 2</text>
+<rect x="393.3" y="222.0" width="112.7" height="26.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.5"/>
+<text x="401.3" y="240.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">no update</text>
+<rect x="510.0" y="222.0" width="112.7" height="26.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="518.0" y="240.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">update 3</text>
+<rect x="626.7" y="222.0" width="112.7" height="26.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="634.7" y="240.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">update 4</text>
+<rect x="743.3" y="222.0" width="112.7" height="26.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="751.3" y="240.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">update 5</text>
+<text x="40.0" y="286.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The original took two frames for one update. Lag frames change the timing. A port that must match speedruns reproduces them.</text>
+<text x="40.0" y="303.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Most ports do not. Record the decision. Pick one region as the reference.</text>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="320" viewBox="0 0 900 320" role="img" aria-label="MAME's -record and -playback can go out of step if the .cfg, NVRAM and memory card files differ from the original run, so record and play back with them deleted. Other options capture video, audio and debugger output.">
+<title>MAME's -record and -playback can go out of step if the .cfg, NVRAM and memory card files differ from the original run, so record and play back with them deleted. Other options capture video, audio and debugger output.</title>
+<rect x="0.5" y="0.5" width="899" height="319" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">RECORDING INPUTS IN MAME</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">-record and -playback "do not work reliably for all systems". Start both runs from the same state.</text>
+<rect x="24.0" y="96.0" width="220.0" height="60.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.25"/>
+<text x="134.0" y="123.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">-record game.inp</text>
+<text x="134.0" y="139.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">delete .cfg, .nv, memory cards</text>
+<rect x="340.0" y="96.0" width="220.0" height="60.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="450.0" y="123.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">-playback game.inp</text>
+<text x="450.0" y="139.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">the same files deleted</text>
+<path d="M248.0 126.0L336.0 126.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="656.0" y="96.0" width="220.0" height="60.0" rx="6" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="766.0" y="131.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">the same frames</text>
+<path d="M564.0 126.0L652.0 126.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<g opacity="0"><rect x="656" y="96" width="220" height="60" rx="6" fill="#6b3434"/><text x="766" y="131" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">out of step if a file differed</text><animate attributeName="opacity" values="0;1;0;0" keyTimes="0.0000;0.5000;1.0000;1.0000" dur="6s" calcMode="discrete" repeatCount="indefinite"/></g>
+<text x="24.0" y="196.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#f59e0b" text-anchor="start">-exit_after_playback</text>
+<text x="330.0" y="196.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">quit at the end</text>
+<text x="24.0" y="222.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#f59e0b" text-anchor="start">-mngwrite, -aviwrite, -wavwrite</text>
+<text x="330.0" y="222.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">capture video and audio</text>
+<text x="24.0" y="248.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#f59e0b" text-anchor="start">-debugger, -debugscript</text>
+<text x="330.0" y="248.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">run debugger commands from a file</text>
+<text x="24.0" y="274.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#f59e0b" text-anchor="start">-autoboot_script</text>
+<text x="330.0" y="274.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">run a Lua script at start</text>
+</svg>

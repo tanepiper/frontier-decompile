@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="Taito, Data East, Irem, Midway and Sega used 68705, 8751, 80C31 and PIC chips for protection. These MCUs often hold game logic such as enemy behaviour or tables. If the MCU ROM was never dumped, MAME may use a simulation.">
+<title>Taito, Data East, Irem, Midway and Sega used 68705, 8751, 80C31 and PIC chips for protection. These MCUs often hold game logic such as enemy behaviour or tables. If the MCU ROM was never dumped, MAME may use a simulation.</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">PROTECTION MCUS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">A protection MCU often holds part of the game, such as enemy behaviour or lookup tables.</text>
+<text x="24.0" y="102.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Taito</text>
+<text x="130.0" y="102.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Bubble Bobble</text>
+<rect x="270.0" y="84.0" width="230.0" height="26.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="282.0" y="102.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">M68705P3 or M6801U4</text>
+<text x="24.0" y="136.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Data East</text>
+<text x="130.0" y="136.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">DEC0</text>
+<rect x="270.0" y="118.0" width="230.0" height="26.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="282.0" y="136.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Intel 8751, M68705R3</text>
+<text x="24.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Irem</text>
+<text x="130.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">M72</text>
+<rect x="270.0" y="152.0" width="230.0" height="26.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="282.0" y="170.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Intel 8751 or 80C31</text>
+<text x="24.0" y="204.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Midway</text>
+<text x="130.0" y="204.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">W-unit</text>
+<rect x="270.0" y="186.0" width="230.0" height="26.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="282.0" y="204.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">PIC16C57</text>
+<text x="24.0" y="238.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Sega</text>
+<text x="130.0" y="238.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">System 16B</text>
+<rect x="270.0" y="220.0" width="230.0" height="26.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="282.0" y="238.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Intel 8751</text>
+<rect x="560.0" y="90.0" width="300.0" height="56.0" rx="6" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="710.0" y="115.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">MCU ROM dumped</text>
+<text x="710.0" y="131.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">MAME runs the real program</text>
+<rect x="560.0" y="166.0" width="300.0" height="56.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="710.0" y="191.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">MCU ROM never dumped</text>
+<text x="710.0" y="207.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">MAME may use a simulation</text>
+<text x="24.0" y="280.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Check which one MAME uses before you trust its output. Ghidra has 8051 and PIC modules built in.</text>
+</svg>

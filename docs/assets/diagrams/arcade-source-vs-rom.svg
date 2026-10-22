@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="260" viewBox="0 0 900 260" role="img" aria-label="Released source shows what the programmers meant, but it may not match the final revision. The shipped ROM decides the exact behaviour. A project never copies the source into its repository.">
+<title>Released source shows what the programmers meant, but it may not match the final revision. The shipped ROM decides the exact behaviour. A project never copies the source into its repository.</title>
+<rect x="0.5" y="0.5" width="899" height="259" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">RELEASED SOURCE AND THE SHIPPED ROM</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Exact behaviour comes from the shipped ROM, even where the source was released.</text>
+<rect x="24.0" y="96.0" width="250.0" height="70.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="149.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">released source</text>
+<text x="149.0" y="144.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">assembly, what was meant</text>
+<rect x="324.0" y="96.0" width="250.0" height="70.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.2"/>
+<text x="449.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">later fixes</text>
+<text x="449.0" y="144.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">may not be in the source</text>
+<rect x="624.0" y="96.0" width="250.0" height="70.0" rx="6" fill="#4ade80" stroke="none" fill-opacity="0.3"/>
+<text x="749.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">shipped ROM</text>
+<text x="749.0" y="144.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">the exact behaviour</text>
+<path d="M278.0 131.0L320.0 131.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M578.0 131.0L620.0 131.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="24.0" y="206.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The source is third-party evidence. GameFrame's rule against game material means a project does not copy it</text>
+<text x="24.0" y="224.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">into its own repository.</text>
+</svg>

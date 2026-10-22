@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360" role="img" aria-label="The Cell with one PPE and six SPEs, each with 256 KiB of local store reached by DMA">
+<title>The Cell with one PPE and six SPEs, each with 256 KiB of local store reached by DMA</title>
+<rect x="0.5" y="0.5" width="899" height="359" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">THE PLAYSTATION 3 CELL</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The PPE runs the main code. Each SPU works on the data in its own local store.</text>
+<rect x="40.0" y="92.0" width="180.0" height="90.0" rx="5" fill="#60a5fa" stroke="#60a5fa" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="130.0" y="125.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">PPE</text>
+<text x="130.0" y="143.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">PowerPC core</text>
+<text x="130.0" y="158.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">the main program</text>
+<rect x="40.0" y="206.0" width="180.0" height="64.0" rx="5" fill="#64748b" stroke="#64748b" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="130.0" y="242.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Main memory</text>
+<path d="M130.0 184.0L130.0 204.0" stroke="#8fa9a5" stroke-width="1.5" fill="none"/>
+<rect x="270.0" y="92.0" width="180.0" height="80.0" rx="5" fill="#c084fc" stroke="#c084fc" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="360.0" y="120.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">SPE 0</text>
+<text x="360.0" y="138.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">own 128-bit ISA</text>
+<text x="360.0" y="153.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">256 KiB local store</text>
+<rect x="470.0" y="92.0" width="180.0" height="80.0" rx="5" fill="#c084fc" stroke="#c084fc" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="560.0" y="120.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">SPE 1</text>
+<text x="560.0" y="138.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">own 128-bit ISA</text>
+<text x="560.0" y="153.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">256 KiB local store</text>
+<rect x="670.0" y="92.0" width="180.0" height="80.0" rx="5" fill="#c084fc" stroke="#c084fc" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="760.0" y="120.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">SPE 2</text>
+<text x="760.0" y="138.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">own 128-bit ISA</text>
+<text x="760.0" y="153.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">256 KiB local store</text>
+<rect x="270.0" y="192.0" width="180.0" height="80.0" rx="5" fill="#c084fc" stroke="#c084fc" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="360.0" y="220.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">SPE 3</text>
+<text x="360.0" y="238.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">own 128-bit ISA</text>
+<text x="360.0" y="253.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">256 KiB local store</text>
+<rect x="470.0" y="192.0" width="180.0" height="80.0" rx="5" fill="#c084fc" stroke="#c084fc" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="560.0" y="220.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">SPE 4</text>
+<text x="560.0" y="238.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">own 128-bit ISA</text>
+<text x="560.0" y="253.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">256 KiB local store</text>
+<rect x="670.0" y="192.0" width="180.0" height="80.0" rx="5" fill="#c084fc" stroke="#c084fc" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="760.0" y="220.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">SPE 5</text>
+<text x="760.0" y="238.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">own 128-bit ISA</text>
+<text x="760.0" y="253.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">256 KiB local store</text>
+<path d="M222 238H245V182H850" fill="none" stroke="#f59e0b" stroke-width="2" stroke-opacity="0.6"/>
+<circle r="4" fill="#f59e0b"><animateMotion path="M222 238H245V182H850" dur="3.0s" begin="0s" repeatCount="indefinite"/></circle>
+<circle r="4" fill="#f59e0b"><animateMotion path="M222 238H245V182H850" dur="3.0s" begin="-1s" repeatCount="indefinite"/></circle>
+<circle r="4" fill="#f59e0b"><animateMotion path="M222 238H245V182H850" dur="3.0s" begin="-2s" repeatCount="indefinite"/></circle>
+<text x="270.0" y="300.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">DMA is the only way between main memory and a local store.</text>
+<text x="40.0" y="330.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">SPU single precision rounds toward zero, has no INF or NaN, treats denormals as zero (not confirmed).</text>
+<text x="40.0" y="348.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">A port of SPU float code needs a software float model.</text>
+</svg>

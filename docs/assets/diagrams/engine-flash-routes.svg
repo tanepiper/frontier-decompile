@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="A Flash game can run unchanged in Ruffle, be reimplemented from the decompiled scripts, or be rebuilt from the decompiled project with the AIR SDK">
+<title>A Flash game can run unchanged in Ruffle, be reimplemented from the decompiled scripts, or be rebuilt from the decompiled project with the AIR SDK</title>
+<rect x="0.5" y="0.5" width="899" height="299" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">ROUTES FOR A FLASH GAME</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">A Flash game can run in Ruffle, be reimplemented or be rebuilt from the decompiled project.</text>
+<rect x="24.0" y="150.0" width="130.0" height="56.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="89.0" y="175.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">game.swf</text>
+<text x="89.0" y="191.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">and what it loads</text>
+<path d="M156 178C 200 178 200 116 240 116" fill="none" stroke="#8fa9a5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="244.0" y="90.0" width="632.0" height="54.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.16"/>
+<text x="258.0" y="112.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#e2ece9" text-anchor="start">Run it in Ruffle</text>
+<text x="258.0" y="131.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">the game stays as it was, with no port</text>
+<text x="560.0" y="131.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">gaps are fixed in Ruffle itself</text>
+<path d="M156 178C 200 178 200 184 240 184" fill="none" stroke="#8fa9a5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="244.0" y="158.0" width="632.0" height="54.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.16"/>
+<text x="258.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#e2ece9" text-anchor="start">Reimplement it</text>
+<text x="258.0" y="199.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">translate the frame loop and clips</text>
+<text x="560.0" y="199.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">check against captures; mark deviations</text>
+<path d="M156 178C 200 178 200 252 240 252" fill="none" stroke="#8fa9a5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="244.0" y="226.0" width="632.0" height="54.0" rx="4" fill="#f87171" stroke="none" fill-opacity="0.16"/>
+<text x="258.0" y="248.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12.5" font-weight="600" fill="#e2ece9" text-anchor="start">Rebuild the decompiled project</text>
+<text x="258.0" y="267.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">FFDec exports, the AIR SDK compiles</text>
+<text x="560.0" y="267.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">the original's code is in it, so take legal care</text>
+</svg>

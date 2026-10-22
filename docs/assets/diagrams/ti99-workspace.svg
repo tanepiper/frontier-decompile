@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360" role="img" aria-label="The TMS9900 keeps only PC, WP and ST on the chip. Its sixteen registers are sixteen words in RAM at the workspace pointer. BLWP switches to a new workspace and saves the old WP, PC and ST in R13 to R15.">
+<title>The TMS9900 keeps only PC, WP and ST on the chip. Its sixteen registers are sixteen words in RAM at the workspace pointer. BLWP switches to a new workspace and saves the old WP, PC and ST in R13 to R15.</title>
+<rect x="0.5" y="0.5" width="899" height="359" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">TI-99/4A REGISTERS IN RAM</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The TMS9900 holds only PC, WP and ST. R0 to R15 are 16 words of RAM starting at WP.</text>
+<rect x="40.0" y="96.0" width="110.0" height="40.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="95.0" y="121.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">PC</text>
+<rect x="40.0" y="146.0" width="110.0" height="40.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="95.0" y="171.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">WP</text>
+<rect x="40.0" y="196.0" width="110.0" height="40.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="95.0" y="221.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">ST</text>
+<text x="40.0" y="266.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">on the chip</text>
+<text x="250.0" y="92.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">workspace A (old WP)</text>
+<rect x="250.0" y="100.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="110.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R0</text>
+<rect x="250.0" y="115.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="125.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R1</text>
+<rect x="250.0" y="130.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="140.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R2</text>
+<rect x="250.0" y="145.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="155.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R3</text>
+<rect x="250.0" y="160.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="170.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R4</text>
+<rect x="250.0" y="175.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="185.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R5</text>
+<rect x="250.0" y="190.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="200.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R6</text>
+<rect x="250.0" y="205.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="215.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R7</text>
+<rect x="250.0" y="220.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="230.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R8</text>
+<rect x="250.0" y="235.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="245.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R9</text>
+<rect x="250.0" y="250.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="260.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R10</text>
+<rect x="250.0" y="265.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="275.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R11</text>
+<rect x="250.0" y="280.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="290.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R12</text>
+<rect x="250.0" y="295.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="305.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R13</text>
+<rect x="250.0" y="310.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="320.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R14</text>
+<rect x="250.0" y="325.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="256.0" y="335.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R15</text>
+<text x="520.0" y="92.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">workspace B (new WP)</text>
+<rect x="520.0" y="100.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="526.0" y="110.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R0</text>
+<rect x="520.0" y="115.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="526.0" y="125.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R1</text>
+<rect x="520.0" y="130.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="526.0" y="140.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R2</text>
+<rect x="520.0" y="145.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="526.0" y="155.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R3</text>
+<rect x="520.0" y="160.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="526.0" y="170.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R4</text>
+<rect x="520.0" y="175.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="526.0" y="185.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R5</text>
+<rect x="520.0" y="190.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="526.0" y="200.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R6</text>
+<rect x="520.0" y="205.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="526.0" y="215.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R7</text>
+<rect x="520.0" y="220.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="526.0" y="230.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R8</text>
+<rect x="520.0" y="235.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="526.0" y="245.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R9</text>
+<rect x="520.0" y="250.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="526.0" y="260.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R10</text>
+<rect x="520.0" y="265.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="526.0" y="275.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R11</text>
+<rect x="520.0" y="280.0" width="130.0" height="13.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="526.0" y="290.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R12</text>
+<rect x="520.0" y="295.0" width="130.0" height="13.0" rx="2" fill="#c084fc" stroke="none" fill-opacity="0.5"/>
+<text x="526.0" y="305.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R13</text>
+<rect x="520.0" y="310.0" width="130.0" height="13.0" rx="2" fill="#c084fc" stroke="none" fill-opacity="0.5"/>
+<text x="526.0" y="320.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R14</text>
+<rect x="520.0" y="325.0" width="130.0" height="13.0" rx="2" fill="#c084fc" stroke="none" fill-opacity="0.5"/>
+<text x="526.0" y="335.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="start">R15</text>
+<text x="644.0" y="305.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="end">old WP</text>
+<text x="644.0" y="320.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="end">old PC</text>
+<text x="644.0" y="335.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#e2ece9" text-anchor="end">old ST</text>
+<path d="M150 166C 200 166 210 110 246 110" fill="none" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M384 180L512 180" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow)" opacity="0"><animate attributeName="opacity" values="0;1;1" keyTimes="0;0.4;1" calcMode="discrete" dur="3.0s" repeatCount="indefinite"/></path>
+<g opacity="0"><text x="448" y="172" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="12" fill="#f59e0b" text-anchor="middle" font-weight="600">BLWP</text><animate attributeName="opacity" values="0;1;0;0" keyTimes="0.0000;0.4000;1.0000;1.0000" dur="3.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<text x="690.0" y="110.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">A register read is a</text>
+<text x="690.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">memory read. Trace the</text>
+<text x="690.0" y="146.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">workspace RAM with</text>
+<text x="690.0" y="164.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">the function.</text>
+<text x="690.0" y="182.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start"></text>
+<text x="690.0" y="200.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Record WP at the entry</text>
+<text x="690.0" y="218.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">of each function you</text>
+<text x="690.0" y="236.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">emulate.</text>
+<text x="690.0" y="270.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The TMS9900 is a 16-bit</text>
+<text x="690.0" y="288.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">big-endian CPU.</text>
+</svg>

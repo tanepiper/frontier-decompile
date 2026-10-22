@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="A game archive: a header, a table of entries with a name or name hash, offset, size and a compression flag, then the data">
+<title>A game archive: a header, a table of entries with a name or name hash, offset, size and a compression flag, then the data</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">AN ARCHIVE FILE</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">A header, a table of entries, then the data. Names may be stored as hashes.</text>
+<rect x="40.0" y="90.0" width="106.0" height="40.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.3"/>
+<text x="93.0" y="115.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">header</text>
+<rect x="150.0" y="90.0" width="226.0" height="40.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="263.0" y="115.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">entry table</text>
+<rect x="380.0" y="90.0" width="466.0" height="40.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="613.0" y="115.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">data</text>
+<text x="40.0" y="152.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">magic, version, entry count, table offset</text>
+<text x="150.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="start">name hash</text>
+<text x="260.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="start">offset</text>
+<text x="370.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="start">size</text>
+<text x="480.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="start">packed size</text>
+<text x="590.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="start">flags</text>
+<text x="150.0" y="204.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">0x8c1f22a0</text>
+<text x="260.0" y="204.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">0x0400</text>
+<text x="370.0" y="204.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">18 432</text>
+<text x="480.0" y="204.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">6 210</text>
+<text x="590.0" y="204.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">zlib</text>
+<text x="150.0" y="226.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">0x1b7e9c41</text>
+<text x="260.0" y="226.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">0x1c42</text>
+<text x="370.0" y="226.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">2 048</text>
+<text x="480.0" y="226.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">2 048</text>
+<text x="590.0" y="226.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">stored</text>
+<text x="150.0" y="248.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">0x5d03aa17</text>
+<text x="260.0" y="248.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">0x2442</text>
+<text x="370.0" y="248.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">96 000</text>
+<text x="480.0" y="248.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">31 877</text>
+<text x="590.0" y="248.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">zlib</text>
+<rect x="380.0" y="90.0" width="116.0" height="40.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.35"/>
+<path d="M700 200C 760 200 440.0 170 440.0 134" fill="none" stroke="#8fa9a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="504.0" y="90.0" width="56.0" height="40.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.35"/>
+<path d="M700 222C 760 222 534.0 170 534.0 134" fill="none" stroke="#8fa9a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="568.0" y="90.0" width="296.0" height="40.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.35"/>
+<path d="M700 244C 760 244 718.0 170 718.0 134" fill="none" stroke="#8fa9a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<text x="40.0" y="300.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">An example layout. The lookup code hashes a file name and searches the table. hashnames.py finds the hash function.</text>
+</svg>

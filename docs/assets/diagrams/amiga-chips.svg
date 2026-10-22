@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="400" viewBox="0 0 900 400" role="img" aria-label="Agnus shares chip RAM between the 68000 and the custom chips and holds the Copper and the Blitter. Denise draws bitplanes and sprites. Paula plays four audio channels and drives the floppy and the interrupts.">
+<title>Agnus shares chip RAM between the 68000 and the custom chips and holds the Copper and the Blitter. Denise draws bitplanes and sprites. Paula plays four audio channels and drives the floppy and the interrupts.</title>
+<rect x="0.5" y="0.5" width="899" height="399" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">THE AMIGA OCS CUSTOM CHIPS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Agnus shares chip RAM between the CPU and the chips. A takeover game writes their registers directly.</text>
+<rect x="40.0" y="96.0" width="150.0" height="60.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="115.0" y="123.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">68000</text>
+<text x="115.0" y="139.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">CPU</text>
+<rect x="40.0" y="206.0" width="150.0" height="50.0" rx="6" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="115.0" y="228.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">fast RAM</text>
+<text x="115.0" y="244.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">CPU only, if fitted</text>
+<rect x="300.0" y="96.0" width="220.0" height="130.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.15"/>
+<text x="410.0" y="166.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle"></text>
+<text x="410.0" y="118.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="middle">Agnus</text>
+<text x="410.0" y="134.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">chip RAM DMA, 512 KB (later 1-2 MB)</text>
+<rect x="314.0" y="148.0" width="92.0" height="62.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.35"/>
+<text x="360.0" y="176.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Copper</text>
+<text x="360.0" y="192.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">beam program</text>
+<rect x="414.0" y="148.0" width="92.0" height="62.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.35"/>
+<text x="460.0" y="176.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Blitter</text>
+<text x="460.0" y="192.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">block copies</text>
+<rect x="300.0" y="290.0" width="220.0" height="56.0" rx="6" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="410.0" y="315.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">chip RAM</text>
+<text x="410.0" y="331.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">shared by CPU and chips</text>
+<rect x="640.0" y="80.0" width="220.0" height="70.0" rx="6" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="750.0" y="112.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Denise</text>
+<text x="750.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">1-5 bitplanes, 8 sprites, HAM, EHB</text>
+<rect x="640.0" y="176.0" width="220.0" height="70.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="750.0" y="208.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Paula</text>
+<text x="750.0" y="224.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">4 audio channels, floppy, serial, IRQ</text>
+<path d="M194.0 126.0L296.0 126.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M410.0 230.0L410.0 286.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M524.0 120.0L636.0 115.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M524.0 190.0L636.0 211.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M115.0 160.0L115.0 202.0" stroke="#8fa9a5" stroke-width="1.5" fill="none"/>
+<circle r="5" fill="#4ade80"><animateMotion path="M410 286L410 230" dur="1.2s" begin="0.0s" repeatCount="indefinite"/></circle>
+<circle r="5" fill="#c084fc"><animateMotion path="M524 120L636 115" dur="1.2s" begin="0.4s" repeatCount="indefinite"/></circle>
+<circle r="5" fill="#f59e0b"><animateMotion path="M524 190L636 211" dur="1.2s" begin="0.8s" repeatCount="indefinite"/></circle>
+<text x="640.0" y="280.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Time is counted in colour clocks</text>
+<text x="640.0" y="298.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">of 280 ns. Audio DMA peaks near</text>
+<text x="640.0" y="316.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">28,867 samples/s (NTSC) and</text>
+<text x="640.0" y="334.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">28,837 (PAL) per channel.</text>
+<text x="40.0" y="380.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Trace an OS game at its library calls. Trace a takeover game at its chip register writes.</text>
+</svg>

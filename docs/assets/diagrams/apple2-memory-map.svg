@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="432" viewBox="0 0 900 432" role="img" aria-label="The Apple II memory map holds zero page, the stack, the text and hi-res screen pages, the soft switches at $C000 to $C0FF and the language card RAM that can replace the ROM at $D000 to $FFFF.">
+<title>The Apple II memory map holds zero page, the stack, the text and hi-res screen pages, the soft switches at $C000 to $C0FF and the language card RAM that can replace the ROM at $D000 to $FFFF.</title>
+<rect x="0.5" y="0.5" width="899" height="431" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">APPLE II MEMORY AND SOFT SWITCHES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Reading or writing an address in $C000-$C0FF flips a switch. The language card banks RAM over the ROM.</text>
+<rect x="110.0" y="84.0" width="230.0" height="14.0" rx="3" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="120.0" y="95.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#e2ece9" text-anchor="start">zero page</text>
+<text x="102.0" y="94.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">$0000</text>
+<rect x="110.0" y="100.0" width="230.0" height="14.0" rx="3" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="120.0" y="111.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#e2ece9" text-anchor="start">stack</text>
+<text x="102.0" y="110.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">$0100</text>
+<rect x="110.0" y="116.0" width="230.0" height="16.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.25"/>
+<text x="120.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#e2ece9" text-anchor="start">RAM</text>
+<text x="102.0" y="126.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">$0200</text>
+<rect x="110.0" y="134.0" width="230.0" height="22.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="120.0" y="149.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">text / lo-res page 1</text>
+<text x="102.0" y="144.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">$0400</text>
+<rect x="110.0" y="158.0" width="230.0" height="38.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.25"/>
+<text x="120.0" y="181.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">RAM</text>
+<text x="102.0" y="168.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">$0800</text>
+<rect x="110.0" y="198.0" width="230.0" height="38.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="120.0" y="221.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">hi-res page 1</text>
+<text x="102.0" y="208.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">$2000</text>
+<rect x="110.0" y="238.0" width="230.0" height="38.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="120.0" y="261.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">hi-res page 2</text>
+<text x="102.0" y="248.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">$4000</text>
+<rect x="110.0" y="278.0" width="230.0" height="54.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.25"/>
+<text x="120.0" y="309.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">RAM</text>
+<text x="102.0" y="288.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">$6000</text>
+<rect x="110.0" y="334.0" width="230.0" height="16.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="120.0" y="346.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#e2ece9" text-anchor="start">soft switches, I/O</text>
+<text x="102.0" y="344.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">$C000</text>
+<rect x="110.0" y="352.0" width="230.0" height="14.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="120.0" y="363.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#e2ece9" text-anchor="start">slot ROMs</text>
+<text x="102.0" y="362.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">$C100</text>
+<rect x="110.0" y="368.0" width="230.0" height="42.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="120.0" y="393.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">ROM, or language card RAM</text>
+<text x="102.0" y="378.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">$D000</text>
+<text x="440.0" y="100.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">some soft switches</text>
+<text x="440.0" y="126.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#f59e0b" text-anchor="start">$C030</text>
+<text x="570.0" y="126.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">click the speaker (1 bit)</text>
+<text x="440.0" y="148.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#f59e0b" text-anchor="start">$C050 / $C051</text>
+<text x="570.0" y="148.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">graphics / text</text>
+<text x="440.0" y="170.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#f59e0b" text-anchor="start">$C052 / $C053</text>
+<text x="570.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">full screen / mixed</text>
+<text x="440.0" y="192.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#f59e0b" text-anchor="start">$C054 / $C055</text>
+<text x="570.0" y="192.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">page 1 / page 2</text>
+<text x="440.0" y="214.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#f59e0b" text-anchor="start">$C056 / $C057</text>
+<text x="570.0" y="214.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">lo-res / hi-res</text>
+<text x="440.0" y="236.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#f59e0b" text-anchor="start">$C080-$C08F</text>
+<text x="570.0" y="236.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">language card banks</text>
+<text x="440.0" y="280.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Hi-res is 280 x 192 with six visible colours.</text>
+<text x="440.0" y="298.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The IIgs adds the 65C816 and an Ensoniq 5503 (not confirmed).</text>
+<text x="440.0" y="316.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start"></text>
+<text x="440.0" y="334.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Record the soft switch and language card state</text>
+<text x="440.0" y="352.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">for each code region.</text>
+</svg>

@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" role="img" aria-label="Console CPUs and their support in Ghidra and Unicorn">
+<title>Console CPUs and their support in Ghidra and Unicorn</title>
+<rect x="0.5" y="0.5" width="899" height="519" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">CONSOLE CPUS IN GHIDRA AND UNICORN</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Where Unicorn has no backend, take ground truth from an emulator or a small core.</text>
+<text x="40.0" y="84.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">CPU</text>
+<text x="200.0" y="84.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Ghidra</text>
+<text x="330.0" y="84.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Unicorn</text>
+<text x="40.0" y="113.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">6502, 65C02</text>
+<rect x="200.0" y="98.0" width="120.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="206.0" y="113.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">built in</text>
+<rect x="330.0" y="98.0" width="100.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="336.0" y="113.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">no</text>
+<text x="40.0" y="151.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">HuC6280</text>
+<rect x="200.0" y="136.0" width="120.0" height="22.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="206.0" y="151.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">extension</text>
+<rect x="330.0" y="136.0" width="100.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="336.0" y="151.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">no</text>
+<text x="40.0" y="189.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">CP1600</text>
+<rect x="200.0" y="174.0" width="120.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="206.0" y="189.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">built in</text>
+<rect x="330.0" y="174.0" width="100.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="336.0" y="189.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">no</text>
+<text x="40.0" y="227.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">6809</text>
+<rect x="200.0" y="212.0" width="120.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="206.0" y="227.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">built in</text>
+<rect x="330.0" y="212.0" width="100.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="336.0" y="227.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">no</text>
+<text x="40.0" y="265.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">65C816</text>
+<rect x="200.0" y="250.0" width="120.0" height="22.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="206.0" y="265.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">extension</text>
+<rect x="330.0" y="250.0" width="100.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="336.0" y="265.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">no</text>
+<text x="40.0" y="303.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Z80</text>
+<rect x="200.0" y="288.0" width="120.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="206.0" y="303.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">built in</text>
+<rect x="330.0" y="288.0" width="100.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="336.0" y="303.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">no</text>
+<text x="40.0" y="341.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">SM83</text>
+<rect x="200.0" y="326.0" width="120.0" height="22.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="206.0" y="341.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">extension</text>
+<rect x="330.0" y="326.0" width="100.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="336.0" y="341.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">no</text>
+<text x="40.0" y="379.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">68000</text>
+<rect x="200.0" y="364.0" width="120.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="206.0" y="379.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">built in</text>
+<rect x="330.0" y="364.0" width="100.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="336.0" y="379.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">yes</text>
+<text x="40.0" y="417.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">MIPS R3000, R4300</text>
+<rect x="200.0" y="402.0" width="120.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="206.0" y="417.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">built in</text>
+<rect x="330.0" y="402.0" width="100.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="336.0" y="417.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">yes</text>
+<text x="40.0" y="455.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">MIPS R5900</text>
+<rect x="200.0" y="440.0" width="120.0" height="22.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="206.0" y="455.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">extension</text>
+<rect x="330.0" y="440.0" width="100.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="336.0" y="455.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">no</text>
+<text x="470.0" y="84.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">CPU</text>
+<text x="630.0" y="84.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Ghidra</text>
+<text x="760.0" y="84.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Unicorn</text>
+<text x="470.0" y="113.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">SuperH</text>
+<rect x="630.0" y="98.0" width="120.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="636.0" y="113.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">built in</text>
+<rect x="760.0" y="98.0" width="100.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="766.0" y="113.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">no</text>
+<text x="470.0" y="151.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">PowerPC</text>
+<rect x="630.0" y="136.0" width="120.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="636.0" y="151.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">built in</text>
+<rect x="760.0" y="136.0" width="100.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="766.0" y="151.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">yes</text>
+<text x="470.0" y="189.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">ARM7</text>
+<rect x="630.0" y="174.0" width="120.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="636.0" y="189.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">built in</text>
+<rect x="760.0" y="174.0" width="100.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="766.0" y="189.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">yes</text>
+<text x="470.0" y="227.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">x86, V30MZ</text>
+<rect x="630.0" y="212.0" width="120.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="636.0" y="227.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">built in</text>
+<rect x="760.0" y="212.0" width="100.0" height="22.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="766.0" y="227.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">yes</text>
+<text x="470.0" y="265.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">V810</text>
+<rect x="630.0" y="250.0" width="120.0" height="22.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="636.0" y="265.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">extension</text>
+<rect x="760.0" y="250.0" width="100.0" height="22.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="766.0" y="265.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">not stated</text>
+<text x="470.0" y="303.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">TLCS-900/H</text>
+<rect x="630.0" y="288.0" width="120.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="636.0" y="303.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">none</text>
+<rect x="760.0" y="288.0" width="100.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="766.0" y="303.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">no</text>
+<text x="470.0" y="341.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Allegrex</text>
+<rect x="630.0" y="326.0" width="120.0" height="22.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="636.0" y="341.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">extension</text>
+<rect x="760.0" y="326.0" width="100.0" height="22.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="766.0" y="341.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">not stated</text>
+<text x="470.0" y="379.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Cell SPU</text>
+<rect x="630.0" y="364.0" width="120.0" height="22.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="636.0" y="379.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">extension</text>
+<rect x="760.0" y="364.0" width="100.0" height="22.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="766.0" y="379.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">not stated</text>
+<text x="470.0" y="417.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Jaguar RISC</text>
+<rect x="630.0" y="402.0" width="120.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="636.0" y="417.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">none</text>
+<rect x="760.0" y="402.0" width="100.0" height="22.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="766.0" y="417.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">not stated</text>
+<text x="470.0" y="455.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">ARMv3</text>
+<rect x="630.0" y="440.0" width="120.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="636.0" y="455.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">no exact match</text>
+<rect x="760.0" y="440.0" width="100.0" height="22.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="766.0" y="455.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">not stated</text>
+<text x="40.0" y="484.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Unicorn runs ARM, ARM64, M68K, MIPS, PowerPC and x86. It has no paired singles, R5900 or VMX128.</text>
+<text x="40.0" y="504.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">It does not emulate coprocessors such as the GTE or the PS2 vector units.</text>
+</svg>

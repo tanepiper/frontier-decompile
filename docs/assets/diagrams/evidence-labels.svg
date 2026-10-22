@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="Evidence labels from strongest to weakest: measured by running the original, observed in its code, inferred from other facts, assumed with no evidence">
+<title>Evidence labels from strongest to weakest: measured by running the original, observed in its code, inferred from other facts, assumed with no evidence</title>
+<rect x="0.5" y="0.5" width="899" height="299" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">EVIDENCE LABELS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Every finding carries one label. A port is built on measured and observed claims.</text>
+<text x="40.0" y="112.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#4ade80" text-anchor="start">measured</text>
+<rect x="150.0" y="94.0" width="420.0" height="26.0" rx="4" fill="#4ade80" stroke="none" fill-opacity="0.35"/>
+<text x="590.0" y="112.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">produced by running the original</text>
+<text x="40.0" y="158.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#2dd4bf" text-anchor="start">observed</text>
+<rect x="150.0" y="140.0" width="336.0" height="26.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.35"/>
+<text x="590.0" y="158.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">read in the code or the data</text>
+<text x="40.0" y="204.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#f59e0b" text-anchor="start">inferred</text>
+<rect x="150.0" y="186.0" width="210.0" height="26.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.35"/>
+<text x="590.0" y="204.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">follows from other facts, not checked</text>
+<text x="40.0" y="250.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#f87171" text-anchor="start">assumed</text>
+<rect x="150.0" y="232.0" width="105.0" height="26.0" rx="4" fill="#f87171" stroke="none" fill-opacity="0.35"/>
+<text x="590.0" y="250.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">no evidence yet</text>
+<text x="40.0" y="284.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Mark inferred and assumed claims in the text, and list them under Open questions.</text>
+</svg>

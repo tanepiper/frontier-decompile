@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="380" viewBox="0 0 900 380" role="img" aria-label="Home consoles by year of first release, from the NES in 1983 to the PlayStation 5 in 2020, coloured by CPU family">
+<title>Home consoles by year of first release, from the NES in 1983 to the PlayStation 5 in 2020, coloured by CPU family</title>
+<rect x="0.5" y="0.5" width="899" height="379" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">HOME CONSOLES BY GENERATION</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The year of first release. The colour shows the CPU family, which sets the tools that apply.</text>
+<rect x="70.8" y="194.0" width="81.1" height="12.0" rx="3" fill="#16302f" stroke="none"/>
+<rect x="153.8" y="194.0" width="122.6" height="12.0" rx="3" fill="#1f3d40" stroke="none"/>
+<rect x="278.5" y="194.0" width="101.8" height="12.0" rx="3" fill="#16302f" stroke="none"/>
+<rect x="382.3" y="194.0" width="143.4" height="12.0" rx="3" fill="#1f3d40" stroke="none"/>
+<rect x="527.7" y="194.0" width="143.4" height="12.0" rx="3" fill="#16302f" stroke="none"/>
+<rect x="673.1" y="194.0" width="164.2" height="12.0" rx="3" fill="#1f3d40" stroke="none"/>
+<rect x="839.2" y="194.0" width="18.8" height="12.0" rx="3" fill="#16302f" stroke="none"/>
+<path d="M70.8 194.0L70.8 166.0" stroke="#2dd4bf" stroke-width="1" fill="none"/>
+<circle cx="70.8" cy="200" r="4" fill="#2dd4bf"/>
+<path d="M112.3 206.0L112.3 264.0" stroke="#64748b" stroke-width="1" fill="none"/>
+<circle cx="112.3" cy="200" r="4" fill="#64748b"/>
+<path d="M153.8 194.0L153.8 166.0" stroke="#2dd4bf" stroke-width="1" fill="none"/>
+<circle cx="153.8" cy="200" r="4" fill="#2dd4bf"/>
+<path d="M174.6 206.0L174.6 282.0" stroke="#60a5fa" stroke-width="1" fill="none"/>
+<circle cx="174.6" cy="200" r="4" fill="#60a5fa"/>
+<path d="M216.2 194.0L216.2 166.0" stroke="#2dd4bf" stroke-width="1" fill="none"/>
+<circle cx="216.2" cy="200" r="4" fill="#2dd4bf"/>
+<path d="M299.2 194.0L299.2 166.0" stroke="#c084fc" stroke-width="1" fill="none"/>
+<circle cx="299.2" cy="200" r="4" fill="#c084fc"/>
+<path d="M299.2 206.0L299.2 264.0" stroke="#f59e0b" stroke-width="1" fill="none"/>
+<circle cx="299.2" cy="200" r="4" fill="#f59e0b"/>
+<path d="M340.8 194.0L340.8 146.0" stroke="#f59e0b" stroke-width="1" fill="none"/>
+<circle cx="340.8" cy="200" r="4" fill="#f59e0b"/>
+<path d="M382.3 194.0L382.3 166.0" stroke="#c084fc" stroke-width="1" fill="none"/>
+<circle cx="382.3" cy="200" r="4" fill="#c084fc"/>
+<path d="M423.8 206.0L423.8 264.0" stroke="#f59e0b" stroke-width="1" fill="none"/>
+<circle cx="423.8" cy="200" r="4" fill="#f59e0b"/>
+<path d="M444.6 194.0L444.6 146.0" stroke="#4ade80" stroke-width="1" fill="none"/>
+<circle cx="444.6" cy="200" r="4" fill="#4ade80"/>
+<path d="M444.6 194.0L444.6 86.0" stroke="#f87171" stroke-width="1" fill="none"/>
+<circle cx="444.6" cy="200" r="4" fill="#f87171"/>
+<path d="M527.7 194.0L527.7 166.0" stroke="#4ade80" stroke-width="1" fill="none"/>
+<circle cx="527.7" cy="200" r="4" fill="#4ade80"/>
+<path d="M548.5 206.0L548.5 264.0" stroke="#4ade80" stroke-width="1" fill="none"/>
+<circle cx="548.5" cy="200" r="4" fill="#4ade80"/>
+<path d="M548.5 194.0L548.5 86.0" stroke="#4ade80" stroke-width="1" fill="none"/>
+<circle cx="548.5" cy="200" r="4" fill="#4ade80"/>
+<path d="M673.1 194.0L673.1 166.0" stroke="#4ade80" stroke-width="1" fill="none"/>
+<circle cx="673.1" cy="200" r="4" fill="#4ade80"/>
+<path d="M693.8 206.0L693.8 264.0" stroke="#f87171" stroke-width="1" fill="none"/>
+<circle cx="693.8" cy="200" r="4" fill="#f87171"/>
+<path d="M693.8 194.0L693.8 86.0" stroke="#f87171" stroke-width="1" fill="none"/>
+<circle cx="693.8" cy="200" r="4" fill="#f87171"/>
+<path d="M776.9 194.0L776.9 166.0" stroke="#f472b6" stroke-width="1" fill="none"/>
+<circle cx="776.9" cy="200" r="4" fill="#f472b6"/>
+<path d="M839.2 206.0L839.2 264.0" stroke="#f87171" stroke-width="1" fill="none"/>
+<circle cx="839.2" cy="200" r="4" fill="#f87171"/>
+<path d="M839.2 194.0L839.2 146.0" stroke="#f87171" stroke-width="1" fill="none"/>
+<circle cx="839.2" cy="200" r="4" fill="#f87171"/>
+<text x="112.3" y="224" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">3rd</text>
+<text x="216.2" y="224" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">4th</text>
+<text x="330.4" y="224" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">5th</text>
+<text x="455.0" y="224" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">6th</text>
+<text x="600.4" y="224" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">7th</text>
+<text x="756.2" y="224" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">8th</text>
+<text x="849.6" y="224" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">9th</text>
+<text x="112.3" y="242" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="10" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">1985</text>
+<text x="216.2" y="242" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="10" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">1990</text>
+<text x="320.0" y="242" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="10" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">1995</text>
+<text x="423.8" y="242" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="10" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">2000</text>
+<text x="527.7" y="242" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="10" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">2005</text>
+<text x="631.5" y="242" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="10" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">2010</text>
+<text x="735.4" y="242" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="10" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">2015</text>
+<text x="839.2" y="242" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="10" font-weight="normal" fill="#8fa9a5" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">2020</text>
+<text x="70.8" y="162" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#2dd4bf" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">NES</text>
+<text x="112.3" y="276" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#64748b" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Master System</text>
+<text x="153.8" y="162" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#2dd4bf" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">PC Engine</text>
+<text x="174.6" y="294" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#60a5fa" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Mega Drive</text>
+<text x="216.2" y="162" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#2dd4bf" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">SNES</text>
+<text x="299.2" y="162" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#c084fc" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Saturn</text>
+<text x="299.2" y="276" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">PlayStation</text>
+<text x="340.8" y="142" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Nintendo 64</text>
+<text x="382.3" y="162" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#c084fc" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Dreamcast</text>
+<text x="423.8" y="276" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">PlayStation 2</text>
+<text x="444.6" y="142" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#4ade80" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">GameCube</text>
+<text x="444.6" y="82" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f87171" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Xbox</text>
+<text x="527.7" y="162" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#4ade80" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Xbox 360</text>
+<text x="548.5" y="276" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#4ade80" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">PlayStation 3</text>
+<text x="548.5" y="82" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#4ade80" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Wii</text>
+<text x="673.1" y="162" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#4ade80" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Wii U</text>
+<text x="693.8" y="276" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f87171" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">PlayStation 4</text>
+<text x="693.8" y="82" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f87171" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Xbox One</text>
+<text x="776.9" y="162" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f472b6" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Switch</text>
+<text x="839.2" y="276" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f87171" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">PlayStation 5</text>
+<text x="839.2" y="142" font-family="ui-sans-serif, Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f87171" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Xbox Series</text>
+<rect x="50.0" y="352.0" width="10.0" height="10.0" rx="2" fill="#2dd4bf" stroke="none"/>
+<text x="64.0" y="361.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">6502</text>
+<rect x="140.0" y="352.0" width="10.0" height="10.0" rx="2" fill="#64748b" stroke="none"/>
+<text x="154.0" y="361.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">Z80</text>
+<rect x="230.0" y="352.0" width="10.0" height="10.0" rx="2" fill="#60a5fa" stroke="none"/>
+<text x="244.0" y="361.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">68000</text>
+<rect x="320.0" y="352.0" width="10.0" height="10.0" rx="2" fill="#c084fc" stroke="none"/>
+<text x="334.0" y="361.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">SH</text>
+<rect x="410.0" y="352.0" width="10.0" height="10.0" rx="2" fill="#f59e0b" stroke="none"/>
+<text x="424.0" y="361.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">MIPS</text>
+<rect x="500.0" y="352.0" width="10.0" height="10.0" rx="2" fill="#4ade80" stroke="none"/>
+<text x="514.0" y="361.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">PowerPC</text>
+<rect x="590.0" y="352.0" width="10.0" height="10.0" rx="2" fill="#f87171" stroke="none"/>
+<text x="604.0" y="361.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">x86</text>
+<rect x="680.0" y="352.0" width="10.0" height="10.0" rx="2" fill="#f472b6" stroke="none"/>
+<text x="694.0" y="361.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">ARM</text>
+</svg>

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="260" viewBox="0 0 900 260" role="img" aria-label="A Windows Flash projector is the Flash Player program with the SWF added at the end, followed by 8 bytes that hold the marker 0xFA123456 and the length of the movie">
+<title>A Windows Flash projector is the Flash Player program with the SWF added at the end, followed by 8 bytes that hold the marker 0xFA123456 and the length of the movie</title>
+<rect x="0.5" y="0.5" width="899" height="259" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">THE LAYOUT OF A FLASH PROJECTOR</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The file holds the player program, then the movie, then 8 bytes that give the position of the movie.</text>
+<rect x="24.0" y="94.0" width="420.0" height="50.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="234.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">Flash Player program</text>
+<text x="234.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">an ordinary .exe</text>
+<rect x="448.0" y="94.0" width="300.0" height="50.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="598.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">the SWF movie</text>
+<text x="598.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">FWS or CWS ...</text>
+<rect x="752.0" y="94.0" width="60.0" height="50.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.35"/>
+<text x="782.0" y="122.3" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="600" fill="#e2ece9" text-anchor="middle">56 34 12 FA</text>
+<rect x="816.0" y="94.0" width="60.0" height="50.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.35"/>
+<text x="846.0" y="122.7" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="600" fill="#e2ece9" text-anchor="middle">length</text>
+<text x="782.0" y="162.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">marker</text>
+<text x="846.0" y="162.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">4 bytes</text>
+<path d="M846 146C 846 200 600 200 452 150" fill="none" stroke="#2dd4bf" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="24.0" y="190.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">movie start = file size - 8 - length</text>
+<text x="24.0" y="214.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">The marker 0xFA123456 is stored little-endian. swfinfo.py --extract copies the movie out.</text>
+<text x="24.0" y="240.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">A Director projector works the same way, with the Director player and the movie inside.</text>
+</svg>

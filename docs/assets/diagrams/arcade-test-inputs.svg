@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="356" viewBox="0 0 900 356" role="img" aria-label="An arcade test case records every input the game reads. These are the ROM set, the BIOS and region, the DIP switches, the NVRAM or EEPROM image and the recorded inputs. The same inputs on the original and the port should give the same frames.">
+<title>An arcade test case records every input the game reads. These are the ROM set, the BIOS and region, the DIP switches, the NVRAM or EEPROM image and the recorded inputs. The same inputs on the original and the port should give the same frames.</title>
+<rect x="0.5" y="0.5" width="899" height="355" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">THE INPUTS OF AN ARCADE TEST CASE</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The game reads the board's settings too. Record them all with each test.</text>
+<rect x="24.0" y="80.0" width="200.0" height="38.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="124.0" y="96.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">ROM set</text>
+<text x="124.0" y="112.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">with its BIOS set</text>
+<path d="M228 99C 290 99 290 190 340 190" fill="none" stroke="#8fa9a5" stroke-width="1.2"/>
+<rect x="24.0" y="126.0" width="200.0" height="38.0" rx="6" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="124.0" y="142.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">BIOS, region,</text>
+<text x="124.0" y="158.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">language</text>
+<path d="M228 145C 290 145 290 190 340 190" fill="none" stroke="#8fa9a5" stroke-width="1.2"/>
+<rect x="24.0" y="172.0" width="200.0" height="38.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="124.0" y="196.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">DIP switches</text>
+<path d="M228 191C 290 191 290 190 340 190" fill="none" stroke="#8fa9a5" stroke-width="1.2"/>
+<rect x="24.0" y="218.0" width="200.0" height="38.0" rx="6" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="124.0" y="234.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">NVRAM / EEPROM</text>
+<text x="124.0" y="250.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">CMOS, 93C46</text>
+<path d="M228 237C 290 237 290 190 340 190" fill="none" stroke="#8fa9a5" stroke-width="1.2"/>
+<rect x="24.0" y="264.0" width="200.0" height="38.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.25"/>
+<text x="124.0" y="280.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">input recording</text>
+<text x="124.0" y="296.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">from power-on</text>
+<path d="M228 283C 290 283 290 190 340 190" fill="none" stroke="#8fa9a5" stroke-width="1.2"/>
+<rect x="344.0" y="160.0" width="160.0" height="60.0" rx="6" fill="#64748b" stroke="none" fill-opacity="0.3"/>
+<text x="424.0" y="195.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">test case</text>
+<path d="M508.0 176.0L586.0 130.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M508.0 204.0L586.0 250.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="590.0" y="100.0" width="140.0" height="54.0" rx="6" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="660.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">original</text>
+<text x="660.0" y="140.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">in MAME</text>
+<rect x="590.0" y="226.0" width="140.0" height="54.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="660.0" y="258.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">the port</text>
+<text x="800.0" y="196.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#f59e0b" text-anchor="middle">same frames?</text>
+<path d="M734.0 127.0L790.0 180.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M734.0 253.0L790.0 208.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="24.0" y="340.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Fatal Fury 3 crashes in its ending in MAME unless the language is Japanese. MAME's default NVRAM can differ from a factory board.</text>
+</svg>

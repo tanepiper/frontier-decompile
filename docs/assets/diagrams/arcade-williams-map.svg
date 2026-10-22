@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="The Williams 6809 board has a blitter at CA00 to CA07 on games that have one, a watchdog at CBFF and 1K by 4 bits of battery-backed CMOS RAM at CC00 to CFFF for settings and high scores.">
+<title>The Williams 6809 board has a blitter at CA00 to CA07 on games that have one, a watchdog at CBFF and 1K by 4 bits of battery-backed CMOS RAM at CC00 to CFFF for settings and high scores.</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">WILLIAMS 6809 BOARDS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The MC6809E runs at 1 MHz. An 8 MHz pixel clock and 512 x 260 totals give about 60.10 Hz.</text>
+<rect x="120.0" y="90.0" width="260.0" height="38.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="130.0" y="113.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">blitter (not Defender, Stargate)</text>
+<text x="112.0" y="100.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">CA00</text>
+<rect x="120.0" y="130.0" width="260.0" height="28.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="130.0" y="148.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start"></text>
+<text x="112.0" y="140.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">CA08</text>
+<rect x="120.0" y="160.0" width="260.0" height="22.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="130.0" y="175.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">watchdog</text>
+<text x="112.0" y="170.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">CBFF</text>
+<rect x="120.0" y="184.0" width="260.0" height="62.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="130.0" y="219.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">CMOS RAM, 1K x 4 bits</text>
+<text x="112.0" y="194.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">CC00</text>
+<text x="120.0" y="290.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">Only these entries come from the page. The rest of the map is left out.</text>
+<text x="460.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Battery-backed CMOS holds the settings and</text>
+<text x="460.0" y="122.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">high scores. Load it as an input to each test.</text>
+<text x="460.0" y="140.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start"></text>
+<text x="460.0" y="158.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Early games use an M6802 sound CPU.</text>
+<text x="460.0" y="176.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Later ones use an M6808.</text>
+<text x="460.0" y="194.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start"></text>
+<text x="460.0" y="212.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Original assembly source exists. The shipped</text>
+<text x="460.0" y="230.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">ROM decides exact behaviour.</text>
+</svg>

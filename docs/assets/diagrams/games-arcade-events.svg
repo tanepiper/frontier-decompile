@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360" role="img" aria-label="The event script of a shoot 'em up level. Each record fires at a scroll position, starting waves and changing speed. Actors live in slots that are updated in slot order">
+<title>The event script of a shoot 'em up level. Each record fires at a scroll position, starting waves and changing speed. Actors live in slots that are updated in slot order</title>
+<rect x="0.5" y="0.5" width="899" height="359" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">THE EVENT SCRIPT OF AN ARCADE LEVEL</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Each record fires when the screen scrolls to its position. Each new actor takes the first free slot.</text>
+<rect x="40.0" y="92.0" width="760.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<path d="M160.0 88.0L160.0 136.0" stroke="#f59e0b" stroke-width="1.5" fill="none"/>
+<text x="164.0" y="104.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#f59e0b" text-anchor="start">120</text>
+<text x="164.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="start">wave 1, 5 fighters</text>
+<path d="M340.0 88.0L340.0 136.0" stroke="#f59e0b" stroke-width="1.5" fill="none"/>
+<text x="344.0" y="104.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#f59e0b" text-anchor="start">300</text>
+<text x="344.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="start">speed up</text>
+<path d="M460.0 88.0L460.0 136.0" stroke="#f59e0b" stroke-width="1.5" fill="none"/>
+<text x="464.0" y="104.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#f59e0b" text-anchor="start">420</text>
+<text x="464.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="start">wave 2, turrets</text>
+<path d="M640.0 88.0L640.0 136.0" stroke="#f59e0b" stroke-width="1.5" fill="none"/>
+<text x="644.0" y="104.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#f59e0b" text-anchor="start">600</text>
+<text x="644.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="start">boss music</text>
+<path d="M740.0 88.0L740.0 136.0" stroke="#f59e0b" stroke-width="1.5" fill="none"/>
+<text x="744.0" y="104.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#f59e0b" text-anchor="start">700</text>
+<text x="744.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="start">boss</text>
+<text x="40.0" y="150.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">scroll position</text>
+<rect y="84" width="3" height="56" fill="#2dd4bf"><animate attributeName="x" values="40;800" dur="8.0s" repeatCount="indefinite"/></rect>
+<text x="40.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">actor slots, updated and drawn in slot order</text>
+<rect x="40.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="64.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">0</text>
+<rect x="40.0" y="200.0" width="48.0" height="40.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.4"/>
+<text x="64.0" y="223.3" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#e2ece9" text-anchor="middle">player</text>
+<rect x="92.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="116.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">1</text>
+<g opacity="0"><rect x="92.0" y="200.0" width="48.0" height="40.0" rx="4" fill="#f87171" stroke="none" fill-opacity="0.4"/>
+<text x="116.0" y="223.3" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#e2ece9" text-anchor="middle">fighter</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.1579;0.9800" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="144.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="168.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">2</text>
+<g opacity="0"><rect x="144.0" y="200.0" width="48.0" height="40.0" rx="4" fill="#f87171" stroke="none" fill-opacity="0.4"/>
+<text x="168.0" y="223.3" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#e2ece9" text-anchor="middle">fighter</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.1579;0.9800" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="196.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="220.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">3</text>
+<g opacity="0"><rect x="196.0" y="200.0" width="48.0" height="40.0" rx="4" fill="#f87171" stroke="none" fill-opacity="0.4"/>
+<text x="220.0" y="223.3" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#e2ece9" text-anchor="middle">fighter</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.1579;0.9800" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="248.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="272.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">4</text>
+<g opacity="0"><rect x="248.0" y="200.0" width="48.0" height="40.0" rx="4" fill="#f87171" stroke="none" fill-opacity="0.4"/>
+<text x="272.0" y="223.3" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#e2ece9" text-anchor="middle">fighter</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.1579;0.9800" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="300.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="324.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">5</text>
+<g opacity="0"><rect x="300.0" y="200.0" width="48.0" height="40.0" rx="4" fill="#f87171" stroke="none" fill-opacity="0.4"/>
+<text x="324.0" y="223.3" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#e2ece9" text-anchor="middle">fighter</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.1579;0.9800" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="352.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="376.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">6</text>
+<g opacity="0"><rect x="352.0" y="200.0" width="48.0" height="40.0" rx="4" fill="#c084fc" stroke="none" fill-opacity="0.4"/>
+<text x="376.0" y="223.3" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#e2ece9" text-anchor="middle">turret</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5526;0.9800" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="404.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="428.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">7</text>
+<g opacity="0"><rect x="404.0" y="200.0" width="48.0" height="40.0" rx="4" fill="#c084fc" stroke="none" fill-opacity="0.4"/>
+<text x="428.0" y="223.3" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#e2ece9" text-anchor="middle">turret</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5526;0.9800" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="456.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="480.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">8</text>
+<g opacity="0"><rect x="456.0" y="200.0" width="48.0" height="40.0" rx="4" fill="#c084fc" stroke="none" fill-opacity="0.4"/>
+<text x="480.0" y="223.3" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#e2ece9" text-anchor="middle">turret</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5526;0.9800" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="508.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="532.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">9</text>
+<g opacity="0"><rect x="508.0" y="200.0" width="48.0" height="40.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.4"/>
+<text x="532.0" y="223.3" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="9.5" font-weight="600" fill="#e2ece9" text-anchor="middle">boss</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.9211;0.9800" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="560.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="584.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">10</text>
+<rect x="612.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="636.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">11</text>
+<rect x="664.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="688.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">12</text>
+<rect x="716.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="740.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">13</text>
+<rect x="768.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="792.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">14</text>
+<rect x="820.0" y="200.0" width="48.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="844.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">15</text>
+<text x="40.0" y="286.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">A new actor takes the first free slot. The slot order decides who is drawn on top and who is hit first.</text>
+<text x="40.0" y="304.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">Read the event format and the weapon and enemy tables before porting the code that uses them.</text>
+<text x="40.0" y="340.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">The frame order, positions in the game's units and every random draw must be exact.</text>
+</svg>

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="380" viewBox="0 0 900 380" role="img" aria-label="A TZX tape is a list of blocks with an ID, such as 0x10 standard speed, 0x11 turbo, 0x13 pulse sequence, 0x15 direct recording and 0x19 generalised data. Each block stores pulse lengths in T-states at 3.5 MHz.">
+<title>A TZX tape is a list of blocks with an ID, such as 0x10 standard speed, 0x11 turbo, 0x13 pulse sequence, 0x15 direct recording and 0x19 generalised data. Each block stores pulse lengths in T-states at 3.5 MHz.</title>
+<rect x="0.5" y="0.5" width="899" height="379" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">TZX STORES THE TAPE AS TIMED PULSES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Each block has an ID. Timings are in T-states at 3.5 MHz, so turbo and protected loaders still load.</text>
+<rect x="24.0" y="84.0" width="116.0" height="48.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="82.0" y="105.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">0x10</text>
+<text x="82.0" y="121.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">standard</text>
+<rect x="144.0" y="84.0" width="146.0" height="48.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="217.0" y="105.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">0x11</text>
+<text x="217.0" y="121.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">turbo</text>
+<rect x="294.0" y="84.0" width="86.0" height="48.0" rx="6" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="337.0" y="105.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">0x13</text>
+<text x="337.0" y="121.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">pulse seq.</text>
+<rect x="384.0" y="84.0" width="126.0" height="48.0" rx="6" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="447.0" y="105.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">0x15</text>
+<text x="447.0" y="121.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">direct rec.</text>
+<rect x="514.0" y="84.0" width="126.0" height="48.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.25"/>
+<text x="577.0" y="105.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">0x19</text>
+<text x="577.0" y="121.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">generalised</text>
+<rect x="644.0" y="84.0" width="156.0" height="48.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="722.0" y="105.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">0x11</text>
+<text x="722.0" y="121.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">turbo</text>
+<rect x="24" y="78" width="3" height="60" fill="#e2ece9"><animate attributeName="x" values="24;800" dur="8s" repeatCount="indefinite"/></rect>
+<text x="24.0" y="174.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">inside a standard-speed block (ROM loader timings)</text>
+<path d="M24 250V210H38.0V250H52.0V210H66.0V250H80.0V210H94.0V250H108.0V210H122.0V250H136.0V210H150.0V250H164.0V210H169.0V250H175.0V210H197.0V250H219.0V210H230.0V250H241.0V210H263.0V250H285.0V210H307.0V250H329.0" fill="none" stroke="#2dd4bf" stroke-width="1.8"/>
+<text x="24.0" y="272.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">pilot tone</text>
+<text x="24.0" y="288.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">2168 T per pulse</text>
+<path d="M169.0 208.0L169.0 196.0" stroke="#8fa9a5" stroke-width="1" fill="none"/>
+<text x="134.0" y="192.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">sync: 667, 735 T</text>
+<text x="179.0" y="272.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">data: two pulses per bit</text>
+<text x="179.0" y="288.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">0 = 855 T, 1 = 1710 T</text>
+<text x="179.0" y="304.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">bits shown: 1 0 1 1</text>
+<text x="520.0" y="210.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">TAP keeps only the data of standard blocks,</text>
+<text x="520.0" y="228.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">with no timing. A turbo or protected loader</text>
+<text x="520.0" y="246.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">cannot load from it.</text>
+<text x="520.0" y="264.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start"></text>
+<text x="520.0" y="282.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">TZX keeps the timing of each block, so the</text>
+<text x="520.0" y="300.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">tape loads in an emulator as it did on</text>
+<text x="520.0" y="318.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">the real machine.</text>
+<text x="24.0" y="362.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">CPC tapes (CDT) use the same structure, with the timings scaled by 4/3.5.</text>
+</svg>

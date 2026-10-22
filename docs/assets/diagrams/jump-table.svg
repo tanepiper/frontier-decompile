@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="A switch statement compiled to a jump table: a bounds check, then an indirect jump through a table of addresses">
+<title>A switch statement compiled to a jump table: a bounds check, then an indirect jump through a table of addresses</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">A SWITCH AS A JUMP TABLE</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The code checks the bounds, then jumps through the table. The table holds an address for each case.</text>
+<rect x="40.0" y="84.0" width="250.0" height="96.0" rx="6" fill="#12282a" stroke="none"/>
+<text x="56.0" y="112.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="400" fill="#e2ece9" text-anchor="start">cmp   eax, 4</text>
+<text x="56.0" y="138.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="400" fill="#e2ece9" text-anchor="start">ja    default</text>
+<text x="56.0" y="164.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="400" fill="#f59e0b" text-anchor="start">jmp   [table + eax*4]</text>
+<text x="40.0" y="200.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">switch (kind) {</text>
+<text x="40.0" y="216.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">  case 0: ... case 4: ...</text>
+<text x="40.0" y="232.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">  default: ... }</text>
+<text x="360.0" y="76.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">table (read with readdata.py)</text>
+<rect x="360.0" y="84.0" width="170.0" height="28.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="370.0" y="103.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">[0]  0x401230</text>
+<rect x="360.0" y="116.0" width="170.0" height="28.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="370.0" y="135.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">[1]  0x401250</text>
+<rect x="360.0" y="148.0" width="170.0" height="28.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="370.0" y="167.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">[2]  0x401270</text>
+<rect x="360.0" y="180.0" width="170.0" height="28.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="370.0" y="199.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">[3]  0x401290</text>
+<rect x="360.0" y="212.0" width="170.0" height="28.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="370.0" y="231.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">[4]  0x4012b0</text>
+<path d="M292 162C320 162 330 98 356 98" fill="none" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="640.0" y="84.0" width="150.0" height="32.0" rx="4" fill="#4ade80" stroke="none" fill-opacity="0.22"/>
+<text x="652.0" y="105.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">case_0</text>
+<rect x="640.0" y="128.0" width="150.0" height="32.0" rx="4" fill="#4ade80" stroke="none" fill-opacity="0.22"/>
+<text x="652.0" y="149.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">case_1</text>
+<rect x="640.0" y="172.0" width="150.0" height="32.0" rx="4" fill="#4ade80" stroke="none" fill-opacity="0.22"/>
+<text x="652.0" y="193.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">case_2</text>
+<rect x="640.0" y="216.0" width="150.0" height="32.0" rx="4" fill="#4ade80" stroke="none" fill-opacity="0.22"/>
+<text x="652.0" y="237.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">case_4</text>
+<path d="M532 98C580 98 590 100 636 100" fill="none" stroke="#8fa9a5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M532 130C580 130 590 144 636 144" fill="none" stroke="#8fa9a5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M532 162C580 162 590 188 636 188" fill="none" stroke="#8fa9a5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M532 194C580 194 590 144 636 144" fill="none" stroke="#8fa9a5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<path d="M532 226C580 226 590 232 636 232" fill="none" stroke="#8fa9a5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="640.0" y="278.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">two entries can share a case (1 and 3)</text>
+<text x="40.0" y="300.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">When Ghidra shows a computed jump with no cases, read the table's size from the bounds check and its entries as addresses.</text>
+</svg>

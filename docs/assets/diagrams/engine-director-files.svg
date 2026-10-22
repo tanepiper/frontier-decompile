@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="Director files come as editable movies and casts, protected versions without the script source, compressed Shockwave versions and projectors. All of them are RIFX or XFIR containers">
+<title>Director files come as editable movies and casts, protected versions without the script source, compressed Shockwave versions and projectors. All of them are RIFX or XFIR containers</title>
+<rect x="0.5" y="0.5" width="899" height="299" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">DIRECTOR AND SHOCKWAVE FILES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">All forms use one container format, RIFX on a Mac (big-endian) or XFIR on Windows (little-endian).</text>
+<rect x="24.0" y="92.0" width="200.0" height="70.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="124.0" y="124.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">.dir  .cst</text>
+<text x="124.0" y="140.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">editable movie and cast</text>
+<text x="124.0" y="182.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">Lingo source and byte code</text>
+<path d="M226.0 127.0L238.0 127.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="240.0" y="92.0" width="200.0" height="70.0" rx="4" fill="#c084fc" stroke="none" fill-opacity="0.22"/>
+<text x="340.0" y="124.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">.dxr  .cxt</text>
+<text x="340.0" y="140.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">protected</text>
+<text x="340.0" y="182.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">source text removed, byte code kept</text>
+<path d="M442.0 127.0L454.0 127.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="456.0" y="92.0" width="200.0" height="70.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.22"/>
+<text x="556.0" y="124.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">.dcr  .cct</text>
+<text x="556.0" y="140.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">Shockwave, for the web</text>
+<text x="556.0" y="182.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">compressed ("Afterburner")</text>
+<rect x="672.0" y="92.0" width="200.0" height="70.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.22"/>
+<text x="772.0" y="124.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">projector</text>
+<text x="772.0" y="140.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">the player with the movie inside</text>
+<text x="772.0" y="182.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">.exe or Mac application</text>
+<text x="24.0" y="222.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">ProjectorRays decompiles Lingo byte code back to source and unpacks projectors.</text>
+<text x="24.0" y="240.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">ScummVM's Director engine runs a growing number of these games.</text>
+<text x="24.0" y="258.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">Xtras (.x32, .xtr) are native plug-ins in ordinary machine code.</text>
+</svg>

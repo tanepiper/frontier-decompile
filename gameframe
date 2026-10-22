@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+"""gameframe: help and discovery for GameFrame. Run `./gameframe help`.
+
+The launcher for tools/gameframe/ (see its __main__.py for the commands). Standard library only.
+"""
+import runpy
+import sys
+from pathlib import Path
+
+sys.argv[0] = 'gameframe'
+runpy.run_path(str(Path(__file__).resolve().parent / 'tools' / 'gameframe'), run_name='__main__')

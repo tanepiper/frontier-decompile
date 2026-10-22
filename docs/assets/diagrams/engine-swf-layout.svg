@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="380" viewBox="0 0 900 380" role="img" aria-label="An SWF file starts with a signature of FWS, CWS or ZWS, a version and a length. The stage size, frame rate and frame count follow, then tags that each have a code and a length">
+<title>An SWF file starts with a signature of FWS, CWS or ZWS, a version and a length. The stage size, frame rate and frame count follow, then tags that each have a code and a length</title>
+<rect x="0.5" y="0.5" width="899" height="379" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">THE LAYOUT OF AN SWF FILE</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">A short header comes first, followed by a list of tags. CWS files are compressed with zlib from byte 8. ZWS files use LZMA.</text>
+<rect x="24.0" y="90.0" width="39.0" height="34.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="43.5" y="110.8" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">F/C/Z</text>
+<rect x="66.0" y="90.0" width="39.0" height="34.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="85.5" y="110.8" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">W</text>
+<rect x="108.0" y="90.0" width="39.0" height="34.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="127.5" y="110.8" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">S</text>
+<rect x="150.0" y="90.0" width="39.0" height="34.0" rx="4" fill="#c084fc" stroke="none" fill-opacity="0.3"/>
+<text x="169.5" y="110.8" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">ver</text>
+<rect x="192.0" y="90.0" width="165.0" height="34.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.3"/>
+<text x="274.5" y="110.8" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">file length</text>
+<text x="24.0" y="142.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">bytes 0 to 7, never compressed</text>
+<rect x="370.0" y="90.0" width="267.0" height="34.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="503.5" y="110.7" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="600" fill="#e2ece9" text-anchor="middle">stage size, bit-packed, in twips</text>
+<rect x="640.0" y="90.0" width="107.0" height="34.0" rx="4" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="693.5" y="110.7" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="600" fill="#e2ece9" text-anchor="middle">frame rate, 8.8</text>
+<rect x="750.0" y="90.0" width="97.0" height="34.0" rx="4" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="798.5" y="110.7" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="600" fill="#e2ece9" text-anchor="middle">frame count</text>
+<text x="370.0" y="142.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">compressed in CWS and ZWS</text>
+<text x="24.0" y="182.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Each tag header, 16 bits</text>
+<rect x="24.0" y="192.0" width="217.0" height="30.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="132.5" y="210.7" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="600" fill="#e2ece9" text-anchor="middle">tag code, 10 bits</text>
+<rect x="244.0" y="192.0" width="129.0" height="30.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.3"/>
+<text x="308.5" y="210.7" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="600" fill="#e2ece9" text-anchor="middle">length, 6 bits</text>
+<text x="380.0" y="212.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">length 63 means a 32-bit length follows</text>
+<text x="24.0" y="256.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Tags in a file, in order, with code and name</text>
+<rect x="24.0" y="268.0" width="162.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="32.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">9</text>
+<text x="54.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">SetBackgroundColor</text>
+<rect x="192.0" y="268.0" width="113.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="200.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">2</text>
+<text x="222.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">DefineShape</text>
+<rect x="311.0" y="268.0" width="141.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="319.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">21</text>
+<text x="341.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">DefineBitsJPEG2</text>
+<rect x="458.0" y="268.0" width="120.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="466.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">39</text>
+<text x="488.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">DefineSprite</text>
+<rect x="584.0" y="268.0" width="71.0" height="30.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.22"/>
+<text x="592.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">82</text>
+<text x="614.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">DoABC</text>
+<rect x="661.0" y="268.0" width="113.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="669.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">76</text>
+<text x="691.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">SymbolClass</text>
+<rect x="780.0" y="268.0" width="92.0" height="30.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.22"/>
+<text x="788.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">12</text>
+<text x="810.0" y="287.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">DoAction</text>
+<rect x="24.0" y="306.0" width="99.0" height="30.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.22"/>
+<text x="32.0" y="325.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">1</text>
+<text x="54.0" y="325.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">ShowFrame</text>
+<rect x="129.0" y="306.0" width="57.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="137.0" y="325.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">0</text>
+<text x="159.0" y="325.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">End</text>
+<rect x="24.0" y="356.0" width="12.0" height="12.0" rx="2" fill="#f87171" stroke="none" fill-opacity="0.6"/>
+<text x="42.0" y="366.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">scripts, DoAction for AVM1 and DoABC for AVM2</text>
+<rect x="329.0" y="356.0" width="12.0" height="12.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.6"/>
+<text x="347.0" y="366.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">ShowFrame ends a frame</text>
+<rect x="491.4" y="356.0" width="12.0" height="12.0" rx="2" fill="#60a5fa" stroke="none" fill-opacity="0.6"/>
+<text x="509.4" y="366.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">shapes, images, sprites</text>
+</svg>

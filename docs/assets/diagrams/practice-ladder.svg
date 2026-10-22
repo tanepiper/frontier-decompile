@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="A ladder of practice exercises, from reading one function to porting a whole system, each checked against the game's released source">
+<title>A ladder of practice exercises, from reading one function to porting a whole system, each checked against the game's released source</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">A LADDER OF EXERCISES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Each rung is checked against a game whose source was released.</text>
+<rect x="60.0" y="270.0" width="420.0" height="34.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.3"/>
+<text x="72.0" y="292.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">1. name one function from its strings</text>
+<rect x="130.0" y="226.0" width="420.0" height="34.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="142.0" y="248.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">2. recover one structure</text>
+<rect x="200.0" y="182.0" width="420.0" height="34.0" rx="4" fill="#c084fc" stroke="none" fill-opacity="0.3"/>
+<text x="212.0" y="204.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">3. decode one file format</text>
+<rect x="270.0" y="138.0" width="420.0" height="34.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="282.0" y="160.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">4. emulate one function, compare with the source</text>
+<rect x="340.0" y="94.0" width="420.0" height="34.0" rx="4" fill="#4ade80" stroke="none" fill-opacity="0.3"/>
+<text x="352.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">5. port one system and match it bit for bit</text>
+</svg>

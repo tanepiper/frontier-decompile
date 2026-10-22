@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="Games still in print, from the 2023 study of 1,500 US games released before 2010. 13% of the sample is in print, with 5.87% of the Game Boy library, 4.5% of Commodore 64 games and fewer than 3% of games from before 1985">
+<title>Games still in print, from the 2023 study of 1,500 US games released before 2010. 13% of the sample is in print, with 5.87% of the Game Boy library, 4.5% of Commodore 64 games and fewer than 3% of games from before 1985</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">HOW MANY OLD GAMES CAN STILL BE BOUGHT</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">From the study by the Video Game History Foundation and the Software Preservation Network, July 2023.</text>
+<text x="24.0" y="114.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">All 1,500 games sampled</text>
+<rect x="250.0" y="98.0" width="600.0" height="24.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<rect x="250" y="98" height="24" rx="3" fill="#2dd4bf" fill-opacity="0.7" width="78.0"><animate attributeName="width" values="0;78.0" dur="1.2s"/></rect>
+<text x="336.0" y="115.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">13%</text>
+<text x="24.0" y="160.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Game Boy library</text>
+<rect x="250.0" y="144.0" width="600.0" height="24.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<rect x="250" y="144" height="24" rx="3" fill="#60a5fa" fill-opacity="0.7" width="35.2"><animate attributeName="width" values="0;35.2" dur="1.2s"/></rect>
+<text x="293.2" y="161.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">5.87%</text>
+<text x="24.0" y="206.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Commodore 64 games</text>
+<rect x="250.0" y="190.0" width="600.0" height="24.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<rect x="250" y="190" height="24" rx="3" fill="#60a5fa" fill-opacity="0.7" width="27.0"><animate attributeName="width" values="0;27.0" dur="1.2s"/></rect>
+<text x="285.0" y="207.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">4.5%</text>
+<text x="24.0" y="252.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Games from before 1985</text>
+<rect x="250.0" y="236.0" width="600.0" height="24.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<rect x="250" y="236" height="24" rx="3" fill="#f59e0b" fill-opacity="0.7" width="18.0"><animate attributeName="width" values="0;18.0" dur="1.2s"/></rect>
+<text x="276.0" y="253.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">fewer than 3%</text>
+<text x="250.0" y="288.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Each bar is out of 100%. The grey part is the games that cannot be bought today.</text>
+<text x="24.0" y="314.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#e2ece9" text-anchor="start">About 1,000 more games left sale when Nintendo closed the 3DS and Wii U eShops in March 2023.</text>
+</svg>

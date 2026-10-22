@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="366" viewBox="0 0 900 366" role="img" aria-label="Three questions that decide whether to choose a matching decompilation">
+<title>Three questions that decide whether to choose a matching decompilation</title>
+<rect x="0.5" y="0.5" width="899" height="365" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">CHOOSING A MATCHING DECOMPILATION</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">A yes to a question leads to the route on its right.</text>
+<rect x="40.0" y="92.0" width="380.0" height="50.0" rx="5" fill="#60a5fa" stroke="#60a5fa" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="230.0" y="121.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">Is the game mostly hand-written assembly?</text>
+<rect x="40.0" y="182.0" width="380.0" height="50.0" rx="5" fill="#60a5fa" stroke="#60a5fa" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="230.0" y="211.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">Has a community already started a decompilation?</text>
+<rect x="40.0" y="272.0" width="380.0" height="50.0" rx="5" fill="#60a5fa" stroke="#60a5fa" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="230.0" y="301.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">Must the port be exactly the original, bugs included?</text>
+<rect x="500.0" y="92.0" width="360.0" height="50.0" rx="5" fill="#64748b" stroke="#64748b" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="680.0" y="112.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">Disassemble, document, reimplement</text>
+<text x="680.0" y="129.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">matching proves less for assembly</text>
+<path d="M422.0 117.0L497.0 117.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="460.0" y="110.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4ade80" text-anchor="middle">yes</text>
+<rect x="500.0" y="182.0" width="360.0" height="50.0" rx="5" fill="#2dd4bf" stroke="#2dd4bf" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="680.0" y="202.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">Use or join it</text>
+<text x="680.0" y="219.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">its documents help any route</text>
+<path d="M422.0 207.0L497.0 207.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="460.0" y="200.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4ade80" text-anchor="middle">yes</text>
+<rect x="500.0" y="272.0" width="360.0" height="50.0" rx="5" fill="#f59e0b" stroke="#f59e0b" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="680.0" y="292.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">Matching decompilation</text>
+<text x="680.0" y="309.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">if you accept the legal position</text>
+<path d="M422.0 297.0L497.0 297.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="460.0" y="290.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4ade80" text-anchor="middle">yes</text>
+<path d="M230.0 144.0L230.0 180.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="240.0" y="168.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#f87171" text-anchor="start">no</text>
+<path d="M230.0 234.0L230.0 270.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="240.0" y="258.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#f87171" text-anchor="start">no</text>
+<text x="500.0" y="348.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">If every answer is no, reimplement from documented behaviour.</text>
+</svg>

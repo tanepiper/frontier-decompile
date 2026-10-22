@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="MIDI channel messages: a status byte with the message kind and channel, then one or two data bytes; running status leaves out repeated status bytes">
+<title>MIDI channel messages: a status byte with the message kind and channel, then one or two data bytes; running status leaves out repeated status bytes</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">MIDI MESSAGES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">A status byte (high bit set) gives the kind and the channel. Data bytes are 0 to 127.</text>
+<text x="40.0" y="112.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Note on, channel 1</text>
+<rect x="230.0" y="92.0" width="130.0" height="30.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.28"/>
+<text x="260.0" y="112.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">90</text>
+<text x="284.0" y="112.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">status 9n</text>
+<rect x="370.0" y="92.0" width="130.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="400.0" y="112.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">3C</text>
+<text x="424.0" y="112.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">key 60 (C4)</text>
+<rect x="510.0" y="92.0" width="130.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="540.0" y="112.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">64</text>
+<text x="564.0" y="112.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">velocity 100</text>
+<text x="40.0" y="154.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Note off</text>
+<rect x="230.0" y="134.0" width="130.0" height="30.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.28"/>
+<text x="260.0" y="154.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">80</text>
+<text x="284.0" y="154.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">status 8n</text>
+<rect x="370.0" y="134.0" width="130.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="400.0" y="154.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">3C</text>
+<text x="424.0" y="154.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">key</text>
+<rect x="510.0" y="134.0" width="130.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="540.0" y="154.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">40</text>
+<text x="564.0" y="154.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">velocity</text>
+<text x="40.0" y="196.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Program change</text>
+<rect x="230.0" y="176.0" width="130.0" height="30.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.28"/>
+<text x="260.0" y="196.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">C0</text>
+<text x="284.0" y="196.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">status Cn</text>
+<rect x="370.0" y="176.0" width="130.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="400.0" y="196.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">13</text>
+<text x="424.0" y="196.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">instrument 19</text>
+<text x="40.0" y="238.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Controller</text>
+<rect x="230.0" y="218.0" width="130.0" height="30.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.28"/>
+<text x="260.0" y="238.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">B0</text>
+<text x="284.0" y="238.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">status Bn</text>
+<rect x="370.0" y="218.0" width="130.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="400.0" y="238.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">07</text>
+<text x="424.0" y="238.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">volume (7)</text>
+<rect x="510.0" y="218.0" width="130.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="540.0" y="238.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">50</text>
+<text x="564.0" y="238.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">value 80</text>
+<text x="40.0" y="280.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Running status</text>
+<rect x="230.0" y="260.0" width="64.0" height="30.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.28"/>
+<text x="262.0" y="280.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">90</text>
+<rect x="300.0" y="260.0" width="64.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="332.0" y="280.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">3C</text>
+<rect x="370.0" y="260.0" width="64.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="402.0" y="280.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">64</text>
+<rect x="440.0" y="260.0" width="64.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="472.0" y="280.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">40</text>
+<rect x="510.0" y="260.0" width="64.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="542.0" y="280.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">64</text>
+<rect x="580.0" y="260.0" width="64.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="612.0" y="280.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">43</text>
+<rect x="650.0" y="260.0" width="64.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="682.0" y="280.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">00</text>
+<text x="230.0" y="310.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">three notes on with one status byte. Velocity 0 (the last) is a note off.</text>
+</svg>

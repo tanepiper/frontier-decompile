@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="One 32-bit value, 0x2E6B7A40, read as a Unix time, a Mac time and a FAT date and time, which gives three different dates">
+<title>One 32-bit value, 0x2E6B7A40, read as a Unix time, a Mac time and a FAT date and time, which gives three different dates</title>
+<rect x="0.5" y="0.5" width="899" height="299" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">READING ONE VALUE AS SEVERAL KINDS OF TIMESTAMP</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">timestamps.py 0x2E6B7A40 prints every reading. Only the kind that the game uses gives the right date.</text>
+<text x="24.0" y="104.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="600" fill="#e2ece9" text-anchor="start">0x2E6B7A40</text>
+<path d="M150 99C 190 99 190 108 230 108" fill="none" stroke="#8fa9a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="234.0" y="92.0" width="642.0" height="34.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.16"/>
+<text x="248.0" y="114.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Unix seconds since 1970</text>
+<text x="560.0" y="114.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">1994-09-05 20:06:24</text>
+<path d="M150 99C 190 99 190 152 230 152" fill="none" stroke="#8fa9a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="234.0" y="136.0" width="642.0" height="34.0" rx="4" fill="#c084fc" stroke="none" fill-opacity="0.16"/>
+<text x="248.0" y="158.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Mac seconds since 1904</text>
+<text x="560.0" y="158.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">1928-09-04 20:06:24</text>
+<path d="M150 99C 190 99 190 196 230 196" fill="none" stroke="#8fa9a5" stroke-width="1.2" marker-end="url(#arrow)"/>
+<rect x="234.0" y="180.0" width="642.0" height="34.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.16"/>
+<text x="248.0" y="202.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">FAT date (high word) and time</text>
+<text x="560.0" y="202.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">2003-03-11 15:18:00</text>
+<text x="24.0" y="246.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">Windows FILETIME (100 ns steps since 1601) and OLE dates (days since 1899-12-30, a double) need 64 bits.</text>
+<text x="24.0" y="264.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">A field is real when a later save has a later value at the same offset. FAT and Mac times are local time.</text>
+</svg>

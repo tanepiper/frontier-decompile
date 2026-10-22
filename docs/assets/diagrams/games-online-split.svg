@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="In an online game, the client sends input, predicts and shows results. The server holds the authority and sends back the true state, which the client follows">
+<title>In an online game, the client sends input, predicts and shows results. The server holds the authority and sends back the true state, which the client follows</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">HOW AN ONLINE GAME SPLITS ITS RULES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The client shows a predicted result at once and then follows the result that the server sends.</text>
+<rect x="24.0" y="100.0" width="300.0" height="170.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.14"/>
+<text x="40.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">the client</text>
+<text x="40.0" y="148.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">the interface and rendering</text>
+<text x="40.0" y="168.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">prediction, which moves at once</text>
+<text x="40.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">some formulas, to show numbers</text>
+<text x="40.0" y="208.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">data tables the server also uses</text>
+<rect x="576.0" y="100.0" width="300.0" height="170.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.14"/>
+<text x="592.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">the server</text>
+<text x="592.0" y="148.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">the authority on what</text>
+<text x="592.0" y="168.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">really happened</text>
+<text x="592.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">server ticks</text>
+<text x="592.0" y="208.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">known only from captured</text>
+<text x="592.0" y="228.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">traffic, marked inferred</text>
+<path d="M330.0 150.0L570.0 150.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M570.0 220.0L330.0 220.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="450.0" y="142.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">input, "attack target"</text>
+<text x="450.0" y="240.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">result, "hit for 12"</text>
+<circle r="6" fill="#2dd4bf"><animateMotion path="M330 150L570 150" keyPoints="0;1;1" keyTimes="0;0.4;1" calcMode="linear" dur="4.0s" repeatCount="indefinite"/></circle>
+<circle r="6" fill="#f59e0b"><animateMotion path="M570 220L330 220" keyPoints="0;0;1;1" keyTimes="0;0.5;0.9;1" calcMode="linear" dur="4.0s" repeatCount="indefinite"/></circle>
+<text x="24.0" y="300.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Record traffic only from your own sessions, on servers you may use. Keep other players' data private.</text>
+</svg>

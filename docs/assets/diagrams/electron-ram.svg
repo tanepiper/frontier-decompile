@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="The Acorn Electron's RAM is 4 bits wide, so each byte takes two reads. The CPU runs at an effective 1 MHz or less when it touches RAM.">
+<title>The Acorn Electron's RAM is 4 bits wide, so each byte takes two reads. The CPU runs at an effective 1 MHz or less when it touches RAM.</title>
+<rect x="0.5" y="0.5" width="899" height="299" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">THE ACORN ELECTRON'S 4-BIT RAM</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">One ULA does video and sound. Its RAM is 4 bits wide, so a byte is read in two halves.</text>
+<rect x="40.0" y="100.0" width="140.0" height="60.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="110.0" y="127.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">6502</text>
+<text x="110.0" y="143.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">CPU</text>
+<rect x="260.0" y="100.0" width="160.0" height="60.0" rx="6" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="340.0" y="127.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">ULA</text>
+<text x="340.0" y="143.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">video, sound, RAM access</text>
+<rect x="500.0" y="100.0" width="140.0" height="60.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.25"/>
+<text x="570.0" y="127.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">RAM</text>
+<text x="570.0" y="143.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">32 KB, 4 bits wide</text>
+<path d="M184.0 130.0L256.0 130.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M424.0 130.0L496.0 130.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="500.0" y="196.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">one byte from RAM</text>
+<rect x="500.0" y="206.0" width="136.0" height="32.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="568.0" y="227.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="middle">read 1: low 4 bits</text>
+<rect x="500" y="206" width="136" height="32" rx="3" fill="#2dd4bf" fill-opacity="0.6" opacity="0"><animate attributeName="opacity" values="1;0" keyTimes="0;0.5" calcMode="discrete" dur="2.0s" repeatCount="indefinite"/></rect>
+<rect x="640.0" y="206.0" width="136.0" height="32.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.2"/>
+<text x="708.0" y="227.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="middle">read 2: high 4 bits</text>
+<rect x="640" y="206" width="136" height="32" rx="3" fill="#f59e0b" fill-opacity="0.6" opacity="0"><animate attributeName="opacity" values="0;1" keyTimes="0;0.5" calcMode="discrete" dur="2.0s" repeatCount="indefinite"/></rect>
+<text x="680.0" y="112.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">From ROM: full speed.</text>
+<text x="680.0" y="130.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">From RAM: an effective</text>
+<text x="680.0" y="148.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">1 MHz or less.</text>
+<text x="40.0" y="270.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The BBC Micro's timing does not fit the Electron. A port must model the slower RAM.</text>
+</svg>

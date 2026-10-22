@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="440" viewBox="0 0 900 440" role="img" aria-label="Doom's renderer walks the BSP tree and visits the player's side of each split first, so the subsectors come out from front to back">
+<title>Doom's renderer walks the BSP tree and visits the player's side of each split first, so the subsectors come out from front to back</title>
+<rect x="0.5" y="0.5" width="899" height="439" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">WALKING DOOM'S BSP TREE FRONT TO BACK</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">At each split, the renderer visits the player's side first. The subsectors come out in order from nearest to farthest.</text>
+<rect x="42.0" y="94.0" width="156.0" height="96.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.12"/>
+<rect x="42" y="94" width="156" height="96" rx="3" fill="#2dd4bf" opacity="0"><animate attributeName="opacity" values="0;0.35;0" keyTimes="0;0.3200;0.9600" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></rect>
+<text x="120.0" y="138.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#e2ece9" text-anchor="middle">A</text>
+<text x="120.0" y="158.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#f59e0b" text-anchor="middle" opacity="0">drawn 2<animate attributeName="opacity" values="0;1;0" keyTimes="0;0.3200;0.9600" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></text>
+<rect x="42.0" y="194.0" width="156.0" height="116.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.12"/>
+<rect x="42" y="194" width="156" height="116" rx="3" fill="#2dd4bf" opacity="0"><animate attributeName="opacity" values="0;0.35;0" keyTimes="0;0.1200;0.9600" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></rect>
+<text x="120.0" y="248.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#e2ece9" text-anchor="middle">B</text>
+<text x="120.0" y="268.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#f59e0b" text-anchor="middle" opacity="0">drawn 1<animate attributeName="opacity" values="0;1;0" keyTimes="0;0.1200;0.9600" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></text>
+<rect x="202.0" y="94.0" width="156.0" height="126.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.12"/>
+<rect x="202" y="94" width="156" height="126" rx="3" fill="#2dd4bf" opacity="0"><animate attributeName="opacity" values="0;0.35;0" keyTimes="0;0.7200;0.9600" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></rect>
+<text x="280.0" y="153.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#e2ece9" text-anchor="middle">C</text>
+<text x="280.0" y="173.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#f59e0b" text-anchor="middle" opacity="0">drawn 4<animate attributeName="opacity" values="0;1;0" keyTimes="0;0.7200;0.9600" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></text>
+<rect x="202.0" y="224.0" width="156.0" height="86.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.12"/>
+<rect x="202" y="224" width="156" height="86" rx="3" fill="#2dd4bf" opacity="0"><animate attributeName="opacity" values="0;0.35;0" keyTimes="0;0.5200;0.9600" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></rect>
+<text x="280.0" y="263.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="18" font-weight="700" fill="#e2ece9" text-anchor="middle">D</text>
+<text x="280.0" y="283.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" fill="#f59e0b" text-anchor="middle" opacity="0">drawn 3<animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5200;0.9600" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></text>
+<path d="M200.0 92.0L200.0 312.0" stroke="#f87171" stroke-width="2.5" fill="none"/>
+<path d="M40.0 192.0L200.0 192.0" stroke="#c084fc" stroke-width="2.5" fill="none"/>
+<path d="M200.0 222.0L360.0 222.0" stroke="#60a5fa" stroke-width="2.5" fill="none"/>
+<text x="204.0" y="328.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#f87171" text-anchor="start">split 1</text>
+<text x="36.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#c084fc" text-anchor="start">split 2</text>
+<text x="316.0" y="218.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#60a5fa" text-anchor="start">split 3</text>
+<circle cx="70" cy="288" r="6" fill="#f59e0b"/>
+<text x="82.0" y="292.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#f59e0b" text-anchor="start">player</text>
+<path d="M640.0 116.0L540.0 174.0" stroke="#8fa9a5" stroke-width="1.5" fill="none"/>
+<path d="M640.0 116.0L760.0 174.0" stroke="#8fa9a5" stroke-width="1.5" fill="none"/>
+<path d="M540.0 206.0L585.0 266.0" stroke="#8fa9a5" stroke-width="1.5" fill="none"/>
+<path d="M540.0 206.0L495.0 266.0" stroke="#8fa9a5" stroke-width="1.5" fill="none"/>
+<path d="M760.0 206.0L715.0 266.0" stroke="#8fa9a5" stroke-width="1.5" fill="none"/>
+<path d="M760.0 206.0L805.0 266.0" stroke="#8fa9a5" stroke-width="1.5" fill="none"/>
+<rect x="590.0" y="84.0" width="100.0" height="32.0" rx="4" fill="#f87171" stroke="none" fill-opacity="0.3"/>
+<text x="640.0" y="104.2" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">split 1</text>
+<rect x="490.0" y="174.0" width="100.0" height="32.0" rx="4" fill="#c084fc" stroke="none" fill-opacity="0.3"/>
+<text x="540.0" y="194.2" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">split 2</text>
+<rect x="710.0" y="174.0" width="100.0" height="32.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="760.0" y="194.2" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">split 3</text>
+<rect x="559.0" y="266.0" width="52.0" height="34.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<rect x="559" y="266" width="52" height="34" rx="4" fill="#2dd4bf" opacity="0"><animate attributeName="opacity" values="0;0.55;0" keyTimes="0;0.3200;0.9600" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></rect>
+<text x="585.0" y="288.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="middle">A</text>
+<text x="585.0" y="322.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f59e0b" text-anchor="middle">2</text>
+<rect x="469.0" y="266.0" width="52.0" height="34.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<rect x="469" y="266" width="52" height="34" rx="4" fill="#2dd4bf" opacity="0"><animate attributeName="opacity" values="0;0.55;0" keyTimes="0;0.1200;0.9600" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></rect>
+<text x="495.0" y="288.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="middle">B</text>
+<text x="495.0" y="322.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f59e0b" text-anchor="middle">1</text>
+<rect x="689.0" y="266.0" width="52.0" height="34.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<rect x="689" y="266" width="52" height="34" rx="4" fill="#2dd4bf" opacity="0"><animate attributeName="opacity" values="0;0.55;0" keyTimes="0;0.5200;0.9600" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></rect>
+<text x="715.0" y="288.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="middle">D</text>
+<text x="715.0" y="322.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f59e0b" text-anchor="middle">3</text>
+<rect x="779.0" y="266.0" width="52.0" height="34.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<rect x="779" y="266" width="52" height="34" rx="4" fill="#2dd4bf" opacity="0"><animate attributeName="opacity" values="0;0.55;0" keyTimes="0;0.7200;0.9600" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></rect>
+<text x="805.0" y="288.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="middle">C</text>
+<text x="805.0" y="322.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f59e0b" text-anchor="middle">4</text>
+<circle cx="640" cy="100" r="22" fill="none" stroke="#f59e0b" stroke-width="2.5"><animateTransform attributeName="transform" type="translate" values="0 0;-100 90;-145 183;-55 183;120 90;75 183;165 183" keyTimes="0.00;0.06;0.12;0.32;0.46;0.52;0.72" calcMode="discrete" dur="8.0s" repeatCount="indefinite"/></circle>
+<text x="450.0" y="350.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">The player is left of split 1, so the left half comes first.</text>
+<text x="450.0" y="367.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">The player is below split 2, so B comes before A.</text>
+<text x="450.0" y="384.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">Each screen column is drawn once, so later walls fill</text>
+<text x="450.0" y="401.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">only the columns that are still empty.</text>
+<text x="40.0" y="350.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">An illustrative map of four subsectors.</text>
+<text x="40.0" y="424.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#e2ece9" text-anchor="start">World positions are 16.16 fixed point. The game state changes 35 times a second.</text>
+</svg>

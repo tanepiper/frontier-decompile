@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360" role="img" aria-label="A DirectDraw surface whose pitch is wider than its row of pixels, and the 5-6-5 and 5-5-5 16-bit pixel formats">
+<title>A DirectDraw surface whose pitch is wider than its row of pixels, and the 5-6-5 and 5-5-5 16-bit pixel formats</title>
+<rect x="0.5" y="0.5" width="899" height="359" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">SURFACE PITCH AND PIXEL FORMATS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Lock gives a pointer and a pitch. Each row starts one pitch after the row before it.</text>
+<rect x="40.0" y="90.0" width="300.0" height="22.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.3"/>
+<rect x="342.0" y="90.0" width="80.0" height="22.0" rx="2" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<rect x="40.0" y="116.0" width="300.0" height="22.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.3"/>
+<rect x="342.0" y="116.0" width="80.0" height="22.0" rx="2" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<rect x="40.0" y="142.0" width="300.0" height="22.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.3"/>
+<rect x="342.0" y="142.0" width="80.0" height="22.0" rx="2" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<rect x="40.0" y="168.0" width="300.0" height="22.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.3"/>
+<rect x="342.0" y="168.0" width="80.0" height="22.0" rx="2" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<rect x="40.0" y="194.0" width="300.0" height="22.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.3"/>
+<rect x="342.0" y="194.0" width="80.0" height="22.0" rx="2" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="190.0" y="105.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="middle">pixels of row 0 (width x bytes per pixel)</text>
+<text x="382.0" y="105.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">padding</text>
+<path d="M40.0 230.0L422.0 230.0" stroke="#f59e0b" stroke-width="2" fill="none"/>
+<text x="231.0" y="248.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#f59e0b" text-anchor="middle">pitch: the bytes from one row to the next</text>
+<text x="40.0" y="276.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">row y starts at pointer + y x pitch</text>
+<text x="40.0" y="296.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">A port must never assume pitch = width x bytes.</text>
+<text x="470.0" y="100.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">16-bit 5-6-5</text>
+<rect x="470.0" y="110.0" width="118.0" height="30.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.3"/>
+<text x="529.0" y="129.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">red</text>
+<rect x="590.0" y="110.0" width="142.0" height="30.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.3"/>
+<text x="661.0" y="129.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">green</text>
+<rect x="734.0" y="110.0" width="118.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="793.0" y="129.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">blue</text>
+<text x="470.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">16-bit 5-5-5</text>
+<rect x="470.0" y="180.0" width="22.0" height="30.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.3"/>
+<text x="481.0" y="199.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">x</text>
+<rect x="494.0" y="180.0" width="118.0" height="30.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.3"/>
+<text x="553.0" y="199.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">red</text>
+<rect x="614.0" y="180.0" width="118.0" height="30.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.3"/>
+<text x="673.0" y="199.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">green</text>
+<rect x="734.0" y="180.0" width="118.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="793.0" y="199.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">blue</text>
+<text x="470.0" y="240.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">bit 15 on the left, bit 0 on the right</text>
+<text x="470.0" y="266.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The game reads the pixel format from the surface</text>
+<text x="470.0" y="284.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">and may have a code path for each. Port the one</text>
+<text x="470.0" y="302.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">the reference captures used, or both.</text>
+</svg>

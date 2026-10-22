@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="The CPS-3 security cartridge holds the encrypted SH-2 derivative, a boot flash ROM and NVRAM. A SCSI CD-ROM loads the game into custom flash SIMMs. The screen runs at 59.59 Hz.">
+<title>The CPS-3 security cartridge holds the encrypted SH-2 derivative, a boot flash ROM and NVRAM. A SCSI CD-ROM loads the game into custom flash SIMMs. The screen runs at 59.59 Hz.</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">CAPCOM CPS-3 (1996 TO 1999)</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Six games ran on CPS-3, among them Red Earth and Street Fighter III. The game loads from CD.</text>
+<rect x="24.0" y="96.0" width="170.0" height="60.0" rx="6" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="109.0" y="123.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">SCSI CD-ROM</text>
+<text x="109.0" y="139.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">the game</text>
+<rect x="260.0" y="84.0" width="220.0" height="84.0" rx="6" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="370.0" y="123.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">flash SIMMs</text>
+<text x="370.0" y="139.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">program 64 Mbit; graphics and sound 128 Mbit</text>
+<rect x="560.0" y="76.0" width="310.0" height="160.0" rx="8" fill="#f59e0b" stroke="none" fill-opacity="0.12"/>
+<text x="576.0" y="100.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">security cartridge</text>
+<rect x="576.0" y="112.0" width="280.0" height="50.0" rx="6" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="716.0" y="134.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">SH-2 derivative (SH7014 core)</text>
+<text x="716.0" y="150.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">key in battery SRAM on the die</text>
+<rect x="576.0" y="172.0" width="135.0" height="50.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="643.5" y="202.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">boot flash</text>
+<rect x="721.0" y="172.0" width="135.0" height="50.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="788.5" y="202.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">NVRAM</text>
+<path d="M198.0 126.0L256.0 126.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M484.0 126.0L572.0 136.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="24.0" y="268.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Only the boot flash and the program areas are encrypted. MAME models the CPU as an SH7604 at 25 MHz.</text>
+<text x="24.0" y="286.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The CPU erases its key on tampering. Screen: 42.954545 MHz / 5, 59.59 Hz.</text>
+</svg>

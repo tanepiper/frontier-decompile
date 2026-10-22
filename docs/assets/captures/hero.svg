@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="604" height="214" viewBox="0 0 604 214" role="img" aria-label="tests/run.sh">
+<rect x="0.5" y="0.5" width="603" height="213" rx="9" fill="#0d1b1e" stroke="#1f3d40"/>
+<path d="M1 30V10a9 9 0 0 1 9-9h584a9 9 0 0 1 9 9v20z" fill="#132a2d"/>
+<circle cx="18" cy="15.0" r="5" fill="#f87171" opacity="0.8"/>
+<circle cx="36" cy="15.0" r="5" fill="#fbbf24" opacity="0.8"/>
+<circle cx="54" cy="15.0" r="5" fill="#4ade80" opacity="0.8"/>
+<text x="302.0" y="19.0" text-anchor="middle" fill="#7c9895" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12">tests/run.sh</text>
+<text font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" fill="#d5e4e2" xml:space="preserve">
+<tspan x="18" y="58"><tspan fill="#7c9895">$ </tspan><tspan fill="#2dd4bf">tests/run.sh --ghidra</tspan></tspan>
+<tspan x="18" y="77"><tspan fill="#7c9895">  …</tspan></tspan>
+<tspan x="18" y="96"><tspan fill="#f59e0b">Ground truth and the port</tspan></tspan>
+<tspan x="18" y="115">  <tspan fill="#4ade80">ok</tspan>    the port matches the original bit for bit (20 seeds x 600 steps)</tspan>
+<tspan x="18" y="134">  <tspan fill="#4ade80">ok</tspan>    the port draws random numbers in the original's order (20 seeds)</tspan>
+<tspan x="18" y="153">  <tspan fill="#4ade80">ok</tspan>    bitcompare catches the naive double-precision port (20 seeds)</tspan>
+<tspan x="18" y="172"><tspan fill="#7c9895">  …</tspan></tspan>
+<tspan x="18" y="191">104 passed, 0 failed</tspan>
+</text></svg>

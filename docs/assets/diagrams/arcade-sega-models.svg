@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="380" viewBox="0 0 900 380" role="img" aria-label="Sega Model 1 uses a NEC V60 with a TGP coprocessor, Model 2 an i960 with TGPs or SHARCs, and Model 3 a PowerPC 603ev with Real3D graphics. Each has a 68000 for sound and its own protection.">
+<title>Sega Model 1 uses a NEC V60 with a TGP coprocessor, Model 2 an i960 with TGPs or SHARCs, and Model 3 a PowerPC 603ev with Real3D graphics. Each has a 68000 for sound and its own protection.</title>
+<rect x="0.5" y="0.5" width="899" height="379" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">SEGA MODEL 1, 2 AND 3</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Each Model changes the main CPU and the geometry hardware. Each needs its own tools.</text>
+<rect x="24.0" y="80.0" width="272.0" height="230.0" rx="8" fill="#2dd4bf" stroke="none" fill-opacity="0.13"/>
+<text x="38.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">Model 1 (1992)</text>
+<text x="38.0" y="122.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Virtua Racing, Virtua Fighter</text>
+<text x="38.0" y="152.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">CPU</text>
+<text x="38.0" y="168.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">NEC V60, 16 MHz</text>
+<text x="38.0" y="190.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">geometry</text>
+<text x="38.0" y="206.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Fujitsu MB86233 "TGP"</text>
+<text x="38.0" y="228.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">sound</text>
+<text x="38.0" y="244.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">68000 10 MHz, YM3438</text>
+<text x="38.0" y="266.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">Ghidra</text>
+<text x="38.0" y="282.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">none found for the V60</text>
+<rect x="310.0" y="80.0" width="272.0" height="230.0" rx="8" fill="#60a5fa" stroke="none" fill-opacity="0.13"/>
+<text x="324.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">Model 2 (1993/1994)</text>
+<text x="324.0" y="122.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Daytona USA</text>
+<text x="324.0" y="152.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">CPU</text>
+<text x="324.0" y="168.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">i960KB, 25 MHz</text>
+<text x="324.0" y="190.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">geometry</text>
+<text x="324.0" y="206.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">TGPs or SHARCs (by variant)</text>
+<text x="324.0" y="228.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">sound</text>
+<text x="324.0" y="244.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">68000, SCSP</text>
+<text x="324.0" y="266.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">Ghidra</text>
+<text x="324.0" y="282.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">i960 by extension</text>
+<rect x="596.0" y="80.0" width="272.0" height="230.0" rx="8" fill="#c084fc" stroke="none" fill-opacity="0.13"/>
+<text x="610.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">Model 3 (1996)</text>
+<text x="610.0" y="122.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Virtua Fighter 3, Scud Race</text>
+<text x="610.0" y="152.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">CPU</text>
+<text x="610.0" y="168.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">PowerPC 603ev, 66-166 MHz</text>
+<text x="610.0" y="190.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">geometry</text>
+<text x="610.0" y="206.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Real3D (Lockheed Martin)</text>
+<text x="610.0" y="228.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">sound</text>
+<text x="610.0" y="244.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">68000, two SCSP</text>
+<text x="610.0" y="266.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">Ghidra</text>
+<text x="610.0" y="282.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">PowerPC built in</text>
+<text x="24.0" y="340.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Model 1's TGP ROMs are marked BAD_DUMP on four games. Model 3 runs at 57.524 frames a second (Supermodel).</text>
+<text x="24.0" y="358.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Protection: 315-5881 crypt device on Model 2A, 2B and Model 3.</text>
+</svg>

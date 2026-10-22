@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="Static recompilation of an Xbox 360 game into a native PC port">
+<title>Static recompilation of an Xbox 360 game into a native PC port</title>
+<rect x="0.5" y="0.5" width="899" height="299" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">XBOX 360 STATIC RECOMPILATION</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">This is how Unleashed Recompiled was made. The project ships no game files.</text>
+<rect x="40.0" y="100.0" width="160.0" height="60.0" rx="5" fill="#f87171" stroke="#f87171" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="120.0" y="125.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">XEX2</text>
+<text x="120.0" y="143.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">the player's copy</text>
+<path d="M202.0 120.0L246.0 105.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M202.0 140.0L246.0 175.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="250.0" y="80.0" width="180.0" height="50.0" rx="5" fill="#60a5fa" stroke="#60a5fa" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="340.0" y="109.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">PowerPC code</text>
+<rect x="250.0" y="150.0" width="180.0" height="50.0" rx="5" fill="#c084fc" stroke="#c084fc" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="340.0" y="179.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Xenos shaders</text>
+<path d="M432.0 105.0L476.0 105.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M432.0 175.0L476.0 175.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="480.0" y="80.0" width="180.0" height="50.0" rx="5" fill="#60a5fa" stroke="#60a5fa" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="570.0" y="100.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">XenonRecomp</text>
+<text x="570.0" y="118.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">to C++</text>
+<rect x="480.0" y="150.0" width="180.0" height="50.0" rx="5" fill="#c084fc" stroke="#c084fc" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="570.0" y="170.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">XenosRecomp</text>
+<text x="570.0" y="188.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">to HLSL</text>
+<path d="M662.0 105.0L706.0 130.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M662.0 175.0L706.0 150.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="710.0" y="100.0" width="150.0" height="80.0" rx="5" fill="#4ade80" stroke="#4ade80" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="785.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Native PC port</text>
+<text x="785.0" y="146.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">with a new</text>
+<text x="785.0" y="161.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">hardware layer</text>
+<text x="40.0" y="240.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">ReXGlue (2026) is an open SDK built on XenonRecomp and Xenia. It is in early development.</text>
+</svg>

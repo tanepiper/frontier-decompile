@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="683" height="290" viewBox="0 0 683 290" role="img" aria-label="bitcompare.py and seqdiff.py">
+<rect x="0.5" y="0.5" width="682" height="289" rx="9" fill="#0d1b1e" stroke="#1f3d40"/>
+<path d="M1 30V10a9 9 0 0 1 9-9h663a9 9 0 0 1 9 9v20z" fill="#132a2d"/>
+<circle cx="18" cy="15.0" r="5" fill="#f87171" opacity="0.8"/>
+<circle cx="36" cy="15.0" r="5" fill="#fbbf24" opacity="0.8"/>
+<circle cx="54" cy="15.0" r="5" fill="#4ade80" opacity="0.8"/>
+<text x="341.5" y="19.0" text-anchor="middle" fill="#7c9895" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="12">bitcompare.py and seqdiff.py</text>
+<text font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="13" fill="#d5e4e2" xml:space="preserve">
+<tspan x="18" y="58"><tspan fill="#7c9895">$ </tspan><tspan fill="#2dd4bf">cd examples/sample-game/build</tspan></tspan>
+<tspan x="18" y="77"><tspan fill="#7c9895">$ </tspan><tspan fill="#2dd4bf">python ../../../tools/verify/bitcompare.py f32 truth/seed-1.f32 port/seed-1.f32</tspan></tspan>
+<tspan x="18" y="96">600 of 600 values match bit for bit</tspan>
+<tspan x="18" y="115"><tspan fill="#7c9895">$ </tspan><tspan fill="#2dd4bf">python ../../../tools/verify/seqdiff.py truth/seed-1.trace port/seed-1.trace</tspan></tspan>
+<tspan x="18" y="134">identical: 746 events</tspan>
+<tspan x="18" y="153"><tspan fill="#7c9895">$ </tspan><tspan fill="#2dd4bf">python ../../../tools/verify/bitcompare.py f32 truth/seed-1.f32 naive/seed-1.f32</tspan></tspan>
+<tspan x="18" y="172">7 of 600 values match bit for bit</tspan>
+<tspan x="18" y="191">  [0] expected 0.00083333341171965, got 0.0008333333535119891</tspan>
+<tspan x="18" y="210">  [1] expected 0.0016666668234393, got 0.0016666667070239782</tspan>
+<tspan x="18" y="229">  [2] expected 0.002500000176951289, got 0.0024999999441206455</tspan>
+<tspan x="18" y="248"><tspan fill="#7c9895">  …</tspan></tspan>
+<tspan x="18" y="267">  largest difference: 12 ULP</tspan>
+</text></svg>

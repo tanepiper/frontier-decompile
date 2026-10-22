@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="440" viewBox="0 0 900 440" role="img" aria-label="Arcade refresh rates run from about 54.71 Hz on Midway TMS34010 boards to about 61.5 Hz on Asteroids. Boards with the same crystal and totals share a rate.">
+<title>Arcade refresh rates run from about 54.71 Hz on Midway TMS34010 boards to about 61.5 Hz on Asteroids. Boards with the same crystal and totals share a rate.</title>
+<rect x="0.5" y="0.5" width="899" height="439" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">ARCADE REFRESH RATES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Boards with the same crystal and the same totals have the same rate. Few boards run at exactly 60 Hz.</text>
+<path d="M515.0 74.0L515.0 410.0" stroke="#f59e0b" stroke-width="1.5" fill="none" stroke-dasharray="5 4"/>
+<text x="190.0" y="96.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">Midway TMS34010</text>
+<rect x="200.0" y="83.0" width="37.3" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="243.3" y="97.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">54.71</text>
+<text x="650.0" y="97.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Y, T, W-units</text>
+<text x="190.0" y="126.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">Irem M72</text>
+<rect x="200.0" y="113.0" width="53.6" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="259.6" y="127.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">55.02</text>
+<text x="650.0" y="127.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">32 MHz, 512 x 284</text>
+<text x="190.0" y="156.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">Sega System 18</text>
+<rect x="200.0" y="143.0" width="169.6" height="20.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.45"/>
+<text x="363.6" y="157.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">57.23</text>
+<text x="650.0" y="157.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">measured</text>
+<text x="190.0" y="186.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">Data East DEC0</text>
+<rect x="200.0" y="173.0" width="180.6" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="374.6" y="187.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">57.44</text>
+<text x="650.0" y="187.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">384 x 272</text>
+<text x="190.0" y="216.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">Cave 68000</text>
+<rect x="200.0" y="203.0" width="186.4" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="380.4" y="217.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">57.55</text>
+<text x="650.0" y="217.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">set</text>
+<text x="190.0" y="246.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">Taito F3</text>
+<rect x="200.0" y="233.0" width="259.3" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="453.3" y="247.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">58.94</text>
+<text x="650.0" y="247.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">26.686 MHz / 4</text>
+<text x="190.0" y="276.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">6 MHz pixel clock</text>
+<rect x="200.0" y="263.0" width="272.5" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="466.5" y="277.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">59.19</text>
+<text x="650.0" y="277.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Neo Geo, TMNT, Bubble Bobble</text>
+<text x="190.0" y="306.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">8 MHz pixel clock</text>
+<rect x="200.0" y="293.0" width="296.1" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="490.1" y="307.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">59.64</text>
+<text x="650.0" y="307.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">CPS-1, CPS-2, X Board</text>
+<text x="190.0" y="336.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">Atari 456 x 262</text>
+<rect x="200.0" y="323.0" width="310.8" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="504.8" y="337.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">59.92</text>
+<text x="650.0" y="337.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">System 1, GT</text>
+<text x="190.0" y="366.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">18.432 MHz / 3</text>
+<rect x="200.0" y="353.0" width="347.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="541.0" y="367.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">60.61</text>
+<text x="650.0" y="367.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Namco, Donkey Kong</text>
+<text x="190.0" y="396.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">Vector</text>
+<rect x="200.0" y="383.0" width="393.8" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="587.8" y="397.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">61.5</text>
+<text x="650.0" y="397.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Asteroids</text>
+<text x="515.0" y="426.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#f59e0b" text-anchor="middle">60 Hz</text>
+<text x="200.0" y="426.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">54</text>
+<text x="305.0" y="426.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">56</text>
+<text x="410.0" y="426.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">58</text>
+<text x="620.0" y="426.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">62</text>
+</svg>

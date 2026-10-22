@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="An entity-component system: entities are ids, each component type keeps its own array, and each system walks one array in a fixed order">
+<title>An entity-component system: entities are ids, each component type keeps its own array, and each system walks one array in a fixed order</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">ENTITIES AND COMPONENTS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">An entity is an id. Each kind of component has its own array. Systems walk the arrays in order.</text>
+<rect x="40.0" y="90.0" width="130.0" height="38.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="105.0" y="114.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">#1 farmer</text>
+<rect x="40.0" y="140.0" width="130.0" height="38.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="105.0" y="164.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">#2 house</text>
+<rect x="40.0" y="190.0" width="130.0" height="38.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="105.0" y="214.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">#3 tree</text>
+<rect x="40.0" y="240.0" width="130.0" height="38.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="105.0" y="264.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">#4 cart</text>
+<text x="250.0" y="84.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Position</text>
+<rect x="250.0" y="92.0" width="130.0" height="28.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="260.0" y="111.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">entity #1</text>
+<rect x="250.0" y="126.0" width="130.0" height="28.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="260.0" y="145.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">entity #2</text>
+<rect x="250.0" y="160.0" width="130.0" height="28.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="260.0" y="179.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">entity #3</text>
+<rect x="250.0" y="194.0" width="130.0" height="28.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="260.0" y="213.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">entity #4</text>
+<text x="400.0" y="84.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Health</text>
+<rect x="400.0" y="92.0" width="130.0" height="28.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.3"/>
+<text x="410.0" y="111.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">entity #1</text>
+<rect x="400.0" y="126.0" width="130.0" height="28.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.3"/>
+<text x="410.0" y="145.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">entity #3</text>
+<text x="550.0" y="84.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Mover</text>
+<rect x="550.0" y="92.0" width="130.0" height="28.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="560.0" y="111.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">entity #1</text>
+<rect x="550.0" y="126.0" width="130.0" height="28.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="560.0" y="145.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">entity #4</text>
+<text x="700.0" y="84.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Storage</text>
+<rect x="700.0" y="92.0" width="130.0" height="28.0" rx="3" fill="#c084fc" stroke="none" fill-opacity="0.3"/>
+<text x="710.0" y="111.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">entity #2</text>
+<rect x="700.0" y="126.0" width="130.0" height="28.0" rx="3" fill="#c084fc" stroke="none" fill-opacity="0.3"/>
+<text x="710.0" y="145.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">entity #4</text>
+<text x="250.0" y="260.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">type id: often a hash of the name ("Position" -&gt; 0x8f3a...)</text>
+<text x="40.0" y="296.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Each frame: Mover system, then Health system, then Storage system, each from the first element to the last. Keep that order.</text>
+</svg>

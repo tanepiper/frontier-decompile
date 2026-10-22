@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="290" viewBox="0 0 900 290" role="img" aria-label="Switch emulators from the yuzu settlement in 2024 to the takedowns of 2026">
+<title>Switch emulators from the yuzu settlement in 2024 to the takedowns of 2026</title>
+<rect x="0.5" y="0.5" width="899" height="289" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">SWITCH EMULATORS SINCE 2024</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">These events come from secondary coverage in 2026. Pin an exact build and keep a local copy.</text>
+<path d="M60.0 220.0L840.0 220.0" stroke="#64748b" stroke-width="2" fill="none"/>
+<path d="M115.7 216.0L115.7 224.0" stroke="#64748b" stroke-width="1" fill="none"/>
+<text x="115.7" y="240.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">2024</text>
+<path d="M394.3 216.0L394.3 224.0" stroke="#64748b" stroke-width="1" fill="none"/>
+<text x="394.3" y="240.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">2025</text>
+<path d="M672.9 216.0L672.9 224.0" stroke="#64748b" stroke-width="1" fill="none"/>
+<text x="672.9" y="240.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">2026</text>
+<path d="M163.1 215.0L163.1 203.0" stroke="#f87171" stroke-width="1" fill="none"/>
+<circle cx="163.1" cy="220" r="4.5" fill="#f87171"/>
+<path d="M227.1 215.0L227.1 181.0" stroke="#60a5fa" stroke-width="1" fill="none"/>
+<circle cx="227.1" cy="220" r="4.5" fill="#60a5fa"/>
+<path d="M450.0 215.0L450.0 203.0" stroke="#60a5fa" stroke-width="1" fill="none"/>
+<circle cx="450.0" cy="220" r="4.5" fill="#60a5fa"/>
+<path d="M700.7 215.0L700.7 203.0" stroke="#f87171" stroke-width="1" fill="none"/>
+<circle cx="700.7" cy="220" r="4.5" fill="#f87171"/>
+<path d="M706.3 215.0L706.3 181.0" stroke="#f59e0b" stroke-width="1" fill="none"/>
+<circle cx="706.3" cy="220" r="4.5" fill="#f59e0b"/>
+<rect x="42.3" y="186.0" width="241.6" height="16" fill="#0d1b1e"/>
+<text x="163.1" y="198.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#e2ece9" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">March 2024: yuzu settles, Citra goes</text>
+<rect x="162.4" y="164.0" width="129.4" height="16" fill="#0d1b1e"/>
+<text x="227.1" y="176.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#e2ece9" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Suyu, an early fork</text>
+<rect x="339.1" y="186.0" width="221.8" height="16" fill="#0d1b1e"/>
+<text x="450.0" y="198.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#e2ece9" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Eden and Citron, the active forks</text>
+<rect x="593.1" y="186.0" width="215.2" height="16" fill="#0d1b1e"/>
+<text x="700.7" y="198.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#e2ece9" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">Feb 2026: Ryubing in maintenance</text>
+<rect x="598.7" y="164.0" width="215.2" height="16" fill="#0d1b1e"/>
+<text x="706.3" y="176.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#e2ece9" text-anchor="middle" stroke="#0d1b1e" stroke-width="4" paint-order="stroke">takedown notices to 13+ projects</text>
+<text x="60.0" y="274.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The 2024 to 2026 cases ended in settlements. No court ruling on console emulators is known from that period.</text>
+</svg>

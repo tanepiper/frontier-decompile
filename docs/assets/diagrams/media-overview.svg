@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="270" viewBox="0 0 900 270" role="img" aria-label="From what the game came on to the code. An image of the disc or disk gives the files. Each file is identified, and packed code is unpacked before Ghidra">
+<title>From what the game came on to the code. An image of the disc or disk gives the files. Each file is identified, and packed code is unpacked before Ghidra</title>
+<rect x="0.5" y="0.5" width="899" height="269" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">FROM THE MEDIA TO THE CODE</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Each step has its own tools. Record what each step found before you start the next one.</text>
+<rect x="24.0" y="92.0" width="200.0" height="60.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="124.0" y="119.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">disc or disk image</text>
+<text x="124.0" y="135.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">discinfo.py, mtools</text>
+<text x="124.0" y="176.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">tracks, file systems, dates</text>
+<path d="M226.0 122.0L238.0 122.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="240.0" y="92.0" width="200.0" height="60.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.25"/>
+<text x="340.0" y="119.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">the files</text>
+<text x="340.0" y="135.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">filetypes.py</text>
+<text x="340.0" y="176.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">kind, entropy, signatures</text>
+<path d="M442.0 122.0L454.0 122.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="456.0" y="92.0" width="200.0" height="60.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="556.0" y="119.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">each unknown file</text>
+<text x="556.0" y="135.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">binview, xorscan, similar</text>
+<text x="556.0" y="176.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">structure, obfuscation</text>
+<path d="M658.0 122.0L670.0 122.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="672.0" y="92.0" width="200.0" height="60.0" rx="4" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="772.0" y="119.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">the code</text>
+<text x="772.0" y="135.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">peinfo, dosinfo, unpacking</text>
+<text x="772.0" y="176.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">readable, ready for Ghidra</text>
+<rect x="24.0" y="200.0" width="852.0" height="40.0" rx="5" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<text x="40.0" y="225.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#e2ece9" text-anchor="start">Record the hash of every file and where the copy came from. Commit nothing from target/, analysis/ or derived/.</text>
+</svg>

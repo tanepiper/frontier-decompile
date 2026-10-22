@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="A fat Classic app keeps 68k CODE resources in the resource fork and a PowerPC PEF fragment in the data fork. A universal Mach-O file starts with 0xcafebabe and holds one Mach-O slice per CPU.">
+<title>A fat Classic app keeps 68k CODE resources in the resource fork and a PowerPC PEF fragment in the data fork. A universal Mach-O file starts with 0xcafebabe and holds one Mach-O slice per CPU.</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">MAC FILES THAT HOLD TWO BUILDS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Compare the two compiled versions of each function to check one against the other.</text>
+<rect x="24.0" y="80.0" width="410.0" height="200.0" rx="8" fill="#60a5fa" stroke="none" fill-opacity="0.1"/>
+<text x="40.0" y="106.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">fat Classic app</text>
+<rect x="40.0" y="120.0" width="180.0" height="120.0" rx="6" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="130.0" y="177.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">resource fork</text>
+<text x="130.0" y="193.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">68k CODE resources</text>
+<rect x="236.0" y="120.0" width="180.0" height="120.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="326.0" y="177.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">data fork</text>
+<text x="326.0" y="193.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">PowerPC PEF fragment</text>
+<text x="40.0" y="264.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">The Code Fragment Manager loads the PEF.</text>
+<rect x="466.0" y="80.0" width="410.0" height="200.0" rx="8" fill="#f59e0b" stroke="none" fill-opacity="0.1"/>
+<text x="482.0" y="106.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">universal Mach-O</text>
+<rect x="482.0" y="120.0" width="378.0" height="34.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="671.0" y="142.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">0xcafebabe: the fat header</text>
+<rect x="482.0" y="162.0" width="184.0" height="78.0" rx="6" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="574.0" y="198.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">slice 1</text>
+<text x="574.0" y="214.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">Mach-O 0xfeedfacf</text>
+<rect x="676.0" y="162.0" width="184.0" height="78.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.25"/>
+<text x="768.0" y="198.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">slice 2</text>
+<text x="768.0" y="214.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">Mach-O 0xfeedface/cf</text>
+<text x="482.0" y="264.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">0xfeedface is 32-bit Mach-O, 0xfeedfacf 64-bit.</text>
+<text x="24.0" y="310.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">A 32-bit build needs a Mac older than Catalina, or a VM. Rosetta 2 does not translate AVX instructions.</text>
+</svg>

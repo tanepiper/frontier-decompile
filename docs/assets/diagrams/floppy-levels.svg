@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="280" viewBox="0 0 900 280" role="img" aria-label="Three levels of floppy disk image: sectors in order, sectors with their layout, and the flux">
+<title>Three levels of floppy disk image: sectors in order, sectors with their layout, and the flux</title>
+<rect x="0.5" y="0.5" width="899" height="279" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">THREE LEVELS OF DISK IMAGE</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Each level keeps more of what was on the disk.</text>
+<rect x="24.0" y="78.0" width="320.0" height="52.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.18"/>
+<rect x="24.0" y="78.0" width="6.0" height="52.0" rx="2" fill="#2dd4bf" stroke="none"/>
+<text x="44.0" y="100.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">Sectors in order</text>
+<text x="44.0" y="118.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">.img .adf .st .dsk .d64</text>
+<text x="362.0" y="109.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#e2ece9" text-anchor="start">the data of each standard sector</text>
+<rect x="660.0" y="92.0" width="22.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.8"/>
+<rect x="686.0" y="92.0" width="22.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.8"/>
+<rect x="712.0" y="92.0" width="22.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.8"/>
+<rect x="738.0" y="92.0" width="22.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.8"/>
+<rect x="764.0" y="92.0" width="22.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.8"/>
+<rect x="790.0" y="92.0" width="22.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.8"/>
+<rect x="816.0" y="92.0" width="22.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.8"/>
+<rect x="842.0" y="92.0" width="22.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.8"/>
+<rect x="868.0" y="92.0" width="22.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.8"/>
+<rect x="24.0" y="142.0" width="320.0" height="52.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.18"/>
+<rect x="24.0" y="142.0" width="6.0" height="52.0" rx="2" fill="#f59e0b" stroke="none"/>
+<text x="44.0" y="164.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">Sectors with their layout</text>
+<text x="44.0" y="182.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">.imd .td0 .stx .g64</text>
+<text x="362.0" y="173.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#e2ece9" text-anchor="start">IDs, sizes, gaps and errors of every track</text>
+<rect x="660.0" y="156.0" width="18.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.8"/>
+<rect x="660.0" y="152.0" width="18.0" height="3.0" rx="1" fill="#c084fc" stroke="none"/>
+<rect x="684.0" y="156.0" width="18.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.8"/>
+<rect x="684.0" y="152.0" width="18.0" height="3.0" rx="1" fill="#c084fc" stroke="none"/>
+<rect x="708.0" y="156.0" width="30.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.8"/>
+<rect x="708.0" y="152.0" width="30.0" height="3.0" rx="1" fill="#c084fc" stroke="none"/>
+<rect x="744.0" y="156.0" width="18.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.8"/>
+<rect x="744.0" y="152.0" width="18.0" height="3.0" rx="1" fill="#c084fc" stroke="none"/>
+<rect x="768.0" y="156.0" width="12.0" height="24.0" rx="2" fill="#f87171" stroke="none" fill-opacity="0.8"/>
+<rect x="768.0" y="152.0" width="12.0" height="3.0" rx="1" fill="#c084fc" stroke="none"/>
+<rect x="786.0" y="156.0" width="18.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.8"/>
+<rect x="786.0" y="152.0" width="18.0" height="3.0" rx="1" fill="#c084fc" stroke="none"/>
+<rect x="810.0" y="156.0" width="18.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.8"/>
+<rect x="810.0" y="152.0" width="18.0" height="3.0" rx="1" fill="#c084fc" stroke="none"/>
+<rect x="834.0" y="156.0" width="24.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.8"/>
+<rect x="834.0" y="152.0" width="24.0" height="3.0" rx="1" fill="#c084fc" stroke="none"/>
+<rect x="24.0" y="206.0" width="320.0" height="52.0" rx="6" fill="#f87171" stroke="none" fill-opacity="0.18"/>
+<rect x="24.0" y="206.0" width="6.0" height="52.0" rx="2" fill="#f87171" stroke="none"/>
+<text x="44.0" y="228.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">Flux</text>
+<text x="44.0" y="246.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">KryoFlux, .scp, Greaseweazle, .ipf, .woz</text>
+<text x="362.0" y="237.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#e2ece9" text-anchor="start">the signal as the drive read it, with timing</text>
+<polyline points="660.0,232.0 662.0,240.6 664.0,242.7 666.0,236.7 668.0,227.1 670.0,221.2 672.0,223.5 674.0,232.2 676.0,240.7 678.0,242.7 680.0,236.5 682.0,227.0 684.0,221.2 686.0,223.6 688.0,232.4 690.0,240.8 692.0,242.6 694.0,233.3 696.0,226.8 698.0,221.2 700.0,223.7 702.0,232.6 704.0,241.0 706.0,242.6 708.0,236.2 710.0,226.6 712.0,221.1 714.0,223.9 716.0,232.7 718.0,241.1 720.0,242.5 722.0,236.0 724.0,226.5 726.0,221.1 728.0,229.6 730.0,232.9 732.0,241.2 734.0,242.5 736.0,235.8 738.0,226.3 740.0,221.1 742.0,224.1 744.0,233.1 746.0,241.3 748.0,242.4 750.0,235.7 752.0,226.2 754.0,221.1 756.0,224.2 758.0,233.3 760.0,241.4 762.0,235.1 764.0,235.5 766.0,226.0 768.0,221.0 770.0,224.4 772.0,233.5 774.0,241.5 776.0,242.3 778.0,235.3 780.0,225.9 782.0,221.0 784.0,224.5 786.0,233.7 788.0,241.5 790.0,242.2 792.0,235.1 794.0,225.7 796.0,228.7 798.0,224.6 800.0,233.8 802.0,241.6 804.0,242.1 806.0,235.0 808.0,225.6 810.0,221.0 812.0,224.8 814.0,234.0 816.0,241.7 818.0,242.1 820.0,234.8 822.0,225.4 824.0,221.0 826.0,224.9 828.0,234.2 830.0,234.9 832.0,242.0 834.0,234.6 836.0,225.3 838.0,221.0 840.0,225.1 842.0,234.4 844.0,241.9 846.0,241.9 848.0,234.4 850.0,225.1 852.0,221.0 854.0,225.2 856.0,234.6 858.0,242.0 860.0,241.8 862.0,234.3 864.0,229.9 866.0,221.0 868.0,225.4 870.0,234.7 872.0,242.1 874.0,241.7 876.0,234.1 878.0,224.8 880.0,221.0 882.0,225.5 884.0,234.9 886.0,242.1 888.0,241.7 890.0,233.9 892.0,224.7 894.0,221.0" fill="none" stroke="#f87171" stroke-width="1.6"/>
+</svg>

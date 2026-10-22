@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="380" viewBox="0 0 900 380" role="img" aria-label="From 2004 arcade boards are PCs. Taito Type X to X4 run Windows, Sega Lindbergh runs Linux, and Sega RingEdge, RingWide, Nu and ALLS run Windows Embedded. Namco ES1 and ES3 are also PCs. Each board is locked with a key.">
+<title>From 2004 arcade boards are PCs. Taito Type X to X4 run Windows, Sega Lindbergh runs Linux, and Sega RingEdge, RingWide, Nu and ALLS run Windows Embedded. Namco ES1 and ES3 are also PCs. Each board is locked with a key.</title>
+<rect x="0.5" y="0.5" width="899" height="379" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">PC-BASED BOARDS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">These boards are x86 PCs with custom I/O, a locked OS image and a hardware key. Ghidra handles the code once it is decrypted.</text>
+<text x="24.0" y="106.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Taito Type X</text>
+<text x="24.0" y="122.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">dongles</text>
+<path d="M200.0 102.0L860.0 102.0" stroke="#64748b" stroke-width="1" fill="none" stroke-opacity="0.4"/>
+<text x="860.0" y="120.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="end">later: Zero, X3, X4</text>
+<circle cx="200.0" cy="102" r="6" fill="#60a5fa"/>
+<text x="200.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#e2ece9" text-anchor="middle">X</text>
+<circle cx="332.0" cy="102" r="6" fill="#60a5fa"/>
+<text x="332.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#e2ece9" text-anchor="middle">X2 (SF IV)</text>
+<text x="24.0" y="156.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Sega Lindbergh</text>
+<text x="24.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">PIC keychip, AES-CBC</text>
+<path d="M200.0 152.0L860.0 152.0" stroke="#64748b" stroke-width="1" fill="none" stroke-opacity="0.4"/>
+<circle cx="233.0" cy="152" r="6" fill="#f59e0b"/>
+<text x="233.0" y="174.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#e2ece9" text-anchor="middle">red / yellow box</text>
+<text x="24.0" y="206.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Sega Ring</text>
+<text x="24.0" y="222.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">Ring keychip, AES-128</text>
+<path d="M200.0 202.0L860.0 202.0" stroke="#64748b" stroke-width="1" fill="none" stroke-opacity="0.4"/>
+<circle cx="365.0" cy="202" r="6" fill="#c084fc"/>
+<text x="365.0" y="224.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#e2ece9" text-anchor="middle">RingEdge</text>
+<circle cx="431.0" cy="202" r="6" fill="#c084fc"/>
+<text x="431.0" y="224.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#e2ece9" text-anchor="middle">RingWide</text>
+<text x="24.0" y="256.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Sega Nu, ALLS</text>
+<text x="24.0" y="272.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">keychips</text>
+<path d="M200.0 252.0L860.0 252.0" stroke="#64748b" stroke-width="1" fill="none" stroke-opacity="0.4"/>
+<circle cx="497.0" cy="252" r="6" fill="#2dd4bf"/>
+<text x="497.0" y="274.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#e2ece9" text-anchor="middle">Nu</text>
+<circle cx="662.0" cy="252" r="6" fill="#2dd4bf"/>
+<text x="662.0" y="274.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#e2ece9" text-anchor="middle">ALLS</text>
+<text x="24.0" y="306.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Namco ES1, ES3</text>
+<text x="24.0" y="322.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">HASP dongle, BitLocker</text>
+<path d="M200.0 302.0L860.0 302.0" stroke="#64748b" stroke-width="1" fill="none" stroke-opacity="0.4"/>
+<text x="860.0" y="320.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="end">no years on the page</text>
+<text x="200.0" y="352.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">2004</text>
+<text x="332.0" y="352.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">2008</text>
+<text x="464.0" y="352.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">2012</text>
+<text x="596.0" y="352.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">2016</text>
+<text x="728.0" y="352.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">2020</text>
+<text x="860.0" y="352.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">2024</text>
+<text x="860.0" y="372.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="end">Only the years the page gives are marked.</text>
+</svg>

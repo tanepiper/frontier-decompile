@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="280" viewBox="0 0 900 280" role="img" aria-label="The PSP and PS Vita executables and the Ghidra extension for each">
+<title>The PSP and PS Vita executables and the Ghidra extension for each</title>
+<rect x="0.5" y="0.5" width="899" height="279" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">PSP AND PS VITA EXECUTABLES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The executables of both are signed and encrypted. After decryption, each needs a Ghidra extension.</text>
+<text x="40.0" y="130.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">PSP</text>
+<rect x="130.0" y="96.0" width="260.0" height="56.0" rx="5" fill="#f87171" stroke="#f87171" fill-opacity="0.15" stroke-opacity="0.65"/>
+<text x="260.0" y="127.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">EBOOT.BIN, PRX: "~PSP" encrypted</text>
+<path d="M392.0 124.0L426.0 124.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="430.0" y="96.0" width="170.0" height="56.0" rx="5" fill="#60a5fa" stroke="#60a5fa" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="515.0" y="127.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">MIPS32 + VFPU ELF</text>
+<path d="M602.0 124.0L636.0 124.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="640.0" y="96.0" width="220.0" height="56.0" rx="5" fill="#4ade80" stroke="#4ade80" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="750.0" y="119.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">ghidra-allegrex</text>
+<text x="750.0" y="136.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">run in PPSSPP</text>
+<text x="40.0" y="206.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">PS Vita</text>
+<rect x="130.0" y="172.0" width="260.0" height="56.0" rx="5" fill="#f87171" stroke="#f87171" fill-opacity="0.15" stroke-opacity="0.65"/>
+<text x="260.0" y="203.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">SELF, SUPRX modules</text>
+<path d="M392.0 200.0L426.0 200.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="430.0" y="172.0" width="170.0" height="56.0" rx="5" fill="#60a5fa" stroke="#60a5fa" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="515.0" y="203.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">ARM ELF (Cortex-A9)</text>
+<path d="M602.0 200.0L636.0 200.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="640.0" y="172.0" width="220.0" height="56.0" rx="5" fill="#4ade80" stroke="#4ade80" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="750.0" y="195.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">VitaLoaderRedux</text>
+<text x="750.0" y="212.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">run in Vita3K</text>
+<text x="40.0" y="264.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">splat supports PSP binaries. Capstone has no Allegrex mode.</text>
+</svg>

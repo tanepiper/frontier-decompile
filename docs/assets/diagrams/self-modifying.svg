@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="Self-modifying code: before an inner loop runs, the game writes a value into the immediate operand of an instruction in the loop">
+<title>Self-modifying code: before an inner loop runs, the game writes a value into the immediate operand of an instruction in the loop</title>
+<rect x="0.5" y="0.5" width="899" height="299" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">CODE THAT CHANGES ITSELF</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Before the loop runs, the game writes the texture width into the loop's own instruction.</text>
+<text x="40.0" y="98.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">the loop as Ghidra shows it</text>
+<text x="40.0" y="124.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" font-weight="400" fill="#e2ece9" text-anchor="start">add esi, 0x12345678</text>
+<text x="40.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">81 C6 78 56 34 12</text>
+<text x="40.0" y="192.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">the setup code</text>
+<text x="40.0" y="218.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#f59e0b" text-anchor="start">mov dword [loop + 2], ecx    ; ecx = width</text>
+<text x="470.0" y="94.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">the instruction's bytes in memory</text>
+<rect x="470.0" y="104.0" width="56.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.2"/>
+<text x="498.0" y="130.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" font-weight="600" fill="#8fa9a5" text-anchor="middle">81</text>
+<rect x="532.0" y="104.0" width="56.0" height="40.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.2"/>
+<text x="560.0" y="130.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" font-weight="600" fill="#8fa9a5" text-anchor="middle">C6</text>
+<rect x="594.0" y="104.0" width="56.0" height="40.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="622" y="130" font-family="ui-monospace, Menlo, monospace" font-size="15" font-weight="600" fill="#e2ece9" text-anchor="middle">78<animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.4;0.45;1" dur="5s" repeatCount="indefinite"/></text>
+<text x="622" y="130" font-family="ui-monospace, Menlo, monospace" font-size="15" font-weight="600" fill="#f59e0b" text-anchor="middle" opacity="0">40<animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.4;0.45;1" dur="5s" repeatCount="indefinite"/></text>
+<rect x="656.0" y="104.0" width="56.0" height="40.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="684" y="130" font-family="ui-monospace, Menlo, monospace" font-size="15" font-weight="600" fill="#e2ece9" text-anchor="middle">56<animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.4;0.45;1" dur="5s" repeatCount="indefinite"/></text>
+<text x="684" y="130" font-family="ui-monospace, Menlo, monospace" font-size="15" font-weight="600" fill="#f59e0b" text-anchor="middle" opacity="0">01<animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.4;0.45;1" dur="5s" repeatCount="indefinite"/></text>
+<rect x="718.0" y="104.0" width="56.0" height="40.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="746" y="130" font-family="ui-monospace, Menlo, monospace" font-size="15" font-weight="600" fill="#e2ece9" text-anchor="middle">34<animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.4;0.45;1" dur="5s" repeatCount="indefinite"/></text>
+<text x="746" y="130" font-family="ui-monospace, Menlo, monospace" font-size="15" font-weight="600" fill="#f59e0b" text-anchor="middle" opacity="0">00<animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.4;0.45;1" dur="5s" repeatCount="indefinite"/></text>
+<rect x="780.0" y="104.0" width="56.0" height="40.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="808" y="130" font-family="ui-monospace, Menlo, monospace" font-size="15" font-weight="600" fill="#e2ece9" text-anchor="middle">12<animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.4;0.45;1" dur="5s" repeatCount="indefinite"/></text>
+<text x="808" y="130" font-family="ui-monospace, Menlo, monospace" font-size="15" font-weight="600" fill="#f59e0b" text-anchor="middle" opacity="0">00<animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.4;0.45;1" dur="5s" repeatCount="indefinite"/></text>
+<text x="470.0" y="168.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">opcode and register</text>
+<text x="714.0" y="168.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#f59e0b" text-anchor="middle">the 32-bit immediate</text>
+<g opacity="0"><text x="470" y="204" font-family="ui-monospace, Menlo, monospace" font-size="15" fill="#e2ece9">add esi, 0x140   ; 320</text><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;0.45;0.5;1" dur="5s" repeatCount="indefinite"/></g>
+<text x="40.0" y="280.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Find stores whose target is a code address. In the port, the patched value is an ordinary variable.</text>
+</svg>

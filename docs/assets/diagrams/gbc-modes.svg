@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="The header byte at 0143 picks the Game Boy Color mode. Double speed doubles the clock">
+<title>The header byte at 0143 picks the Game Boy Color mode. Double speed doubles the clock</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">GAME BOY COLOR MODES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The boot ROM reads $0143 and sets the mode before the game starts.</text>
+<rect x="40.0" y="90.0" width="90.0" height="40.0" rx="5" fill="#f59e0b" stroke="#f59e0b" fill-opacity="0.3" stroke-opacity="0.65"/>
+<text x="85.0" y="114.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">$80</text>
+<path d="M132.0 110.0L172.0 110.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="176.0" y="90.0" width="260.0" height="40.0" rx="5" fill="#2dd4bf" stroke="#2dd4bf" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="306.0" y="114.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">supports both systems</text>
+<text x="452.0" y="115.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">black "dual mode" cartridge</text>
+<rect x="40.0" y="140.0" width="90.0" height="40.0" rx="5" fill="#f59e0b" stroke="#f59e0b" fill-opacity="0.3" stroke-opacity="0.65"/>
+<text x="85.0" y="164.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">$C0</text>
+<path d="M132.0 160.0L172.0 160.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="176.0" y="140.0" width="260.0" height="40.0" rx="5" fill="#60a5fa" stroke="#60a5fa" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="306.0" y="164.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">CGB only</text>
+<text x="452.0" y="165.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">clear cartridge</text>
+<rect x="40.0" y="190.0" width="90.0" height="40.0" rx="5" fill="#f59e0b" stroke="#f59e0b" fill-opacity="0.3" stroke-opacity="0.65"/>
+<text x="85.0" y="214.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">other</text>
+<path d="M132.0 210.0L172.0 210.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="176.0" y="190.0" width="260.0" height="40.0" rx="5" fill="#64748b" stroke="#64748b" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="306.0" y="214.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">monochrome "Non CGB" mode</text>
+<text x="452.0" y="215.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">grey DMG cartridge</text>
+<text x="40.0" y="266.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">Speed</text>
+<rect x="120.0" y="250.0" width="218.0" height="26.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="229.0" y="267.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">normal: 4.194304 MHz</text>
+<rect x="120.0" y="282.0" width="438.0" height="26.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="339.0" y="299.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">double: 8.388608 MHz</text>
+<text x="580.0" y="270.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">A port of a dual-mode game needs both of</text>
+<text x="580.0" y="287.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">its code paths.</text>
+</svg>

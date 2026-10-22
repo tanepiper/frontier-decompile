@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" role="img" aria-label="On the MSX the Z80's 64 KB is four 16 KB pages. Port A8h picks which of four primary slots each page comes from. A cartridge game is switched in this way.">
+<title>On the MSX the Z80's 64 KB is four 16 KB pages. Port A8h picks which of four primary slots each page comes from. A cartridge game is switched in this way.</title>
+<rect x="0.5" y="0.5" width="899" height="429" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">MSX PAGES AND SLOTS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Port A8h has 2 bits per page. Each 16 KB page can come from any of the four primary slots.</text>
+<text x="225.0" y="88.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">slot 0</text>
+<text x="225.0" y="102.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">BIOS and BASIC ROM</text>
+<text x="375.0" y="88.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">slot 1</text>
+<text x="375.0" y="102.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">cartridge</text>
+<text x="525.0" y="88.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">slot 2</text>
+<text x="525.0" y="102.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">cartridge</text>
+<text x="675.0" y="88.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">slot 3</text>
+<text x="675.0" y="102.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">RAM</text>
+<text x="138.0" y="141.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">page 0</text>
+<text x="138.0" y="155.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#8fa9a5" text-anchor="end">0000-3FFF</text>
+<rect x="154.0" y="114.0" width="142.0" height="44.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.12"/>
+<rect x="304.0" y="114.0" width="142.0" height="44.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.12"/>
+<rect x="454.0" y="114.0" width="142.0" height="44.0" rx="3" fill="#c084fc" stroke="none" fill-opacity="0.12"/>
+<rect x="604.0" y="114.0" width="142.0" height="44.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.12"/>
+<text x="138.0" y="193.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">page 1</text>
+<text x="138.0" y="207.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#8fa9a5" text-anchor="end">4000-7FFF</text>
+<rect x="154.0" y="166.0" width="142.0" height="44.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.12"/>
+<rect x="304.0" y="166.0" width="142.0" height="44.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.12"/>
+<rect x="454.0" y="166.0" width="142.0" height="44.0" rx="3" fill="#c084fc" stroke="none" fill-opacity="0.12"/>
+<rect x="604.0" y="166.0" width="142.0" height="44.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.12"/>
+<text x="138.0" y="245.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">page 2</text>
+<text x="138.0" y="259.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#8fa9a5" text-anchor="end">8000-BFFF</text>
+<rect x="154.0" y="218.0" width="142.0" height="44.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.12"/>
+<rect x="304.0" y="218.0" width="142.0" height="44.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.12"/>
+<rect x="454.0" y="218.0" width="142.0" height="44.0" rx="3" fill="#c084fc" stroke="none" fill-opacity="0.12"/>
+<rect x="604.0" y="218.0" width="142.0" height="44.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.12"/>
+<text x="138.0" y="297.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="end">page 3</text>
+<text x="138.0" y="311.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#8fa9a5" text-anchor="end">C000-FFFF</text>
+<rect x="154.0" y="270.0" width="142.0" height="44.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.12"/>
+<rect x="304.0" y="270.0" width="142.0" height="44.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.12"/>
+<rect x="454.0" y="270.0" width="142.0" height="44.0" rx="3" fill="#c084fc" stroke="none" fill-opacity="0.12"/>
+<rect x="604.0" y="270.0" width="142.0" height="44.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.12"/>
+<g opacity="1"><rect x="154.0" y="114.0" width="142.0" height="44.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.75"/>
+<rect x="154.0" y="166.0" width="142.0" height="44.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.75"/>
+<rect x="604.0" y="218.0" width="142.0" height="44.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.75"/>
+<rect x="604.0" y="270.0" width="142.0" height="44.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.75"/>
+<text x="150.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="600" fill="#f59e0b" text-anchor="start">A8h = F0h</text>
+<text x="300.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">p3: 11</text>
+<text x="370.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">p2: 11</text>
+<text x="440.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">p1: 00</text>
+<text x="510.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">p0: 00</text>
+<text x="150.0" y="372.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">BASIC: ROM in pages 0 and 1, RAM above</text><animate attributeName="opacity" values="1;0" keyTimes="0.0000;0.3333" dur="7.5s" calcMode="discrete" repeatCount="indefinite"/></g>
+<g opacity="0"><rect x="154.0" y="114.0" width="142.0" height="44.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.75"/>
+<rect x="304.0" y="166.0" width="142.0" height="44.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.75"/>
+<rect x="604.0" y="218.0" width="142.0" height="44.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.75"/>
+<rect x="604.0" y="270.0" width="142.0" height="44.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.75"/>
+<text x="150.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="600" fill="#f59e0b" text-anchor="start">A8h = F4h</text>
+<text x="300.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">p3: 11</text>
+<text x="370.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">p2: 11</text>
+<text x="440.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">p1: 01</text>
+<text x="510.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">p0: 00</text>
+<text x="150.0" y="372.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">a 16 KB cartridge in slot 1 at 4000h</text><animate attributeName="opacity" values="0;1;0" keyTimes="0.0000;0.3333;0.6667" dur="7.5s" calcMode="discrete" repeatCount="indefinite"/></g>
+<g opacity="0"><rect x="154.0" y="114.0" width="142.0" height="44.0" rx="3" fill="#64748b" stroke="none" fill-opacity="0.75"/>
+<rect x="454.0" y="166.0" width="142.0" height="44.0" rx="3" fill="#c084fc" stroke="none" fill-opacity="0.75"/>
+<rect x="604.0" y="218.0" width="142.0" height="44.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.75"/>
+<rect x="604.0" y="270.0" width="142.0" height="44.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.75"/>
+<text x="150.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="600" fill="#f59e0b" text-anchor="start">A8h = F8h</text>
+<text x="300.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">p3: 11</text>
+<text x="370.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">p2: 11</text>
+<text x="440.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">p1: 10</text>
+<text x="510.0" y="348.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">p0: 00</text>
+<text x="150.0" y="372.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">the same with the cartridge in slot 2</text><animate attributeName="opacity" values="0;1" keyTimes="0.0000;0.6667" dur="7.5s" calcMode="discrete" repeatCount="indefinite"/></g>
+<text x="150.0" y="414.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">This is a typical layout, and machines differ. Subslots are chosen through the register at FFFFh.</text>
+</svg>

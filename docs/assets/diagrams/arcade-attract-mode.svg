@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="266" viewBox="0 0 900 266" role="img" aria-label="Attract mode depends on the random state and on NVRAM, so start the original and the port from the same NVRAM image and power-on state. Released source keeps attract mode, audits, adjustments and diagnostics as separate modules.">
+<title>Attract mode depends on the random state and on NVRAM, so start the original and the port from the same NVRAM image and power-on state. Released source keeps attract mode, audits, adjustments and diagnostics as separate modules.</title>
+<rect x="0.5" y="0.5" width="899" height="265" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">ATTRACT MODE AND THE OTHER MODULES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Released source keeps attract mode, audits, adjustments and diagnostics apart. Rebuild all of them.</text>
+<rect x="24.0" y="90.0" width="200.0" height="56.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.25"/>
+<text x="124.0" y="115.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">attract</text>
+<text x="124.0" y="131.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">ATTRACT.ASM</text>
+<rect x="238.0" y="90.0" width="200.0" height="56.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="338.0" y="115.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">audits</text>
+<text x="338.0" y="131.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">AUDIT.ASM</text>
+<rect x="452.0" y="90.0" width="200.0" height="56.0" rx="6" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="552.0" y="115.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">adjustments</text>
+<text x="552.0" y="131.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">ADJUST.ASM</text>
+<rect x="666.0" y="90.0" width="200.0" height="56.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="766.0" y="115.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">diagnostics</text>
+<text x="766.0" y="131.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">DIAG.ASM</text>
+<text x="24.0" y="176.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">These file names are from NBA Jam's source. Smash TV's has DEMO.ASM and HSTD.ASM for the high-score table.</text>
+<text x="24.0" y="216.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">A demo plays from recorded inputs or scripted AI. What it shows depends on the random state and on NVRAM.</text>
+<text x="24.0" y="234.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">To compare a port's attract mode with the original, start both from the same NVRAM image and power-on state.</text>
+</svg>

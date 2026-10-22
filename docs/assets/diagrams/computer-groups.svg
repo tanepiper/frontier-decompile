@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="The machines fall into four groups. The first step is to get past the loader, to learn the custom chips, to identify the executable format, or to read the console guides.">
+<title>The machines fall into four groups. The first step is to get past the loader, to learn the custom chips, to identify the executable format, or to read the console guides.</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">FOUR GROUPS OF MACHINES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Each group starts with a different first step.</text>
+<rect x="24.0" y="80.0" width="202.0" height="108.0" rx="8" fill="#2dd4bf" stroke="none" fill-opacity="0.16"/>
+<text x="38.0" y="106.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">8-bit home computers</text>
+<text x="38.0" y="130.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Sinclair, Acorn, Commodore,</text>
+<text x="38.0" y="146.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Amstrad, MSX, Atari, Apple II</text>
+<path d="M125.0 192.0L125.0 222.0" stroke="#2dd4bf" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="24.0" y="226.0" width="202.0" height="62.0" rx="8" fill="#2dd4bf" stroke="none" fill-opacity="0.32"/>
+<text x="38.0" y="250.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Get past the loader.</text>
+<text x="38.0" y="268.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Then learn the frame timing.</text>
+<rect x="240.0" y="80.0" width="202.0" height="108.0" rx="8" fill="#60a5fa" stroke="none" fill-opacity="0.16"/>
+<text x="254.0" y="106.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">16 and 32-bit computers</text>
+<text x="254.0" y="130.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Amiga, Atari ST, Archimedes,</text>
+<text x="254.0" y="146.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">X68000, PC-98, FM Towns</text>
+<path d="M341.0 192.0L341.0 222.0" stroke="#60a5fa" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="240.0" y="226.0" width="202.0" height="62.0" rx="8" fill="#60a5fa" stroke="none" fill-opacity="0.32"/>
+<text x="254.0" y="250.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Learn the custom chips.</text>
+<text x="254.0" y="268.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Many games bypass the OS.</text>
+<rect x="456.0" y="80.0" width="202.0" height="108.0" rx="8" fill="#f59e0b" stroke="none" fill-opacity="0.16"/>
+<text x="470.0" y="106.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">The PC and the Mac</text>
+<text x="470.0" y="130.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">DOS, Windows, 68k, PowerPC,</text>
+<text x="470.0" y="146.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Intel and ARM Macs, engines</text>
+<path d="M557.0 192.0L557.0 222.0" stroke="#f59e0b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="456.0" y="226.0" width="202.0" height="62.0" rx="8" fill="#f59e0b" stroke="none" fill-opacity="0.32"/>
+<text x="470.0" y="250.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Identify the executable format.</text>
+<text x="470.0" y="268.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">The tools depend on it.</text>
+<rect x="672.0" y="80.0" width="202.0" height="108.0" rx="8" fill="#64748b" stroke="none" fill-opacity="0.16"/>
+<text x="686.0" y="106.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">Consoles</text>
+<text x="686.0" y="130.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">The console guides</text>
+<text x="686.0" y="146.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">cover these machines</text>
+<path d="M773.0 192.0L773.0 222.0" stroke="#64748b" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="672.0" y="226.0" width="202.0" height="62.0" rx="8" fill="#64748b" stroke="none" fill-opacity="0.32"/>
+<text x="686.0" y="250.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">See Console games.</text>
+<text x="686.0" y="268.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start"></text>
+<text x="24.0" y="314.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">First step</text>
+</svg>

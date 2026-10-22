@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="What each disc image format keeps of the user data, sector headers, audio tracks, Form 2 sectors and subchannels, for .iso, .cue and .bin, CloneCD, Alcohol 120% and CHD images">
+<title>What each disc image format keeps of the user data, sector headers, audio tracks, Form 2 sectors and subchannels, for .iso, .cue and .bin, CloneCD, Alcohol 120% and CHD images</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">WHAT EACH DISC IMAGE FORMAT KEEPS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Work from a raw image when the disc has audio or Mode 2 data.</text>
+<text x="310.0" y="96.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">2048 data bytes</text>
+<text x="436.0" y="96.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">sector headers</text>
+<text x="562.0" y="96.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">audio tracks</text>
+<text x="688.0" y="96.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">Form 2 sectors</text>
+<text x="814.0" y="96.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">subchannels</text>
+<rect x="24.0" y="108.0" width="852.0" height="32.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.08"/>
+<text x="40.0" y="129.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">.iso</text>
+<rect x="270.0" y="114.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="310.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="396.0" y="114.0" width="80.0" height="20.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.2"/>
+<text x="436.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">lost</text>
+<rect x="522.0" y="114.0" width="80.0" height="20.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.2"/>
+<text x="562.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">lost</text>
+<rect x="648.0" y="114.0" width="80.0" height="20.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.2"/>
+<text x="688.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">lost</text>
+<rect x="774.0" y="114.0" width="80.0" height="20.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.2"/>
+<text x="814.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">lost</text>
+<rect x="24.0" y="146.0" width="852.0" height="32.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.08"/>
+<text x="40.0" y="167.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">.cue + .bin</text>
+<rect x="270.0" y="152.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="310.0" y="166.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="396.0" y="152.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="436.0" y="166.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="522.0" y="152.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="562.0" y="166.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="648.0" y="152.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="688.0" y="166.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="774.0" y="152.0" width="80.0" height="20.0" rx="3" fill="#f87171" stroke="none" fill-opacity="0.2"/>
+<text x="814.0" y="166.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">lost</text>
+<rect x="24.0" y="184.0" width="852.0" height="32.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.08"/>
+<text x="40.0" y="205.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">.ccd .img .sub</text>
+<rect x="270.0" y="190.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="310.0" y="204.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="396.0" y="190.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="436.0" y="204.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="522.0" y="190.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="562.0" y="204.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="648.0" y="190.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="688.0" y="204.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="774.0" y="190.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="814.0" y="204.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="24.0" y="222.0" width="852.0" height="32.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.08"/>
+<text x="40.0" y="243.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">.mds + .mdf</text>
+<rect x="270.0" y="228.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="310.0" y="242.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="396.0" y="228.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="436.0" y="242.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="522.0" y="228.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="562.0" y="242.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="648.0" y="228.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="688.0" y="242.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="774.0" y="228.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="814.0" y="242.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">often</text>
+<rect x="24.0" y="260.0" width="852.0" height="32.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.08"/>
+<text x="40.0" y="281.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">.chd</text>
+<rect x="270.0" y="266.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="310.0" y="280.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="396.0" y="266.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="436.0" y="280.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="522.0" y="266.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="562.0" y="280.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="648.0" y="266.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="688.0" y="280.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">kept</text>
+<rect x="774.0" y="266.0" width="80.0" height="20.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.2"/>
+<text x="814.0" y="280.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#e2ece9" text-anchor="middle">often</text>
+<text x="24.0" y="316.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">Some protections read the subchannel (LibCrypt on PAL PlayStation discs). Keep the .sub file or Redump's SBI data.</text>
+</svg>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="The versions of one game: a demo, the release, patches, a regional release and a re-release; the port chooses one and records it">
+<title>The versions of one game: a demo, the release, patches, a regional release and a re-release; the port chooses one and records it</title>
+<rect x="0.5" y="0.5" width="899" height="299" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">THE VERSIONS OF ONE GAME</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Choose the version the port copies. Use the others as evidence.</text>
+<path d="M182.0 185.0L228.0 135.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M352.0 135.0L398.0 135.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M522.0 135.0L568.0 135.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M290.0 162.0L398.0 235.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M692.0 135.0L738.0 135.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="60.0" y="160.0" width="120.0" height="50.0" rx="6" fill="#64748b" stroke="none" fill-opacity="0.28"/>
+<text x="120.0" y="183.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">demo</text>
+<text x="120.0" y="200.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">symbols left in</text>
+<rect x="230.0" y="110.0" width="120.0" height="50.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="290.0" y="133.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">1.0</text>
+<text x="290.0" y="150.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">first release</text>
+<rect x="400.0" y="110.0" width="120.0" height="50.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="460.0" y="133.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">1.01</text>
+<text x="460.0" y="150.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">patch</text>
+<rect x="570.0" y="110.0" width="120.0" height="50.0" rx="6" fill="#4ade80" stroke="none" fill-opacity="0.28"/>
+<text x="630.0" y="133.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">1.02</text>
+<text x="630.0" y="150.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">last patch</text>
+<rect x="400.0" y="210.0" width="120.0" height="50.0" rx="6" fill="#c084fc" stroke="none" fill-opacity="0.28"/>
+<text x="460.0" y="233.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">1.0 (Japan)</text>
+<text x="460.0" y="250.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">regional</text>
+<rect x="740.0" y="110.0" width="120.0" height="50.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.28"/>
+<text x="800.0" y="133.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">GOG / Steam</text>
+<text x="800.0" y="150.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">re-release</text>
+<text x="570.0" y="186.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#4ade80" text-anchor="middle">the port follows this one</text>
+<text x="40.0" y="284.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">A patch note names a changed rule. Comparing the two builds finds the function that changed.</text>
+</svg>

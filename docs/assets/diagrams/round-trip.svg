@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="280" viewBox="0 0 900 280" role="img" aria-label="A writer proved by a round trip: read every file, write it back, compare the bytes; each difference is a field the writer loses">
+<title>A writer proved by a round trip: read every file, write it back, compare the bytes; each difference is a field the writer loses</title>
+<rect x="0.5" y="0.5" width="899" height="279" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">A ROUND TRIP TEST</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Read every file, write it back, compare. Any difference is a field the writer loses.</text>
+<rect x="30.0" y="100.0" width="180.0" height="60.0" rx="6" fill="#64748b" stroke="none" fill-opacity="0.28"/>
+<text x="120.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">original file</text>
+<text x="120.0" y="145.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">from the game</text>
+<path d="M212.0 130.0L248.0 130.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="250.0" y="100.0" width="180.0" height="60.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.28"/>
+<text x="340.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">read</text>
+<text x="340.0" y="145.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">the port's reader</text>
+<path d="M432.0 130.0L468.0 130.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="470.0" y="100.0" width="180.0" height="60.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.28"/>
+<text x="560.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">write</text>
+<text x="560.0" y="145.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">the port's writer</text>
+<path d="M652.0 130.0L688.0 130.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="690.0" y="100.0" width="180.0" height="60.0" rx="6" fill="#4ade80" stroke="none" fill-opacity="0.28"/>
+<text x="780.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">compare</text>
+<text x="780.0" y="145.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">byte by byte</text>
+<text x="40.0" y="210.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#f87171" text-anchor="start">byte 0x1c: 00 vs 7f  -&gt; an unknown flag the reader dropped</text>
+<text x="40.0" y="232.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Then load the written file in the original, where that is possible.</text>
+</svg>

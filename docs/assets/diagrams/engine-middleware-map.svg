@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="430" viewBox="0 0 900 430" role="img" aria-label="Middleware libraries around a game for video, sound, physics, animation, scripting, compression, online play and protection, with the signs of each and how the port treats it">
+<title>Middleware libraries around a game for video, sound, physics, animation, scripting, compression, online play and protection, with the signs of each and how the port treats it</title>
+<rect x="0.5" y="0.5" width="899" height="429" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">MIDDLEWARE LIBRARIES AROUND A GAME</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Identify each library, label it and replace it. A few libraries need their exact behaviour in the port.</text>
+<rect x="350.0" y="170.0" width="200.0" height="70.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.3"/>
+<text x="450.0" y="202.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">game.exe</text>
+<text x="450.0" y="218.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">the game and its engine</text>
+<rect x="24.0" y="84.0" width="250.0" height="62.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.16"/>
+<text x="34.0" y="103.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Video</text>
+<text x="34.0" y="120.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">Smacker, Bink</text>
+<text x="34.0" y="136.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">SMK2, BIK, binkw32.dll</text>
+<rect x="24.0" y="170.0" width="250.0" height="62.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.16"/>
+<text x="34.0" y="189.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Sound</text>
+<text x="34.0" y="206.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">Miles, FMOD, DIGPAK</text>
+<text x="34.0" y="222.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">mss32.dll, fmod.dll</text>
+<rect x="24.0" y="256.0" width="250.0" height="62.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.16"/>
+<text x="34.0" y="275.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Animation</text>
+<text x="34.0" y="292.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">Granny 3D</text>
+<text x="34.0" y="308.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">.gr2, granny2.dll</text>
+<rect x="626.0" y="84.0" width="250.0" height="62.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.16"/>
+<text x="636.0" y="103.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Physics</text>
+<text x="636.0" y="120.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">Havok, PhysX</text>
+<text x="636.0" y="136.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">hk prefixes in RTTI</text>
+<rect x="626.0" y="170.0" width="250.0" height="62.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.16"/>
+<text x="636.0" y="189.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Scripting</text>
+<text x="636.0" y="206.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">Lua, Python</text>
+<text x="636.0" y="222.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">lua_pcall, "Lua 5.0"</text>
+<rect x="626.0" y="256.0" width="250.0" height="62.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.16"/>
+<text x="636.0" y="275.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Compression</text>
+<text x="636.0" y="292.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">zlib, LZSS, implode</text>
+<text x="636.0" y="308.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">CRC table 0x77073096</text>
+<rect x="252.0" y="336.0" width="178.0" height="62.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.16"/>
+<text x="262.0" y="355.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Online</text>
+<text x="262.0" y="372.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">GameSpy, DirectPlay</text>
+<text x="262.0" y="388.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">dplayx.dll</text>
+<rect x="470.0" y="336.0" width="178.0" height="62.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.16"/>
+<text x="480.0" y="355.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Protection</text>
+<text x="480.0" y="372.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">SafeDisc, SecuROM</text>
+<text x="480.0" y="388.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">secdrv.sys, .icd</text>
+<path d="M276.0 115.0L348.0 205.0" stroke="#8fa9a5" stroke-width="1" fill="none" opacity="0.5"/>
+<path d="M276.0 201.0L348.0 205.0" stroke="#8fa9a5" stroke-width="1" fill="none" opacity="0.5"/>
+<path d="M276.0 270.0L348.0 205.0" stroke="#8fa9a5" stroke-width="1" fill="none" opacity="0.5"/>
+<path d="M624.0 115.0L552.0 205.0" stroke="#8fa9a5" stroke-width="1" fill="none" opacity="0.5"/>
+<path d="M624.0 201.0L552.0 205.0" stroke="#8fa9a5" stroke-width="1" fill="none" opacity="0.5"/>
+<path d="M624.0 270.0L552.0 205.0" stroke="#8fa9a5" stroke-width="1" fill="none" opacity="0.5"/>
+<path d="M340.0 336.0L420.0 242.0" stroke="#8fa9a5" stroke-width="1" fill="none" opacity="0.5"/>
+<path d="M560.0 336.0L480.0 242.0" stroke="#8fa9a5" stroke-width="1" fill="none" opacity="0.5"/>
+<rect x="24.0" y="410.0" width="12.0" height="12.0" rx="2" fill="#60a5fa" stroke="none" fill-opacity="0.6"/>
+<text x="42.0" y="420.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">replace with a library that does the same job</text>
+<rect x="329.0" y="410.0" width="12.0" height="12.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.6"/>
+<text x="347.0" y="420.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">may set game results, so check before replacing</text>
+<rect x="646.4" y="410.0" width="12.0" height="12.0" rx="2" fill="#64748b" stroke="none" fill-opacity="0.6"/>
+<text x="664.4" y="420.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">leave out of the port</text>
+</svg>

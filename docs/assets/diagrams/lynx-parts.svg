@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="280" viewBox="0 0 900 280" role="img" aria-label="The Lynx chips Mikey and Suzy, and the boot ROM that decrypts the loader">
+<title>The Lynx chips Mikey and Suzy, and the boot ROM that decrypts the loader</title>
+<rect x="0.5" y="0.5" width="899" height="279" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">ATARI LYNX CHIPS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The CPU sits inside the Mikey chip. The Suzy chip draws sprites and does maths.</text>
+<rect x="40.0" y="90.0" width="240.0" height="80.0" rx="5" fill="#60a5fa" stroke="#60a5fa" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="160.0" y="118.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Mikey</text>
+<text x="160.0" y="136.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">65SC02 at 4 MHz</text>
+<text x="160.0" y="151.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">timers, sound, display</text>
+<rect x="320.0" y="90.0" width="240.0" height="80.0" rx="5" fill="#c084fc" stroke="#c084fc" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="440.0" y="118.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Suzy</text>
+<text x="440.0" y="136.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">blitter: scaled sprites</text>
+<text x="440.0" y="151.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">maths unit</text>
+<path d="M282.0 130.0L318.0 130.0" stroke="#8fa9a5" stroke-width="1.5" fill="none"/>
+<rect x="40.0" y="196.0" width="160.0" height="56.0" rx="5" fill="#64748b" stroke="#64748b" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="120.0" y="219.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Cartridge</text>
+<text x="120.0" y="237.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">encrypted loader</text>
+<path d="M202.0 224.0L246.0 224.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="250.0" y="196.0" width="160.0" height="56.0" rx="5" fill="#f59e0b" stroke="#f59e0b" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="330.0" y="219.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Boot ROM</text>
+<text x="330.0" y="237.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">decrypts it</text>
+<path d="M412.0 224.0L456.0 224.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="460.0" y="196.0" width="100.0" height="56.0" rx="5" fill="#2dd4bf" stroke="#2dd4bf" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="510.0" y="219.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Game</text>
+<text x="510.0" y="237.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">runs</text>
+<text x="600.0" y="100.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Load the code with Ghidra's 65C02</text>
+<text x="600.0" y="117.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">language. Take ground truth from a tested</text>
+<text x="600.0" y="134.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">6502 core, because Ghidra's ADC p-code is</text>
+<text x="600.0" y="151.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">not exact. An emulator needs the boot</text>
+<text x="600.0" y="168.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">ROM.</text>
+</svg>

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="340" viewBox="0 0 900 340" role="img" aria-label="With control flow flattening, the blocks A, B, C and D of an ordinary function become cases of one switch inside a loop. A state variable chooses the next block">
+<title>With control flow flattening, the blocks A, B, C and D of an ordinary function become cases of one switch inside a loop. A state variable chooses the next block</title>
+<rect x="0.5" y="0.5" width="899" height="339" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">A FUNCTION WITH FLATTENED CONTROL FLOW</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Every block becomes a case of one switch inside a loop. A state variable picks the next block.</text>
+<text x="24.0" y="92.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#e2ece9" text-anchor="start">as written</text>
+<path d="M110.0 134.0L60.0 174.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M110.0 134.0L160.0 174.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M60.0 204.0L110.0 244.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M160.0 204.0L110.0 244.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="80.0" y="106.0" width="60.0" height="28.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="110.0" y="124.2" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">A</text>
+<rect x="30.0" y="176.0" width="60.0" height="28.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="60.0" y="194.2" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">B</text>
+<rect x="130.0" y="176.0" width="60.0" height="28.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="160.0" y="194.2" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">C</text>
+<rect x="80.0" y="246.0" width="60.0" height="28.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="110.0" y="264.2" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">D</text>
+<text x="320.0" y="92.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="600" fill="#e2ece9" text-anchor="start">flattened</text>
+<rect x="320.0" y="104.0" width="220.0" height="40.0" rx="4" fill="#c084fc" stroke="none" fill-opacity="0.3"/>
+<text x="430.0" y="128.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11.5" font-weight="600" fill="#e2ece9" text-anchor="middle">loop: switch (state)</text>
+<path d="M316.0 144.0L316.0 299.0" stroke="#8fa9a5" stroke-width="1.2" fill="none"/>
+<path d="M330.0 124.0L316.0 124.0" stroke="#8fa9a5" stroke-width="1.2" fill="none"/>
+<path d="M316.0 185.0L328.0 185.0" stroke="#8fa9a5" stroke-width="1.2" fill="none"/>
+<rect x="330.0" y="170.0" width="90.0" height="30.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="375.0" y="188.7" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="600" fill="#e2ece9" text-anchor="middle">case 1: A</text>
+<text x="430.0" y="190.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">state = x ? 2 : 3</text>
+<rect x="327" y="167" width="96" height="36" rx="5" fill="none" stroke="#f59e0b" stroke-width="2.5" opacity="0"><animate attributeName="opacity" values="1;0" keyTimes="0;0.3333" dur="6.0s" calcMode="discrete" repeatCount="indefinite"/></rect>
+<path d="M316.0 223.0L328.0 223.0" stroke="#8fa9a5" stroke-width="1.2" fill="none"/>
+<rect x="330.0" y="208.0" width="90.0" height="30.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="375.0" y="226.7" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="600" fill="#e2ece9" text-anchor="middle">case 2: B</text>
+<text x="430.0" y="228.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">state = 4</text>
+<path d="M316.0 261.0L328.0 261.0" stroke="#8fa9a5" stroke-width="1.2" fill="none"/>
+<rect x="330.0" y="246.0" width="90.0" height="30.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="375.0" y="264.7" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="600" fill="#e2ece9" text-anchor="middle">case 3: C</text>
+<text x="430.0" y="266.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">state = 4</text>
+<rect x="327" y="243" width="96" height="36" rx="5" fill="none" stroke="#f59e0b" stroke-width="2.5" opacity="0"><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.3333;0.6667" dur="6.0s" calcMode="discrete" repeatCount="indefinite"/></rect>
+<path d="M316.0 299.0L328.0 299.0" stroke="#8fa9a5" stroke-width="1.2" fill="none"/>
+<rect x="330.0" y="284.0" width="90.0" height="30.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="375.0" y="302.7" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="600" fill="#e2ece9" text-anchor="middle">case 4: D</text>
+<text x="430.0" y="304.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="start">return</text>
+<rect x="327" y="281" width="96" height="36" rx="5" fill="none" stroke="#f59e0b" stroke-width="2.5" opacity="0"><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.6667;1.0000" dur="6.0s" calcMode="discrete" repeatCount="indefinite"/></rect>
+<text x="620.0" y="110.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">Ghidra shows one loop with</text>
+<text x="620.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">many cases and no visible</text>
+<text x="620.0" y="146.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">structure. Follow the state</text>
+<text x="620.0" y="164.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">values to rebuild the order.</text>
+<text x="620.0" y="182.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start"></text>
+<text x="620.0" y="200.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">In games this code is usually</text>
+<text x="620.0" y="218.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">the protection around the</text>
+<text x="620.0" y="236.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">game. Find where it ends.</text>
+</svg>

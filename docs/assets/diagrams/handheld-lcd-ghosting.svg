@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="Flickered sprites blend on a slow LCD. The test compares the raw frames">
+<title>Flickered sprites blend on a slow LCD. The test compares the raw frames</title>
+<rect x="0.5" y="0.5" width="899" height="299" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">SPRITE FLICKER ON A SLOW LCD</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Some games flicker sprites and rely on the slow LCD to blend them.</text>
+<rect x="40.0" y="96.0" width="170.0" height="130.0" rx="4" fill="#4ade80" stroke="none" fill-opacity="0.12"/>
+<rect x="70.0" y="140.0" width="40.0" height="40.0" rx="3" fill="#e2ece9" stroke="none" fill-opacity="0.9"/>
+<rect x="140.0" y="140.0" width="40.0" height="40.0" rx="3" fill="#e2ece9" stroke="none" fill-opacity="0.0"/>
+<text x="40.0" y="246.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">frame 1: sprite A</text>
+<rect x="240.0" y="96.0" width="170.0" height="130.0" rx="4" fill="#4ade80" stroke="none" fill-opacity="0.12"/>
+<rect x="270.0" y="140.0" width="40.0" height="40.0" rx="3" fill="#e2ece9" stroke="none" fill-opacity="0.0"/>
+<rect x="340.0" y="140.0" width="40.0" height="40.0" rx="3" fill="#e2ece9" stroke="none" fill-opacity="0.9"/>
+<text x="240.0" y="246.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">frame 2: sprite B</text>
+<rect x="480.0" y="96.0" width="170.0" height="130.0" rx="4" fill="#4ade80" stroke="none" fill-opacity="0.12"/>
+<rect x="510" y="140" width="40" height="40" rx="3" fill="#e2ece9" fill-opacity="0.6"><animate attributeName="fill-opacity" values="0.9;0.25;0.9" dur="0.5s" repeatCount="indefinite"/></rect>
+<rect x="580" y="140" width="40" height="40" rx="3" fill="#e2ece9" fill-opacity="0.6"><animate attributeName="fill-opacity" values="0.25;0.9;0.25" dur="0.5s" repeatCount="indefinite"/></rect>
+<text x="480.0" y="246.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">on the LCD, both at half brightness</text>
+<text x="690.0" y="110.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The test compares frame 1</text>
+<text x="690.0" y="127.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">and frame 2 as drawn. Blend</text>
+<text x="690.0" y="144.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">only in the presentation</text>
+<text x="690.0" y="161.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">layer.</text>
+<text x="40.0" y="284.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">On a Game &amp; Watch, the test compares which LCD segments are lit.</text>
+</svg>

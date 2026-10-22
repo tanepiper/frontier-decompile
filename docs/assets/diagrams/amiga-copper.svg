@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="440" viewBox="0 0 900 440" role="img" aria-label="The Amiga Copper runs a list of WAIT and MOVE instructions in step with the beam. Each WAIT holds until a screen line, and each MOVE writes a chip register such as the background colour, so the colour changes part way down the screen.">
+<title>The Amiga Copper runs a list of WAIT and MOVE instructions in step with the beam. Each WAIT holds until a screen line, and each MOVE writes a chip register such as the background colour, so the colour changes part way down the screen.</title>
+<rect x="0.5" y="0.5" width="899" height="439" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">THE COPPER RUNS A PROGRAM FOR THE BEAM</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">MOVE writes a chip register. WAIT holds until the beam reaches a position. The list restarts every frame.</text>
+<rect x="24.0" y="92.0" width="300.0" height="30.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.18"/>
+<text x="36.0" y="112.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">MOVE #$0013, COLOR00</text>
+<rect x="24" y="92" width="300" height="30" rx="3" fill="none" stroke="#e2ece9" stroke-width="2" opacity="0"><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.001;0.060" calcMode="discrete" dur="4.0s" repeatCount="indefinite"/></rect>
+<rect x="24.0" y="128.0" width="300.0" height="30.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.18"/>
+<text x="36.0" y="148.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">WAIT line $50</text>
+<rect x="24" y="128" width="300" height="30" rx="3" fill="none" stroke="#e2ece9" stroke-width="2" opacity="0"><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.220;0.280" calcMode="discrete" dur="4.0s" repeatCount="indefinite"/></rect>
+<rect x="24.0" y="164.0" width="300.0" height="30.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.18"/>
+<text x="36.0" y="184.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">MOVE #$0B42, COLOR00</text>
+<rect x="24" y="164" width="300" height="30" rx="3" fill="none" stroke="#e2ece9" stroke-width="2" opacity="0"><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.220;0.280" calcMode="discrete" dur="4.0s" repeatCount="indefinite"/></rect>
+<rect x="24.0" y="200.0" width="300.0" height="30.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.18"/>
+<text x="36.0" y="220.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">WAIT line $78</text>
+<rect x="24" y="200" width="300" height="30" rx="3" fill="none" stroke="#e2ece9" stroke-width="2" opacity="0"><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.440;0.500" calcMode="discrete" dur="4.0s" repeatCount="indefinite"/></rect>
+<rect x="24.0" y="236.0" width="300.0" height="30.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.18"/>
+<text x="36.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">MOVE #$0EC4, COLOR00</text>
+<rect x="24" y="236" width="300" height="30" rx="3" fill="none" stroke="#e2ece9" stroke-width="2" opacity="0"><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.440;0.500" calcMode="discrete" dur="4.0s" repeatCount="indefinite"/></rect>
+<rect x="24.0" y="272.0" width="300.0" height="30.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.18"/>
+<text x="36.0" y="292.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">WAIT line $A0</text>
+<rect x="24" y="272" width="300" height="30" rx="3" fill="none" stroke="#e2ece9" stroke-width="2" opacity="0"><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.660;0.720" calcMode="discrete" dur="4.0s" repeatCount="indefinite"/></rect>
+<rect x="24.0" y="308.0" width="300.0" height="30.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.18"/>
+<text x="36.0" y="328.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">MOVE #$02B8, COLOR00</text>
+<rect x="24" y="308" width="300" height="30" rx="3" fill="none" stroke="#e2ece9" stroke-width="2" opacity="0"><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.660;0.720" calcMode="discrete" dur="4.0s" repeatCount="indefinite"/></rect>
+<rect x="24.0" y="344.0" width="300.0" height="30.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.18"/>
+<text x="36.0" y="364.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">WAIT $FFFE: end of list</text>
+<rect x="24" y="344" width="300" height="30" rx="3" fill="none" stroke="#e2ece9" stroke-width="2" opacity="0"><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.990;1.000" calcMode="discrete" dur="4.0s" repeatCount="indefinite"/></rect>
+<rect x="420.0" y="92.0" width="440.0" height="71.0" rx="0" fill="#001133" stroke="none" fill-opacity="0.85"/>
+<rect x="420.0" y="163.0" width="440.0" height="71.0" rx="0" fill="#bb4422" stroke="none" fill-opacity="0.85"/>
+<rect x="420.0" y="234.0" width="440.0" height="71.0" rx="0" fill="#eecc44" stroke="none" fill-opacity="0.85"/>
+<rect x="420.0" y="305.0" width="440.0" height="71.0" rx="0" fill="#22bb88" stroke="none" fill-opacity="0.85"/>
+<rect x="420" y="92" width="440" height="2" fill="#ffffff"><animate attributeName="y" values="92;374" dur="4.0s" repeatCount="indefinite"/></rect>
+<text x="420.0" y="394.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">COLOR00 is the background colour register at $DFF180.</text>
+<text x="24.0" y="424.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Raster effects come from a Copper list per frame. Reproduce the list, the waits and the writes.</text>
+</svg>

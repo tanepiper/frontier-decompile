@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="280" viewBox="0 0 900 280" role="img" aria-label="The PCjr and Tandy 1000 add 16-colour modes at 160 by 200 and 320 by 200 to CGA, and an SN76496 sound chip at port C0h. DOSBox runs them with machine set to tandy or pcjr.">
+<title>The PCjr and Tandy 1000 add 16-colour modes at 160 by 200 and 320 by 200 to CGA, and an SN76496 sound chip at port C0h. DOSBox runs them with machine set to tandy or pcjr.</title>
+<rect x="0.5" y="0.5" width="899" height="279" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">PCJR AND TANDY 1000 PATHS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">A DOS game may have a Tandy path beside its CGA path.</text>
+<text x="24.0" y="96.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">CGA 320 x 200</text>
+<rect x="24.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#000000" stroke="none"/>
+<rect x="36.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#55ffff" stroke="none"/>
+<rect x="48.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#ff55ff" stroke="none"/>
+<rect x="60.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#ffffff" stroke="none"/>
+<text x="24.0" y="148.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">4 colours</text>
+<text x="244.0" y="96.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">Tandy 160 x 200</text>
+<rect x="244.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#000000" stroke="none"/>
+<rect x="256.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#0000aa" stroke="none"/>
+<rect x="268.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#00aa00" stroke="none"/>
+<rect x="280.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#00aaaa" stroke="none"/>
+<rect x="292.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#aa0000" stroke="none"/>
+<rect x="304.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#aa00aa" stroke="none"/>
+<rect x="316.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#aa5500" stroke="none"/>
+<rect x="328.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#aaaaaa" stroke="none"/>
+<rect x="340.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#555555" stroke="none"/>
+<rect x="352.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#5555ff" stroke="none"/>
+<rect x="364.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#55ff55" stroke="none"/>
+<rect x="376.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#55ffff" stroke="none"/>
+<rect x="388.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#ff5555" stroke="none"/>
+<rect x="400.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#ff55ff" stroke="none"/>
+<rect x="412.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#ffff55" stroke="none"/>
+<rect x="424.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#ffffff" stroke="none"/>
+<text x="244.0" y="148.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">16 colours</text>
+<text x="464.0" y="96.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">Tandy 320 x 200</text>
+<rect x="464.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#000000" stroke="none"/>
+<rect x="476.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#0000aa" stroke="none"/>
+<rect x="488.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#00aa00" stroke="none"/>
+<rect x="500.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#00aaaa" stroke="none"/>
+<rect x="512.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#aa0000" stroke="none"/>
+<rect x="524.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#aa00aa" stroke="none"/>
+<rect x="536.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#aa5500" stroke="none"/>
+<rect x="548.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#aaaaaa" stroke="none"/>
+<rect x="560.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#555555" stroke="none"/>
+<rect x="572.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#5555ff" stroke="none"/>
+<rect x="584.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#55ff55" stroke="none"/>
+<rect x="596.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#55ffff" stroke="none"/>
+<rect x="608.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#ff5555" stroke="none"/>
+<rect x="620.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#ff55ff" stroke="none"/>
+<rect x="632.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#ffff55" stroke="none"/>
+<rect x="644.0" y="108.0" width="11.0" height="22.0" rx="1" fill="#ffffff" stroke="none"/>
+<text x="464.0" y="148.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">16 colours</text>
+<rect x="690.0" y="84.0" width="180.0" height="64.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="780.0" y="113.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">SN76496</text>
+<text x="780.0" y="129.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">port C0h, 3 tones + noise</text>
+<text x="24.0" y="192.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">The game picks a path by the machine it detects. Record which path the reference recording took.</text>
+<text x="24.0" y="210.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">In DOSBox set machine=tandy or machine=pcjr to run that path.</text>
+<text x="24.0" y="256.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">These hardware facts are marked not confirmed on the page.</text>
+</svg>

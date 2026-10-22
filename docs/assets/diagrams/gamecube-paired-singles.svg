@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="340" viewBox="0 0 900 340" role="img" aria-label="Paired singles hold two floats in one register. A GQR register sets the quantised load">
+<title>Paired singles hold two floats in one register. A GQR register sets the quantised load</title>
+<rect x="0.5" y="0.5" width="899" height="339" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">GEKKO AND BROADWAY PAIRED SINGLES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">One floating-point register holds two single floats, ps0 and ps1. One instruction works on both of them.</text>
+<rect x="40.0" y="92.0" width="190.0" height="30.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="135.0" y="111.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">ps0</text>
+<rect x="232.0" y="92.0" width="190.0" height="30.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.3"/>
+<text x="327.0" y="111.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">ps1</text>
+<text x="440.0" y="112.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">one 64-bit register</text>
+<text x="40.0" y="166.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">A quantised load (psq_l) reads compact values and converts them</text>
+<rect x="40.0" y="180.0" width="170.0" height="60.0" rx="5" fill="#64748b" stroke="#64748b" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="125.0" y="205.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Memory</text>
+<text x="125.0" y="223.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">u8 value 200</text>
+<path d="M212.0 210.0L256.0 210.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="260.0" y="180.0" width="230.0" height="60.0" rx="5" fill="#f59e0b" stroke="#f59e0b" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="375.0" y="198.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">GQR register</text>
+<text x="375.0" y="216.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">load type: u8</text>
+<text x="375.0" y="231.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">load scale: 7</text>
+<path d="M492.0 210.0L536.0 210.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="540.0" y="180.0" width="200.0" height="60.0" rx="5" fill="#60a5fa" stroke="#60a5fa" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="640.0" y="205.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">ps0 = 1.5625</text>
+<text x="640.0" y="223.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">200 / 2^7 = 200 / 128</text>
+<text x="40.0" y="270.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The type is u8, u16, s8, s16 or float. The loaded value is divided by 2 to the power of the scale.</text>
+<text x="40.0" y="296.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The same code gives different results under a different GQR setup. Confirm the setup against Dolphin's code.</text>
+</svg>

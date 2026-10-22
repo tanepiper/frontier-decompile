@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="Replacing a program one function at a time. The original program keeps running while its functions are replaced by new ones. Each new function is checked against the original before the next">
+<title>Replacing a program one function at a time. The original program keeps running while its functions are replaced by new ones. Each new function is checked against the original before the next</title>
+<rect x="0.5" y="0.5" width="899" height="299" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">REPLACING A PROGRAM ONE FUNCTION AT A TIME</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">OpenRCT2 and dethrace replaced the original program piece by piece while the game kept running.</text>
+<rect x="24.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="57.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="24.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="57.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="57.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.0200;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="95.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="128.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="95.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="128.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="128.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.2825;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="166.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="199.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="166.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="199.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="199.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5450;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="237.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="270.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="237.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="270.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="270.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.8075;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="308.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="341.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="308.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="341.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="341.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.1700;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="379.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="412.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="379.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="412.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="412.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.4325;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="450.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="483.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="450.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="483.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="483.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.6950;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="521.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="554.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="521.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="554.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="554.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.0575;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="592.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="625.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="592.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="625.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="625.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.3200;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="663.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="696.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="663.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="696.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="696.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5825;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="734.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="767.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="734.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="767.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="767.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.8450;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="805.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="838.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="805.0" y="96.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="838.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="838.0" y="132.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.2075;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="24.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="57.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="24.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="57.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="57.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.4700;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="95.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="128.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="95.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="128.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="128.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.7325;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="166.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="199.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="166.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="199.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="199.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.0950;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="237.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="270.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="237.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="270.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="270.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.3575;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="308.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="341.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="308.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="341.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="341.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.6200;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="379.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="412.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="379.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="412.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="412.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.8825;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="450.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="483.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="450.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="483.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="483.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.2450;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="521.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="554.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="521.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="554.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="554.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.5075;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="592.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="625.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="592.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="625.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="625.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.7700;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="663.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="696.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="663.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="696.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="696.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.1325;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="734.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="767.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="734.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="767.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="767.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.3950;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<rect x="805.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.25"/>
+<text x="838.0" y="180.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">original</text>
+<g opacity="0"><rect x="805.0" y="152.0" width="66.0" height="46.0" rx="4" fill="#2dd4bf" stroke="none" fill-opacity="0.45"/>
+<text x="838.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">new</text>
+<text x="838.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">checked</text><animate attributeName="opacity" values="0;1;0" keyTimes="0;0.6575;0.9700" dur="8.0s" calcMode="discrete" repeatCount="indefinite"/></g>
+<text x="24.0" y="238.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Each new function must give the original's answers before the next is replaced. At every step the game runs,</text>
+<text x="24.0" y="258.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">so a mistake shows at once. When every function is replaced, no original code is left.</text>
+</svg>

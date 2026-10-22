@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="On the Oric, an attribute byte in screen memory takes a character cell and shows as a blank. It changes the ink or paper colour for the rest of the line.">
+<title>On the Oric, an attribute byte in screen memory takes a character cell and shows as a blank. It changes the ink or paper colour for the rest of the line.</title>
+<rect x="0.5" y="0.5" width="899" height="299" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">ORIC SERIAL ATTRIBUTES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">An attribute is a byte in the screen itself. It takes one cell and changes the colours from there to the line's end.</text>
+<rect x="40.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#000000" stroke="none"/>
+<text x="64.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffffff" text-anchor="middle">A</text>
+<rect x="90.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#000000" stroke="none"/>
+<text x="114.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffffff" text-anchor="middle">B</text>
+<rect x="140.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#000000" stroke="none"/>
+<rect x="142.0" y="112.0" width="44.0" height="56.0" rx="2" fill="none" stroke="#f59e0b" stroke-width="2"/>
+<text x="164.0" y="102.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="middle">ink</text>
+<rect x="190.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#000000" stroke="none"/>
+<text x="214.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffff55" text-anchor="middle">C</text>
+<rect x="240.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#000000" stroke="none"/>
+<text x="264.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffff55" text-anchor="middle">D</text>
+<rect x="290.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#000000" stroke="none"/>
+<text x="314.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffff55" text-anchor="middle">E</text>
+<rect x="340.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#2b2bd7" stroke="none"/>
+<rect x="342.0" y="112.0" width="44.0" height="56.0" rx="2" fill="none" stroke="#f59e0b" stroke-width="2"/>
+<text x="364.0" y="102.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="middle">paper</text>
+<rect x="390.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#2b2bd7" stroke="none"/>
+<text x="414.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffff55" text-anchor="middle">F</text>
+<rect x="440.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#2b2bd7" stroke="none"/>
+<text x="464.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffff55" text-anchor="middle">G</text>
+<rect x="490.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#2b2bd7" stroke="none"/>
+<text x="514.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffff55" text-anchor="middle">H</text>
+<rect x="540.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#2b2bd7" stroke="none"/>
+<text x="564.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffff55" text-anchor="middle">I</text>
+<rect x="590.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#2b2bd7" stroke="none"/>
+<text x="614.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffff55" text-anchor="middle">J</text>
+<rect x="640.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#2b2bd7" stroke="none"/>
+<text x="664.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffff55" text-anchor="middle">K</text>
+<rect x="690.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#2b2bd7" stroke="none"/>
+<text x="714.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffff55" text-anchor="middle">L</text>
+<rect x="740.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#2b2bd7" stroke="none"/>
+<text x="764.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffff55" text-anchor="middle">M</text>
+<rect x="790.0" y="110.0" width="48.0" height="60.0" rx="0" fill="#2b2bd7" stroke="none"/>
+<text x="814.0" y="150.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="26" font-weight="700" fill="#ffff55" text-anchor="middle">N</text>
+<text x="40.0" y="210.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Each attribute cell shows as blank paper. A colour change needs a free cell, so</text>
+<text x="40.0" y="228.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">two colours cannot touch inside a line.</text>
+<text x="40.0" y="246.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The screen is 40 x 28 text or 240 x 200 hi-res, from the HCS 10017 ULA.</text>
+<text x="40.0" y="280.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Some games depend on BASIC ROM v1.0. Record the ROM version with the ground truth.</text>
+</svg>

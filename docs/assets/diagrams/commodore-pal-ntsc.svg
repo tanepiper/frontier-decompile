@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360" role="img" aria-label="The VIC-20's 6560 and 6561 run at different clocks. The C64's VIC-II revisions have different numbers of lines and cycles per line. PAL and NTSC builds of a game therefore differ.">
+<title>The VIC-20's 6560 and 6561 run at different clocks. The C64's VIC-II revisions have different numbers of lines and cycles per line. PAL and NTSC builds of a game therefore differ.</title>
+<rect x="0.5" y="0.5" width="899" height="359" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">PAL AND NTSC BUILDS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The video chip sets the CPU clock and the frame. A PAL build and an NTSC build are often separate programs.</text>
+<text x="24.0" y="96.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">VIC-20: the VIC chip</text>
+<rect x="24.0" y="108.0" width="200.0" height="50.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="124.0" y="130.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">6560 (NTSC)</text>
+<text x="124.0" y="146.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">1.0227 MHz</text>
+<rect x="236.0" y="108.0" width="200.0" height="50.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.22"/>
+<text x="336.0" y="130.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">6561 (PAL)</text>
+<text x="336.0" y="146.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">1.1087 MHz</text>
+<text x="24.0" y="196.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">C64: the VIC-II</text>
+<text x="24.0" y="230.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">6569 (PAL)</text>
+<rect x="200.0" y="214.0" width="520.0" height="26.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.35"/>
+<text x="208.0" y="232.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">312 lines x 63 cycles = 19656 cycles a frame</text>
+<text x="24.0" y="270.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">6567 (NTSC)</text>
+<rect x="200.0" y="254.0" width="452.2" height="26.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.35"/>
+<text x="208.0" y="272.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">263 lines x 65 cycles = 17095 cycles a frame</text>
+<text x="24.0" y="310.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">6567 R56A (early NTSC)</text>
+<rect x="200.0" y="294.0" width="443.6" height="26.0" rx="3" fill="#c084fc" stroke="none" fill-opacity="0.35"/>
+<text x="208.0" y="312.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">262 lines x 64 cycles = 16768 cycles a frame</text>
+<text x="24.0" y="344.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The PAL frame runs at 50.12 Hz. Record the VIC-II revision of the reference recording.</text>
+<text x="200.0" y="196.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The 6510 runs at 1.023 MHz (NTSC) or 0.985 MHz (PAL).</text>
+</svg>

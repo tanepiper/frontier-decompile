@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="380" viewBox="0 0 900 380" role="img" aria-label="Ghidra's 6502 ADC has no decimal mode, leaves the incoming carry out of the carry test and copies V from C. Three worked cases show a real 6502 and Ghidra's p-code giving different results.">
+<title>Ghidra's 6502 ADC has no decimal mode, leaves the incoming carry out of the carry test and copies V from C. Three worked cases show a real 6502 and Ghidra's p-code giving different results.</title>
+<rect x="0.5" y="0.5" width="899" height="379" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">GHIDRA'S 6502 ADC IS NOT EXACT</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The p-code has three faults. Each case below gives a different answer from a real 6502.</text>
+<text x="330.0" y="92.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#4ade80" text-anchor="start">real 6502</text>
+<text x="520.0" y="92.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#f87171" text-anchor="start">Ghidra p-code</text>
+<text x="700.0" y="92.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#8fa9a5" text-anchor="start">fault</text>
+<rect x="24.0" y="104.0" width="840.0" height="60.0" rx="6" fill="#64748b" stroke="none" fill-opacity="0.12"/>
+<text x="36.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">decimal mode</text>
+<text x="36.0" y="148.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">D = 1, A = $99, add $01, C = 0</text>
+<rect x="320.0" y="116.0" width="170.0" height="36.0" rx="4" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="405.0" y="139.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="middle">A = $00, C = 1</text>
+<rect x="510.0" y="116.0" width="170.0" height="36.0" rx="4" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="595.0" y="139.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="middle">A = $9A, C = 0</text>
+<text x="700.0" y="131.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">no decimal mode path</text>
+<rect x="24.0" y="174.0" width="840.0" height="60.0" rx="6" fill="#64748b" stroke="none" fill-opacity="0.12"/>
+<text x="36.0" y="198.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">carry in</text>
+<text x="36.0" y="218.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">D = 0, A = $FF, add $00, C = 1</text>
+<rect x="320.0" y="186.0" width="170.0" height="36.0" rx="4" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="405.0" y="209.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="middle">A = $00, C = 1</text>
+<rect x="510.0" y="186.0" width="170.0" height="36.0" rx="4" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="595.0" y="209.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="middle">A = $00, C = 0</text>
+<text x="700.0" y="201.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">carry in left out of</text>
+<text x="700.0" y="216.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">the carry test</text>
+<rect x="24.0" y="244.0" width="840.0" height="60.0" rx="6" fill="#64748b" stroke="none" fill-opacity="0.12"/>
+<text x="36.0" y="268.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="start">overflow</text>
+<text x="36.0" y="288.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">D = 0, A = $50, add $50, C = 0</text>
+<rect x="320.0" y="256.0" width="170.0" height="36.0" rx="4" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="405.0" y="279.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="middle">A = $A0, V = 1</text>
+<rect x="510.0" y="256.0" width="170.0" height="36.0" rx="4" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="595.0" y="279.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="middle">A = $A0, V = 0</text>
+<text x="700.0" y="271.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">V copied from C instead</text>
+<text x="700.0" y="286.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">of signed overflow</text>
+<text x="24.0" y="336.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Do not use Ghidra's p-code emulation as ground truth for 6502 games. Use py65, mos6502, MAME or floooh/chips.</text>
+<text x="24.0" y="354.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The NES 2A03 has no decimal mode, so the first case gives $9A on a NES.</text>
+</svg>

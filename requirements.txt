@@ -1,0 +1,4 @@
+# Python tools (scripts/setup.sh installs these into .venv)
+unicorn>=2.0      # CPU emulator: run original functions for ground truth (tools/emu)
+pefile>=2023.2    # Windows PE reader (tools/pe, tools/emu)
+capstone>=5.0     # disassembler, for reading instructions in Python

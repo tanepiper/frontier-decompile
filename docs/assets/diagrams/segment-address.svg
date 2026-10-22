@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="A real-mode address: the segment times 16 plus the offset, so 1234:0010 and 1235:0000 are the same byte at 12350h">
+<title>A real-mode address: the segment times 16 plus the offset, so 1234:0010 and 1235:0000 are the same byte at 12350h</title>
+<rect x="0.5" y="0.5" width="899" height="299" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">SEGMENT AND OFFSET ADDRESSES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">linear = segment x 16 + offset. Different pairs can name the same byte.</text>
+<text x="40.0" y="120.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" font-weight="400" fill="#e2ece9" text-anchor="start">1234:0010</text>
+<text x="180.0" y="120.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#f59e0b" text-anchor="start">= 12340 + 0010 = 12350</text>
+<text x="40.0" y="164.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" font-weight="400" fill="#e2ece9" text-anchor="start">1235:0000</text>
+<text x="180.0" y="164.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#f59e0b" text-anchor="start">= 12350 + 0000 = 12350</text>
+<text x="40.0" y="208.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" font-weight="400" fill="#e2ece9" text-anchor="start">1000:2350</text>
+<text x="180.0" y="208.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" font-weight="400" fill="#f59e0b" text-anchor="start">= 10000 + 2350 = 12350</text>
+<rect x="520.0" y="92.0" width="340.0" height="130.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.15"/>
+<rect x="520.0" y="100.0" width="340.0" height="28.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="526.0" y="118.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">segment 1000 (64 KB)</text>
+<rect x="707.3" y="136.0" width="152.7" height="28.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.3"/>
+<text x="713.3" y="154.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">segment 1234 (64 KB)</text>
+<rect x="707.6" y="172.0" width="152.4" height="28.0" rx="3" fill="#c084fc" stroke="none" fill-opacity="0.3"/>
+<text x="713.6" y="190.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#e2ece9" text-anchor="start">segment 1235 (64 KB)</text>
+<path d="M707.6 92.0L707.6 222.0" stroke="#f59e0b" stroke-width="2" fill="none"/>
+<text x="520.0" y="244.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">segments overlap every 16 bytes</text>
+<text x="40.0" y="270.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Ghidra numbers 16-bit code by its own segment selectors. Always quote Ghidra's address.</text>
+</svg>

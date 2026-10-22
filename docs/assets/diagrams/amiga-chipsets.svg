@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="340" viewBox="0 0 900 340" role="img" aria-label="The Amiga had three chip sets. OCS came on the A1000, A500 and A2000 from 1985, ECS on the A500+, A600 and A3000 from 1990, and AGA on the A1200, A4000 and CD32 from 1992.">
+<title>The Amiga had three chip sets. OCS came on the A1000, A500 and A2000 from 1985, ECS on the A500+, A600 and A3000 from 1990, and AGA on the A1200, A4000 and CD32 from 1992.</title>
+<rect x="0.5" y="0.5" width="899" height="339" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">AMIGA CHIP SETS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Each chip set has its own models, chip RAM and Kickstart. Record the model and Kickstart with every capture.</text>
+<rect x="24.0" y="78.0" width="272.0" height="112.0" rx="8" fill="#2dd4bf" stroke="none" fill-opacity="0.15"/>
+<text x="38.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#2dd4bf" text-anchor="start">OCS</text>
+<text x="94.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">A1000, A500, A2000</text>
+<text x="38.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">68000</text>
+<text x="38.0" y="146.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">chip RAM: 256 KB to 1 MB</text>
+<text x="38.0" y="164.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Kickstart 1.0-1.3</text>
+<rect x="40.0" y="230.0" width="546.7" height="12.0" rx="3" fill="#2dd4bf" stroke="none" fill-opacity="0.7"/>
+<rect x="310.0" y="78.0" width="272.0" height="112.0" rx="8" fill="#60a5fa" stroke="none" fill-opacity="0.15"/>
+<text x="324.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#60a5fa" text-anchor="start">ECS</text>
+<text x="380.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">A500+, A600, A3000</text>
+<text x="324.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">68000; 68030 (A3000)</text>
+<text x="324.0" y="146.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">chip RAM: 1 MB</text>
+<text x="324.0" y="164.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Kickstart 2.04-2.05</text>
+<rect x="381.7" y="248.0" width="205.0" height="12.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.7"/>
+<rect x="596.0" y="78.0" width="272.0" height="112.0" rx="8" fill="#f59e0b" stroke="none" fill-opacity="0.15"/>
+<text x="610.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="16" font-weight="700" fill="#f59e0b" text-anchor="start">AGA</text>
+<text x="666.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">A1200, A4000, CD32</text>
+<text x="610.0" y="128.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">68EC020; 68EC030 or 68040</text>
+<text x="610.0" y="146.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">chip RAM: 2 MB</text>
+<text x="610.0" y="164.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Kickstart 3.0-3.1</text>
+<rect x="518.3" y="266.0" width="341.7" height="12.0" rx="3" fill="#f59e0b" stroke="none" fill-opacity="0.7"/>
+<text x="40.0" y="300.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">1985</text>
+<text x="176.7" y="300.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">1987</text>
+<text x="313.3" y="300.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">1989</text>
+<text x="450.0" y="300.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">1991</text>
+<text x="586.7" y="300.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">1993</text>
+<text x="723.3" y="300.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">1995</text>
+<text x="860.0" y="300.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">1997</text>
+<text x="24.0" y="326.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Floppies hold 880 KB on every model. A game built for 512 KB of chip RAM can behave differently on later models.</text>
+</svg>

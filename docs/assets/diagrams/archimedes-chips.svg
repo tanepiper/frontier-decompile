@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="320" viewBox="0 0 900 320" role="img" aria-label="The Archimedes uses the ARM CPU with MEMC for memory, VIDC for video and sound and IOC for input and output. The ARM250 merges all four on one chip.">
+<title>The Archimedes uses the ARM CPU with MEMC for memory, VIDC for video and sound and IOC for input and output. The ARM250 merges all four on one chip.</title>
+<rect x="0.5" y="0.5" width="899" height="319" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">THE ARCHIMEDES CHIPS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The Archimedes uses four main chips. The ARM250 in the A3010 range (1992) merges them into one.</text>
+<rect x="40.0" y="100.0" width="150.0" height="60.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="115.0" y="127.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">ARM2 / ARM3</text>
+<text x="115.0" y="143.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">8 MHz / 25-33 MHz</text>
+<rect x="300.0" y="100.0" width="150.0" height="60.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.25"/>
+<text x="375.0" y="127.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">MEMC</text>
+<text x="375.0" y="143.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">memory, DMA</text>
+<rect x="560.0" y="80.0" width="150.0" height="54.0" rx="6" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="635.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">VIDC</text>
+<text x="635.0" y="120.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">video; 8 sound channels</text>
+<rect x="560.0" y="150.0" width="150.0" height="54.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="635.0" y="174.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">IOC</text>
+<text x="635.0" y="190.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">I/O, timers, IRQs</text>
+<rect x="300.0" y="210.0" width="150.0" height="46.0" rx="6" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="375.0" y="238.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">RAM</text>
+<path d="M194.0 130.0L296.0 130.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M454.0 120.0L556.0 107.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M454.0 140.0L556.0 177.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M375.0 164.0L375.0 206.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="24.0" y="78.0" width="708.0" height="192.0" rx="10" fill="none" stroke="#f59e0b" stroke-dasharray="6 5" stroke-opacity="0.5"/>
+<text x="726.0" y="264.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#f59e0b" text-anchor="end">ARM250: all on one chip</text>
+<text x="740.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">VIDC1 sound:</text>
+<text x="740.0" y="122.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">8-bit logarithmic</text>
+<text x="740.0" y="140.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">stereo.</text>
+<text x="40.0" y="300.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Games ran under Arthur and RISC OS, which use SWI calls. Disks are 800 KB ADFS.</text>
+</svg>

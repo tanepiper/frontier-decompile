@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="480" viewBox="0 0 900 480" role="img" aria-label="The memory map of a DOS PC: conventional memory to 640 KB, video memory and ROMs in the upper area, the EMS page frame, the high memory area, and extended memory above 1 MB">
+<title>The memory map of a DOS PC: conventional memory to 640 KB, video memory and ROMs in the upper area, the EMS page frame, the high memory area, and extended memory above 1 MB</title>
+<rect x="0.5" y="0.5" width="899" height="479" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">MEMORY IN A DOS PC</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Real-mode programs see the first megabyte. Extended memory needs XMS, EMS or a DOS extender.</text>
+<rect x="120.0" y="84.0" width="260.0" height="18.0" rx="2" fill="#64748b" stroke="none" fill-opacity="0.3"/>
+<text x="112.0" y="95.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">00000</text>
+<text x="392.0" y="98.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">interrupt vectors, BIOS data, DOS, drivers</text>
+<rect x="120.0" y="104.0" width="260.0" height="118.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.3"/>
+<text x="392.0" y="168.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">conventional memory: the program, its data and stack</text>
+<rect x="120.0" y="224.0" width="260.0" height="38.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="112.0" y="235.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">A0000</text>
+<text x="24.0" y="235.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="start">640 KB</text>
+<text x="392.0" y="248.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">video memory: A000 graphics, B000 mono text, B800 colour text</text>
+<rect x="120.0" y="264.0" width="260.0" height="12.0" rx="2" fill="#64748b" stroke="none" fill-opacity="0.3"/>
+<text x="112.0" y="275.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">C0000</text>
+<text x="392.0" y="275.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">video BIOS</text>
+<rect x="120.0" y="278.0" width="260.0" height="32.0" rx="2" fill="#c084fc" stroke="none" fill-opacity="0.3"/>
+<text x="112.0" y="289.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">C8000</text>
+<text x="392.0" y="299.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">upper memory blocks; the EMS page frame (64 KB, often at D000 or E000)</text>
+<rect x="120.0" y="312.0" width="260.0" height="12.0" rx="2" fill="#64748b" stroke="none" fill-opacity="0.3"/>
+<text x="112.0" y="323.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">F0000</text>
+<text x="392.0" y="323.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">system BIOS</text>
+<rect x="120.0" y="326.0" width="260.0" height="20.0" rx="2" fill="#60a5fa" stroke="none" fill-opacity="0.3"/>
+<text x="112.0" y="337.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">100000</text>
+<text x="24.0" y="337.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#f59e0b" text-anchor="start">1 MB</text>
+<text x="392.0" y="341.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">high memory area: 64 KB minus 16 bytes, reached from real mode</text>
+<rect x="120.0" y="348.0" width="260.0" height="108.0" rx="2" fill="#4ade80" stroke="none" fill-opacity="0.3"/>
+<text x="112.0" y="359.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="end">10FFF0</text>
+<text x="392.0" y="407.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">extended memory: XMS blocks, or a DOS extender's flat 32-bit memory</text>
+<text x="24.0" y="464.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">A game that needs more than 640 KB uses EMS (pages swapped into the frame), XMS (copies), or a DOS extender (DOS/4GW).</text>
+</svg>

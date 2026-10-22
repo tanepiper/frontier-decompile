@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420" role="img" aria-label="The Atari ST has a 68000 at 8 MHz, the Shifter for video, the YM2149 for sound, the MC68901 MFP for timers and interrupts and the WD-1772 floppy controller. The Shifter has three screen modes.">
+<title>The Atari ST has a 68000 at 8 MHz, the Shifter for video, the YM2149 for sound, the MC68901 MFP for timers and interrupts and the WD-1772 floppy controller. The Shifter has three screen modes.</title>
+<rect x="0.5" y="0.5" width="899" height="419" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">ATARI ST CHIPS AND SCREEN MODES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The ST has a 68000 at 8 MHz and a few standard chips. The Shifter turns RAM into the picture.</text>
+<rect x="24.0" y="84.0" width="160.0" height="54.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="104.0" y="108.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">68000</text>
+<text x="104.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">8 MHz</text>
+<rect x="196.0" y="84.0" width="160.0" height="54.0" rx="6" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="276.0" y="108.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">Shifter</text>
+<text x="276.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">video</text>
+<rect x="368.0" y="84.0" width="160.0" height="54.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="448.0" y="108.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">YM2149</text>
+<text x="448.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">sound</text>
+<rect x="540.0" y="84.0" width="160.0" height="54.0" rx="6" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="620.0" y="108.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">MC68901 MFP</text>
+<text x="620.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">timers, interrupts</text>
+<rect x="712.0" y="84.0" width="160.0" height="54.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.25"/>
+<text x="792.0" y="108.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">WD-1772</text>
+<text x="792.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">floppy controller</text>
+<rect x="24.0" y="170.0" width="145.5" height="90.9" rx="2" fill="#c084fc" stroke="#c084fc" fill-opacity="0.15" stroke-opacity="0.6"/>
+<text x="32.0" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">low: 320 x 200</text>
+<text x="32.0" y="206.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">16 colours from 512</text>
+<text x="32.0" y="222.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">50 or 60 Hz</text>
+<rect x="199.5" y="170.0" width="290.9" height="90.9" rx="2" fill="#c084fc" stroke="#c084fc" fill-opacity="0.15" stroke-opacity="0.6"/>
+<text x="207.5" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">medium: 640 x 200</text>
+<text x="207.5" y="206.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">4 colours from 512</text>
+<text x="207.5" y="222.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">50 or 60 Hz</text>
+<rect x="520.4" y="170.0" width="290.9" height="181.8" rx="2" fill="#c084fc" stroke="#c084fc" fill-opacity="0.15" stroke-opacity="0.6"/>
+<text x="528.4" y="188.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">high: 640 x 400</text>
+<text x="528.4" y="206.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">monochrome</text>
+<text x="528.4" y="222.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">71.2 Hz</text>
+<text x="24.0" y="376.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">TOS with GEM. A game either calls GEMDOS, BIOS, XBIOS, AES and VDI, or takes over the hardware.</text>
+<text x="24.0" y="400.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Trace a TOS game at its system calls with Hatari. Trace a takeover game at its hardware writes.</text>
+</svg>

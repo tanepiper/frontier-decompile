@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="330" viewBox="0 0 900 330" role="img" aria-label="PC copy protection went from manual checks and code wheels to Copylock, SafeDisc from 1998 to 2009, StarForce, the Steam DRM wrapper and Denuvo from 2014. The checks moved toward the disc and then online.">
+<title>PC copy protection went from manual checks and code wheels to Copylock, SafeDisc from 1998 to 2009, StarForce, the Steam DRM wrapper and Denuvo from 2014. The checks moved toward the disc and then online.</title>
+<rect x="0.5" y="0.5" width="899" height="329" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">PC COPY PROTECTION OVER THE YEARS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The checks moved from the manual, to the disk, to the disc, and later online.</text>
+<rect x="24.0" y="96.0" width="133.0" height="110.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.22"/>
+<text x="34.0" y="120.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">manual checks</text>
+<text x="34.0" y="144.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">code wheels, such as</text>
+<text x="34.0" y="160.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">"Dial-a-Pirate"</text>
+<rect x="167.0" y="96.0" width="133.0" height="110.0" rx="6" fill="#f87171" stroke="none" fill-opacity="0.22"/>
+<text x="177.0" y="120.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Copylock</text>
+<text x="177.0" y="144.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">Rob Northen's disk</text>
+<text x="177.0" y="160.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">protection</text>
+<path d="M157.0 151.0L166.0 151.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="310.0" y="96.0" width="133.0" height="110.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.22"/>
+<text x="320.0" y="120.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">SafeDisc</text>
+<text x="320.0" y="144.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">1998 to March 2009</text>
+<text x="320.0" y="160.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">secdrv.sys driver</text>
+<path d="M300.0 151.0L309.0 151.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="453.0" y="96.0" width="133.0" height="110.0" rx="6" fill="#c084fc" stroke="none" fill-opacity="0.22"/>
+<text x="463.0" y="120.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">StarForce 3.0</text>
+<text x="463.0" y="144.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">a driver that stayed</text>
+<text x="463.0" y="160.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">after uninstall</text>
+<path d="M443.0 151.0L452.0 151.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="596.0" y="96.0" width="133.0" height="110.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="606.0" y="120.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Steam DRM wrapper</text>
+<text x="606.0" y="144.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">"easily removed by a</text>
+<text x="606.0" y="160.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">motivated attacker"</text>
+<path d="M586.0 151.0L595.0 151.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="739.0" y="96.0" width="133.0" height="110.0" rx="6" fill="#4ade80" stroke="none" fill-opacity="0.22"/>
+<text x="749.0" y="120.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">Denuvo</text>
+<text x="749.0" y="144.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">from FIFA 15 (2014),</text>
+<text x="749.0" y="160.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">online activation</text>
+<path d="M729.0 151.0L738.0 151.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M24.0 228.0L876.0 228.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="24.0" y="246.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="start">earlier</text>
+<text x="876.0" y="246.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="end">later</text>
+<text x="24.0" y="280.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Protected or virtualised code is hard to decompile. Emulate the game's own logic.</text>
+<text x="24.0" y="298.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">A later DRM-free release is often the easiest owned copy to study.</text>
+</svg>

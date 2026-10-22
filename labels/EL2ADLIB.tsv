@@ -1,0 +1,34 @@
+# Labels made from the port's citations by tools/triage/cite_labels.py: address, the item that cites
+# it, and where it is cited. Do not edit: label by hand in names.tsv, which wins over this file.
+1000:00d6	Driver::start_effect	crates/game/src/adlib.rs
+1000:0152	Driver::engine	crates/game/src/adlib.rs
+1000:01b6	Driver::stop_music_unless_jukebox	crates/game/src/adlib.rs
+1000:01c0	Driver::init	crates/game/src/adlib.rs
+1000:01d2	Driver::play_song	crates/game/src/adlib.rs
+1000:022a	Driver::shutdown	crates/game/src/adlib.rs
+1000:0233	Driver::effect	crates/game/src/adlib.rs
+1000:025b	Driver::effect_with_volume	crates/game/src/adlib.rs
+1000:0280	Driver::effect_at_range	crates/game/src/adlib.rs
+1000:029e	Driver::tick	crates/game/src/adlib.rs
+1000:033b	Driver::silence_all	crates/game/src/adlib.rs
+1000:0346	Driver::clear_effects	crates/game/src/adlib.rs
+1000:036f	Driver::stop_music	crates/game/src/adlib.rs
+1000:087f	Driver::init_state	crates/game/src/adlib.rs
+1000:089f	Driver::queue	crates/game/src/adlib.rs
+1000:08b3	Driver::drain_queue	crates/game/src/adlib.rs
+1000:0920	Driver::reset	crates/game/src/adlib.rs
+1000:0974	Driver::step_voices	crates/game/src/adlib.rs
+1000:1304	Driver::note	crates/game/src/adlib.rs
+1000:13cc	Driver::key_on	crates/game/src/adlib.rs
+1000:1404	Driver::key_off	crates/game/src/adlib.rs
+1000:1432	Driver::duration	crates/game/src/adlib.rs
+1000:1472	Driver::write_reg	crates/game/src/adlib.rs
+1000:1483	Driver::clamp	crates/game/src/adlib.rs
+1000:1494	Driver::tempo	crates/game/src/adlib.rs
+1000:14da	Driver::set_levels	crates/game/src/adlib.rs
+1000:1514	Driver::carrier_level	crates/game/src/adlib.rs
+1000:1554	Driver::modulator_level	crates/game/src/adlib.rs
+1000:159b	Driver::clear_voice	crates/game/src/adlib.rs
+1000:15d3	Driver::load_instrument	crates/game/src/adlib.rs
+1000:164e	Driver::silence_voice	crates/game/src/adlib.rs
+1000:17cb	Driver::random	crates/game/src/adlib.rs

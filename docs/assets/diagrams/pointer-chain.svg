@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="250" viewBox="0 0 900 250" role="img" aria-label="A pointer chain: a global holds the world, the world at +0x18 holds the player, the player at +0x24 holds the gold">
+<title>A pointer chain: a global holds the world, the world at +0x18 holds the player, the player at +0x24 holds the gold</title>
+<rect x="0.5" y="0.5" width="899" height="249" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">A PATH TO A VALUE THAT MOVES</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The chain starts at a global with a fixed address. Following its pointers finds the gold in every run.</text>
+<rect x="40.0" y="100.0" width="170.0" height="70.0" rx="8" fill="#2dd4bf" stroke="none" fill-opacity="0.16"/>
+<rect x="40.0" y="100.0" width="170.0" height="4.0" rx="2" fill="#2dd4bf" stroke="none"/>
+<text x="54.0" y="130.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#e2ece9" text-anchor="start">global</text>
+<text x="54.0" y="152.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">0x4a1f30  (static)</text>
+<path d="M212 135H258" stroke="#8fa9a5" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="260.0" y="100.0" width="170.0" height="70.0" rx="8" fill="#60a5fa" stroke="none" fill-opacity="0.16"/>
+<rect x="260.0" y="100.0" width="170.0" height="4.0" rx="2" fill="#60a5fa" stroke="none"/>
+<text x="274.0" y="130.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#e2ece9" text-anchor="start">world</text>
+<text x="274.0" y="152.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">+0x18  (heap)</text>
+<path d="M432 135H478" stroke="#8fa9a5" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="480.0" y="100.0" width="170.0" height="70.0" rx="8" fill="#60a5fa" stroke="none" fill-opacity="0.16"/>
+<rect x="480.0" y="100.0" width="170.0" height="4.0" rx="2" fill="#60a5fa" stroke="none"/>
+<text x="494.0" y="130.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#e2ece9" text-anchor="start">player</text>
+<text x="494.0" y="152.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">+0x24  (heap)</text>
+<path d="M652 135H698" stroke="#8fa9a5" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="700.0" y="100.0" width="170.0" height="70.0" rx="8" fill="#f59e0b" stroke="none" fill-opacity="0.16"/>
+<rect x="700.0" y="100.0" width="170.0" height="4.0" rx="2" fill="#f59e0b" stroke="none"/>
+<text x="714.0" y="130.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="15" font-weight="600" fill="#e2ece9" text-anchor="start">gold</text>
+<text x="714.0" y="152.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">500  (the value)</text>
+<circle r="6" fill="#f59e0b"><animateMotion dur="4s" repeatCount="indefinite" path="M125 135L345 135L565 135L785 135" keyPoints="0;0.33;0.66;1;1" keyTimes="0;0.25;0.5;0.75;1" calcMode="linear"/></circle>
+<text x="40.0" y="210.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="400" fill="#e2ece9" text-anchor="start">[0x4a1f30] -&gt; +0x18 -&gt; +0x24</text>
+<text x="300.0" y="210.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">tools/triage/pointerpaths.py finds it from dumps of two runs</text>
+</svg>

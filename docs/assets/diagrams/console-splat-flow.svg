@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="280" viewBox="0 0 900 280" role="img" aria-label="Splitting a ROM into code, data and assets, then building the same bytes again">
+<title>Splitting a ROM into code, data and assets, then building the same bytes again</title>
+<rect x="0.5" y="0.5" width="899" height="279" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">SPLITTING AND REBUILDING A PROGRAM</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The first build is all disassembly. This build must already give the identical program.</text>
+<rect x="40.0" y="100.0" width="140.0" height="70.0" rx="5" fill="#64748b" stroke="#64748b" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="110.0" y="130.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">ROM or EXE</text>
+<text x="110.0" y="148.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">the original</text>
+<path d="M182.0 135.0L222.0 135.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="226.0" y="100.0" width="160.0" height="70.0" rx="5" fill="#60a5fa" stroke="#60a5fa" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="306.0" y="123.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">splat, dtk</text>
+<text x="306.0" y="141.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">a config of</text>
+<text x="306.0" y="156.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">addresses</text>
+<path d="M388.0 135.0L436.0 99.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="440.0" y="84.0" width="150.0" height="30.0" rx="5" fill="#c084fc" stroke="#c084fc" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="515.0" y="103.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">code: assembly</text>
+<path d="M388.0 135.0L436.0 135.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="440.0" y="120.0" width="150.0" height="30.0" rx="5" fill="#f59e0b" stroke="#f59e0b" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="515.0" y="139.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">data</text>
+<path d="M388.0 135.0L436.0 171.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="440.0" y="156.0" width="150.0" height="30.0" rx="5" fill="#2dd4bf" stroke="#2dd4bf" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="515.0" y="175.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">assets</text>
+<path d="M592.0 99.0L636.0 135.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M592.0 135.0L636.0 135.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M592.0 171.0L636.0 135.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="640.0" y="100.0" width="100.0" height="70.0" rx="5" fill="#4ade80" stroke="#4ade80" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="690.0" y="139.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">build</text>
+<path d="M742.0 135.0L772.0 135.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="776.0" y="100.0" width="94.0" height="70.0" rx="5" fill="#4ade80" stroke="#4ade80" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="823.0" y="130.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">same</text>
+<text x="823.0" y="148.5" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">hash</text>
+<text x="40.0" y="230.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Then C replaces the assembly one function at a time. The m2c tool drafts each function.</text>
+<text x="40.0" y="250.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The decomp.me site, asm-differ and objdiff (GameCube and Wii) check it against the original.</text>
+</svg>

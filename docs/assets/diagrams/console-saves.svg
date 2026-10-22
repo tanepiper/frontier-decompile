@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="300" viewBox="0 0 900 300" role="img" aria-label="Battery RAM, memory cards and passwords, and how a port keeps each format">
+<title>Battery RAM, memory cards and passwords, and how a port keeps each format</title>
+<rect x="0.5" y="0.5" width="899" height="299" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">SAVE FORMATS IN A PORT</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">With the original format, saves move between the original in an emulator and the port.</text>
+<rect x="40.0" y="88.0" width="300.0" height="48.0" rx="5" fill="#60a5fa" stroke="#60a5fa" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="190.0" y="107.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">Battery RAM (SRAM)</text>
+<text x="190.0" y="124.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">in the cartridge</text>
+<path d="M342.0 112.0L396.0 112.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="400.0" y="88.0" width="460.0" height="48.0" rx="5" fill="#4ade80" stroke="#4ade80" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="630.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">a file with the same bytes</text>
+<rect x="40.0" y="148.0" width="300.0" height="48.0" rx="5" fill="#c084fc" stroke="#c084fc" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="190.0" y="167.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">Memory card</text>
+<text x="190.0" y="184.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">PlayStation, PS2, GameCube</text>
+<path d="M342.0 172.0L396.0 172.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="400.0" y="148.0" width="460.0" height="48.0" rx="5" fill="#4ade80" stroke="#4ade80" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="630.0" y="176.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">card API calls become file calls</text>
+<rect x="40.0" y="208.0" width="300.0" height="48.0" rx="5" fill="#f59e0b" stroke="#f59e0b" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="190.0" y="227.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">Password</text>
+<text x="190.0" y="244.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">the state as text</text>
+<path d="M342.0 232.0L396.0 232.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="400.0" y="208.0" width="460.0" height="48.0" rx="5" fill="#4ade80" stroke="#4ade80" fill-opacity="0.2" stroke-opacity="0.65"/>
+<text x="630.0" y="236.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">the same encoding, exactly</text>
+<text x="40.0" y="284.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Players still have old passwords and old save files.</text>
+</svg>

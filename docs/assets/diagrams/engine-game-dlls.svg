@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="350" viewBox="0 0 900 350" role="img" aria-label="GoldSrc and LithTech load the engine and then the game code from separate DLLs. Half-Life uses hl.dll and client.dll. LithTech games use object.lto and cshell.dll">
+<title>GoldSrc and LithTech load the engine and then the game code from separate DLLs. Half-Life uses hl.dll and client.dll. LithTech games use object.lto and cshell.dll</title>
+<rect x="0.5" y="0.5" width="899" height="349" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">GAME CODE IN SEPARATE DLLS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">Other games share the engine. The DLLs hold the code of this game, so study them first.</text>
+<text x="24.0" y="92.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2dd4bf" text-anchor="start">GoldSrc (Half-Life, 1998)</text>
+<rect x="24.0" y="104.0" width="120.0" height="50.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.3"/>
+<text x="84.0" y="126.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">hl.exe</text>
+<text x="84.0" y="142.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">the launcher</text>
+<path d="M146.0 129.0L176.0 129.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="180.0" y="104.0" width="190.0" height="50.0" rx="4" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="275.0" y="126.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">hw.dll or sw.dll</text>
+<text x="275.0" y="142.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">hardware or software engine</text>
+<path d="M372.0 118.0L420.0 104.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M372.0 140.0L420.0 156.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="424.0" y="80.0" width="240.0" height="46.0" rx="4" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="544.0" y="100.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">hl.dll  (server)</text>
+<text x="544.0" y="116.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">monsters, weapons, rules</text>
+<rect x="424.0" y="134.0" width="240.0" height="46.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="544.0" y="154.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">client.dll  (client)</text>
+<text x="544.0" y="170.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">HUD, prediction, effects</text>
+<text x="684.0" y="100.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">Their source is in the</text>
+<text x="684.0" y="117.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">Half-Life SDK. Maps are BSP</text>
+<text x="684.0" y="134.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">version 30 with WAD3 textures.</text>
+<text x="24.0" y="222.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#2dd4bf" text-anchor="start">LithTech (Shogo, No One Lives Forever)</text>
+<rect x="24.0" y="234.0" width="120.0" height="50.0" rx="4" fill="#64748b" stroke="none" fill-opacity="0.3"/>
+<text x="84.0" y="256.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">lithtech.exe</text>
+<text x="84.0" y="272.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">the engine</text>
+<path d="M146.0 248.0L420.0 236.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M146.0 272.0L420.0 288.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="424.0" y="212.0" width="240.0" height="46.0" rx="4" fill="#f87171" stroke="none" fill-opacity="0.25"/>
+<text x="544.0" y="232.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">object.lto  (server)</text>
+<text x="544.0" y="248.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">the game objects</text>
+<rect x="424.0" y="266.0" width="240.0" height="46.0" rx="4" fill="#f59e0b" stroke="none" fill-opacity="0.25"/>
+<text x="544.0" y="286.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">cshell.dll  (client)</text>
+<text x="544.0" y="302.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10.5" font-weight="400" fill="#8fa9a5" text-anchor="middle">the client side</text>
+<text x="684.0" y="232.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">Ordinary Windows DLLs</text>
+<text x="684.0" y="249.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">under other names. Data is</text>
+<text x="684.0" y="266.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#8fa9a5" text-anchor="start">in .REZ archives.</text>
+<text x="24.0" y="336.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="400" fill="#e2ece9" text-anchor="start">Mods replace these DLLs. A compatible engine (Xash3D FWGS for GoldSrc) can run the original game DLLs.</text>
+</svg>

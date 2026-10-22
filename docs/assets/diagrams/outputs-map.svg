@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="320" viewBox="0 0 900 320" role="img" aria-label="What a project can ship: findings as documents and a website, the reimplementation as programs for each system, a browser version and a server, and tools for players">
+<title>What a project can ship: findings as documents and a website, the reimplementation as programs for each system, a browser version and a server, and tools for players</title>
+<rect x="0.5" y="0.5" width="899" height="319" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">WHAT A PROJECT SHIPS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">A project ships only new work, with none of the game's files.</text>
+<rect x="350.0" y="84.0" width="200.0" height="56.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.3"/>
+<text x="450.0" y="117.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">the project</text>
+<rect x="40.0" y="200.0" width="150.0" height="56.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="115.0" y="226.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">documents</text>
+<text x="115.0" y="243.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">findings, guides</text>
+<path d="M450.0 142.0L115.0 198.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="210.0" y="200.0" width="150.0" height="56.0" rx="6" fill="#60a5fa" stroke="none" fill-opacity="0.25"/>
+<text x="285.0" y="226.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">a website</text>
+<text x="285.0" y="243.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">built from the docs</text>
+<path d="M450.0 142.0L285.0 198.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="380.0" y="200.0" width="150.0" height="56.0" rx="6" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="455.0" y="226.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">programs</text>
+<text x="455.0" y="243.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">Windows, macOS, Linux</text>
+<path d="M450.0 142.0L455.0 198.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="550.0" y="200.0" width="150.0" height="56.0" rx="6" fill="#4ade80" stroke="none" fill-opacity="0.25"/>
+<text x="625.0" y="226.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">a browser version</text>
+<text x="625.0" y="243.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">on the player's files</text>
+<path d="M450.0 142.0L625.0 198.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="720.0" y="200.0" width="150.0" height="56.0" rx="6" fill="#c084fc" stroke="none" fill-opacity="0.25"/>
+<text x="795.0" y="226.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="middle">a server</text>
+<text x="795.0" y="243.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">multiplayer, replays</text>
+<path d="M450.0 142.0L795.0 198.0" stroke="#8fa9a5" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+<text x="40.0" y="300.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Releases are built by CI from a tag. Players bring their own copy of the game.</text>
+</svg>

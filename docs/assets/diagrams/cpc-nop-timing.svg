@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360" role="img" aria-label="On the Amstrad CPC, wait states stretch every instruction to a multiple of 4 T-states, so time is counted in NOPs of 1 microsecond. A Z80 cycle table from another machine gives the wrong times.">
+<title>On the Amstrad CPC, wait states stretch every instruction to a multiple of 4 T-states, so time is counted in NOPs of 1 microsecond. A Z80 cycle table from another machine gives the wrong times.</title>
+<rect x="0.5" y="0.5" width="899" height="359" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">CPC TIME COUNTED IN NOPS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The gate array stretches every instruction to a multiple of 4 T-states. One NOP = 4 T-states = 1 microsecond.</text>
+<text x="24.0" y="90.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#8fa9a5" text-anchor="start">instruction</text>
+<text x="200.0" y="90.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#8fa9a5" text-anchor="start">Z80 T-states (teal), wait states added on the CPC (amber)</text>
+<text x="650.0" y="90.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#8fa9a5" text-anchor="start">on a CPC</text>
+<text x="24.0" y="121.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="400" fill="#e2ece9" text-anchor="start">NOP</text>
+<rect x="200.0" y="104.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="222.0" y="104.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="244.0" y="104.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="266.0" y="104.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<text x="650.0" y="121.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">1 NOP = 1 microsecond</text>
+<text x="24.0" y="155.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="400" fill="#e2ece9" text-anchor="start">LD A,B</text>
+<rect x="200.0" y="138.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="222.0" y="138.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="244.0" y="138.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="266.0" y="138.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<text x="650.0" y="155.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">1 NOP = 1 microsecond</text>
+<text x="24.0" y="189.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="400" fill="#e2ece9" text-anchor="start">INC HL</text>
+<rect x="200.0" y="172.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="222.0" y="172.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="244.0" y="172.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="266.0" y="172.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="288.0" y="172.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="310.0" y="172.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="332.0" y="172.0" width="19.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.7"/>
+<rect x="354.0" y="172.0" width="19.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.7"/>
+<path d="M286.5 169.0L286.5 199.0" stroke="#e2ece9" stroke-width="1" fill="none"/>
+<text x="650.0" y="189.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">2 NOPs = 2 microseconds</text>
+<text x="24.0" y="223.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="400" fill="#e2ece9" text-anchor="start">LD A,(HL)</text>
+<rect x="200.0" y="206.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="222.0" y="206.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="244.0" y="206.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="266.0" y="206.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="288.0" y="206.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="310.0" y="206.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="332.0" y="206.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="354.0" y="206.0" width="19.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.7"/>
+<path d="M286.5 203.0L286.5 233.0" stroke="#e2ece9" stroke-width="1" fill="none"/>
+<text x="650.0" y="223.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">2 NOPs = 2 microseconds</text>
+<text x="24.0" y="257.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="400" fill="#e2ece9" text-anchor="start">LD HL,nn</text>
+<rect x="200.0" y="240.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="222.0" y="240.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="244.0" y="240.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="266.0" y="240.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="288.0" y="240.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="310.0" y="240.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="332.0" y="240.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="354.0" y="240.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="376.0" y="240.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="398.0" y="240.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="420.0" y="240.0" width="19.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.7"/>
+<rect x="442.0" y="240.0" width="19.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.7"/>
+<path d="M286.5 237.0L286.5 267.0" stroke="#e2ece9" stroke-width="1" fill="none"/>
+<path d="M374.5 237.0L374.5 267.0" stroke="#e2ece9" stroke-width="1" fill="none"/>
+<text x="650.0" y="257.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">3 NOPs = 3 microseconds</text>
+<text x="24.0" y="291.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" font-weight="400" fill="#e2ece9" text-anchor="start">JP nn</text>
+<rect x="200.0" y="274.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="222.0" y="274.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="244.0" y="274.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="266.0" y="274.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="288.0" y="274.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="310.0" y="274.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="332.0" y="274.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="354.0" y="274.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="376.0" y="274.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="398.0" y="274.0" width="19.0" height="24.0" rx="2" fill="#2dd4bf" stroke="none" fill-opacity="0.55"/>
+<rect x="420.0" y="274.0" width="19.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.7"/>
+<rect x="442.0" y="274.0" width="19.0" height="24.0" rx="2" fill="#f59e0b" stroke="none" fill-opacity="0.7"/>
+<path d="M286.5 271.0L286.5 301.0" stroke="#e2ece9" stroke-width="1" fill="none"/>
+<path d="M374.5 271.0L374.5 301.0" stroke="#e2ece9" stroke-width="1" fill="none"/>
+<text x="650.0" y="291.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">3 NOPs = 3 microseconds</text>
+<text x="24.0" y="332.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">The Z80A runs at 4 MHz. With the wait states it gives about 3.3 MHz of work.</text>
+<text x="24.0" y="350.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Count a routine's time in NOPs. A Z80 cycle table from another machine gives the wrong times.</text>
+</svg>

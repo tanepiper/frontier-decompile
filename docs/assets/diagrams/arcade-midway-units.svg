@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360" role="img" aria-label="The Midway Y-unit runs its TMS34010 at 40, 48 or 50 MHz and the T-unit at 50 MHz with DCS sound. The W-unit adds an ADSP-2105 for DCS and a PIC16C57 security chip. The screen runs at about 54.71 Hz.">
+<title>The Midway Y-unit runs its TMS34010 at 40, 48 or 50 MHz and the T-unit at 50 MHz with DCS sound. The W-unit adds an ADSP-2105 for DCS and a PIC16C57 security chip. The screen runs at about 54.71 Hz.</title>
+<rect x="0.5" y="0.5" width="899" height="359" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">MIDWAY Y, T AND W-UNITS</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">The TMS34010 graphics CPU runs the game. The screen runs at about 54.71 Hz (506 x 289 totals).</text>
+<rect x="24.0" y="80.0" width="272.0" height="184.0" rx="8" fill="#60a5fa" stroke="none" fill-opacity="0.15"/>
+<text x="38.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">Y-unit, 1988 on</text>
+<text x="38.0" y="122.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Smash TV, Mortal Kombat</text>
+<text x="38.0" y="152.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">TMS34010: 40 MHz "slow"</text>
+<text x="38.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">or 48 MHz "fast", 50 MHz T2</text>
+<text x="38.0" y="192.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">CVSD or ADPCM sound</text>
+<text x="38.0" y="212.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">Z80 + MSM6295 on ADPCM sets</text>
+<rect x="310.0" y="80.0" width="272.0" height="184.0" rx="8" fill="#c084fc" stroke="none" fill-opacity="0.15"/>
+<text x="324.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">T-unit, 1992 on</text>
+<text x="324.0" y="122.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Mortal Kombat, NBA Jam</text>
+<text x="324.0" y="152.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">TMS34010 at 50 MHz</text>
+<text x="324.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">4 MHz pixel clock</text>
+<text x="324.0" y="192.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">DCS sound (2K variant)</text>
+<rect x="596.0" y="80.0" width="272.0" height="184.0" rx="8" fill="#f59e0b" stroke="none" fill-opacity="0.15"/>
+<text x="610.0" y="104.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" font-weight="600" fill="#e2ece9" text-anchor="start">W-unit, 1994 on</text>
+<text x="610.0" y="122.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">MK3, WrestleMania</text>
+<text x="610.0" y="152.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">TMS34010</text>
+<text x="610.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">ADSP-2105 at 10 MHz</text>
+<text x="610.0" y="192.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">for DCS (8K variant)</text>
+<text x="610.0" y="212.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">PIC16C57 security chip</text>
+<text x="24.0" y="300.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">A port at 60 Hz shows about 317 more frames per minute than a 54.71 Hz board.</text>
+<text x="24.0" y="318.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">Attract mode, audits, adjustments and diagnostics are separate modules in the source. Rebuild them all.</text>
+</svg>

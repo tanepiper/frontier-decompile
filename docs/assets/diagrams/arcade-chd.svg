@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="320" viewBox="0 0 900 320" role="img" aria-label="CHD stores disks and optical media as compressed hunks of 16 bytes to 1 MiB. The chdman tool creates, extracts, checks and verifies them with the zlib, zstd, lzma, huff and flac codecs.">
+<title>CHD stores disks and optical media as compressed hunks of 16 bytes to 1 MiB. The chdman tool creates, extracts, checks and verifies them with the zlib, zstd, lzma, huff and flac codecs.</title>
+<rect x="0.5" y="0.5" width="899" height="319" rx="10" fill="#0d1b1e" stroke="#1f3d40"/>
+<defs><marker id="arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#8fa9a5"/></marker></defs>
+<text x="24.0" y="34.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#2dd4bf" text-anchor="start" letter-spacing="0.08em">ROM SETS AND CHD</text>
+<text x="24.0" y="54.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#8fa9a5" text-anchor="start">A ROM set lists every chip dump. Disks and discs go in a CHD (Compressed Hunks of Data).</text>
+<text x="24.0" y="96.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="600" fill="#e2ece9" text-anchor="start">a CHD file</text>
+<rect x="24.0" y="106.0" width="120.0" height="44.0" rx="6" fill="#f59e0b" stroke="none" fill-opacity="0.3"/>
+<text x="84.0" y="125.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#e2ece9" text-anchor="middle">header</text>
+<text x="84.0" y="141.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="middle">metadata</text>
+<rect x="152.0" y="106.0" width="82.0" height="44.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="193.0" y="125.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">hunk 0</text>
+<text x="193.0" y="141.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">zlib</text>
+<rect x="240.0" y="106.0" width="82.0" height="44.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="281.0" y="125.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">hunk 1</text>
+<text x="281.0" y="141.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">zstd</text>
+<rect x="328.0" y="106.0" width="82.0" height="44.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="369.0" y="125.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">hunk 2</text>
+<text x="369.0" y="141.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">lzma</text>
+<rect x="416.0" y="106.0" width="82.0" height="44.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="457.0" y="125.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">hunk 3</text>
+<text x="457.0" y="141.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">flac</text>
+<rect x="504.0" y="106.0" width="82.0" height="44.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="545.0" y="125.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">hunk 4</text>
+<text x="545.0" y="141.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">zlib</text>
+<rect x="592.0" y="106.0" width="82.0" height="44.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="633.0" y="125.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">hunk 5</text>
+<text x="633.0" y="141.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">huff</text>
+<rect x="680.0" y="106.0" width="82.0" height="44.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="721.0" y="125.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">hunk 6</text>
+<text x="721.0" y="141.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">zstd</text>
+<rect x="768.0" y="106.0" width="82.0" height="44.0" rx="6" fill="#2dd4bf" stroke="none" fill-opacity="0.22"/>
+<text x="809.0" y="125.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">hunk 7</text>
+<text x="809.0" y="141.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="10" font-weight="400" fill="#8fa9a5" text-anchor="middle">lzma</text>
+<text x="24.0" y="172.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="400" fill="#8fa9a5" text-anchor="start">Each hunk is compressed on its own with the best codec. Hunks are 16 bytes to 1 MiB.</text>
+<rect x="24.0" y="200.0" width="90.0" height="24.0" rx="3" fill="#60a5fa" stroke="none" fill-opacity="0.35"/>
+<text x="69.0" y="216.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">create</text>
+<text x="126.0" y="216.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">createhd, createcd, createdvd, createld, createraw</text>
+<rect x="24.0" y="230.0" width="90.0" height="24.0" rx="3" fill="#c084fc" stroke="none" fill-opacity="0.35"/>
+<text x="69.0" y="246.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">extract</text>
+<text x="126.0" y="246.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">the matching extract commands</text>
+<rect x="24.0" y="260.0" width="90.0" height="24.0" rx="3" fill="#4ade80" stroke="none" fill-opacity="0.35"/>
+<text x="69.0" y="276.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11" font-weight="600" fill="#e2ece9" text-anchor="middle">check</text>
+<text x="126.0" y="276.0" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" font-weight="400" fill="#e2ece9" text-anchor="start">info, verify</text>
+<text x="560.0" y="214.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">CD codecs: cdzl, cdzs, cdlz, cdfl.</text>
+<text x="560.0" y="232.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">LaserDisc: avhu.</text>
+<text x="560.0" y="250.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">To read a CPS-3 CD or a GD-ROM,</text>
+<text x="560.0" y="268.0" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" font-weight="400" fill="#8fa9a5" text-anchor="start">extract it from the CHD first.</text>
+</svg>
