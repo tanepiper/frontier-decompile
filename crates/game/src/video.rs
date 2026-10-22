@@ -16,8 +16,10 @@
 //! Parity against the original running on the reference runtime: `crates/hooks/tests/mcga3_parity.rs`.
 
 mod raster;
+mod screen;
 mod shapes;
 pub use raster::*;
+pub use screen::*;
 pub use shapes::*;
 
 pub use crate::math3::{lin, lin32, Bus, Cpu, DIVIDE_HANDLER_STEPS, DIVIDE_RESUME, EAX, EBP, EBX, ECX, EDI, EDX, ESI, ESP};
@@ -177,4 +179,14 @@ pub const EXPORTS: &[(u16, u16, &str, Port)] = &[
     (0x3108, 0x01fc, "fill_rows", fill_rows),
     (0x3399, 0x01f4, "fill_masks", fill_masks),
     (0x3343, 0x01f8, "fill_masks_args", fill_masks_args),
+    (0x1a1b, 0x0218, "glyph", glyph),
+    (0x012b, 0x0258, "text_width", text_width),
+    (0x015b, 0x01d0, "char_width", char_width),
+    (0x06ba, 0x01ec, "fill_rect", fill_rect),
+    (0x072a, 0x01f0, "fill_rect_masked", fill_rect_masked),
+    (0x076e, 0x0224, "pixel", pixel),
+    (0x0788, 0x0268, "target_back", target_back),
+    (0x078f, 0x026c, "target_screen", target_screen),
+    (0x3489, 0x01dc, "clear_view_7f", clear_view_7f),
+    (0x349c, 0x01e0, "clear_view_0", clear_view_0),
 ];

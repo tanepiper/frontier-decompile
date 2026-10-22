@@ -213,6 +213,51 @@ fn setup(m: &mut Machine, rng: &mut Rng, name: &str, ds: u16) -> bool {
             m.cpu.mem.ww(lin(ds, video::TARGET as u32), target);
             true
         }
+        "glyph" | "text_width" | "char_width" | "fill_rect" | "fill_rect_masked" | "pixel" | "target_back"
+        | "target_screen" | "clear_view_7f" | "clear_view_0" => {
+            for r in [EAX, EBX, ECX, EDX, ESI, EBP] {
+                m.cpu.r[r] = rng.dword();
+            }
+            let set = |m: &mut Machine, r: usize, v: u16| m.cpu.r[r] = (m.cpu.r[r] & 0xFFFF_0000) | v as u32;
+            match name {
+                "glyph" => {
+                    set(m, EAX, rng.below(0x60) + if rng.below(4) == 0 { 0 } else { 0x20 });
+                    set(m, ECX, rng.below(312));
+                    set(m, EDX, if rng.below(8) == 0 { rng.next() } else { rng.below(192) });
+                }
+                "text_width" => {
+                    // A string in scratch memory, DS pointing at it.
+                    let len = rng.below(24);
+                    for i in 0..len {
+                        let c = if rng.below(8) == 0 { rng.next() as u8 } else { 0x20 + rng.below(0x60) as u8 };
+                        m.cpu.mem.wb(lin(0x8000, (0x100 + i) as u32), c.max(1));
+                    }
+                    m.cpu.mem.wb(lin(0x8000, (0x100 + len) as u32), 0);
+                    set(m, ESI, 0x100);
+                }
+                "fill_rect" | "fill_rect_masked" => {
+                    let x0 = rng.below(320);
+                    let x1 = if rng.below(16) == 0 { x0.wrapping_sub(1) } else { x0 + rng.below(320 - x0) };
+                    let y0 = rng.below(200);
+                    let mut y1 = if rng.below(16) == 0 { rng.below(200) } else { y0 + rng.below(200 - y0) };
+                    if x1 == x0.wrapping_sub(1) {
+                        // Width 0 fills 65536 bytes a row: keep it to a row or two.
+                        y1 = y0 + rng.below(2);
+                    }
+                    set(m, EAX, x0);
+                    set(m, EBX, x1);
+                    m.cpu.r[ECX] = (m.cpu.r[ECX] & !0xFF) | y0 as u32;
+                    m.cpu.r[EDX] = (m.cpu.r[EDX] & !0xFF) | y1 as u32;
+                }
+                "pixel" => {
+                    set(m, EAX, rng.below(320));
+                    m.cpu.r[EBX] = (m.cpu.r[EBX] & !0xFF) | rng.below(200) as u32;
+                }
+                _ => {}
+            }
+            m.cpu.mem.ww(lin(ds, video::TARGET as u32), target);
+            true
+        }
         _ => false,
     }
 }
@@ -242,6 +287,9 @@ fn mcga3_ports_match_original() {
             m.cpu.flags &= !frontier_dos::cpu::DF;
             if !setup(&mut m, &mut rng, name, ds) {
                 break;
+            }
+            if name == "text_width" {
+                m.cpu.s[DS] = 0x8000;
             }
             m.enter(seg, off);
             let entry = state(&m.cpu);
