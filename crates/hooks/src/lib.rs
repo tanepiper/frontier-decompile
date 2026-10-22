@@ -32,6 +32,11 @@ pub fn state(cpu: &Cpu) -> math3::Cpu {
 }
 
 pub(crate) fn apply(cpu: &mut Cpu, s: &math3::Cpu) {
+    // The arithmetic flags a port leaves (CF, PF, AF, ZF, SF, OF). Ports that do not model flags
+    // return them unchanged from entry, so this changes nothing for them; ports whose callers
+    // test flags (EL2M00:468a's ZF) set them.
+    const ARITH: u32 = 0x08D5;
+    cpu.flags = (cpu.flags & !ARITH) | (s.flags & ARITH);
     cpu.r = s.r;
     cpu.s[CS] = s.cs;
     cpu.ip = s.ip as u32;

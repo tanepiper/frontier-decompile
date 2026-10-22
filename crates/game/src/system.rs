@@ -9,6 +9,21 @@
 use crate::math3::{lin, Bus, Cpu, Port, DECLINE, EAX, EBP, EBX, ECX, EDI, EDX, ESI, ESP};
 use crate::names::name_port;
 
+macro_rules! near_port {
+    ($name:ident, $inner:ident) => {
+        /// Port of the `EL2M00` routine of the same name (entered by a near `CALL`).
+        pub fn $name(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+            match $inner(c, bus) {
+                Some(n) => {
+                    near_ret(c, bus);
+                    n + 1
+                }
+                None => DECLINE,
+            }
+        }
+    };
+}
+
 /// The system seed in the main data segment: `s0` = `DS:2021`, `s1` = `DS:2025`.
 pub const SYS_S0: u16 = 0x2021;
 pub const SYS_S1: u16 = 0x2025;
@@ -759,30 +774,648 @@ fn self_4a45(c: &mut Cpu, bus: &mut dyn Bus, mut n: u64) -> Option<u64> {
     after_49f1(c, bus, n)
 }
 
-macro_rules! near_port {
-    ($name:ident, $inner:ident) => {
-        /// Port of the `EL2M00` routine of the same name (entered by a near `CALL`).
-        pub fn $name(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
-            match $inner(c, bus) {
-                Some(n) => {
-                    near_ret(c, bus);
-                    n + 1
+/// `EL2M00:4bad` without its `RET`, *observed*: a body at least DCh hot under a parent value
+/// above 32h is named with kind 10; from a parent value of 50h it gets small bodies (`BX` = 0,
+/// `DX` = 18h).
+fn classify_4bad(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let cx = bus.read16(lin(c.ds, 0x2049));
+    let bx = field(c, bus, 0x20);
+    c.set_x(ECX, cx);
+    c.set_x(EBX, bx);
+    if (bx as i16) < 0xdc {
+        return Some(4);
+    }
+    if (cx as i16) <= 0x32 {
+        return Some(6);
+    }
+    c.set_x(EAX, 0x0a);
+    let mut n = 7 + call_body_name(c, bus, 0x4bca)?;
+    n += 2;
+    if (c.x(ECX) as i16) < 0x50 {
+        return Some(n);
+    }
+    c.set_x(EBX, 0);
+    c.set_x(EDX, 0x18);
+    n += 2;
+    n += call_moons(c, bus, 0x4bd9)?;
+    Some(n)
+}
+
+/// `EL2M00:4bff` without its `RET`, *observed*: from the third body on (`DS:202d` > 2) the body
+/// becomes type AEh, class 32h, `+18h` = 3E2h, temperature 2C09h, and `+02h` is decremented
+/// (a white dwarf, *inferred*).
+fn classify_4bff(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let k = bus.read16(lin(c.ds, 0x202d));
+    c.set_x(EAX, k);
+    if (k as i16) <= 2 {
+        return 3;
+    }
+    set_field(c, bus, 0x0c, 0xae);
+    set_field(c, bus, 0x0a, 0x32);
+    let (es, si) = (c.es, c.x(ESI));
+    bus.write32(lin(es, si.wrapping_add(0x18)), 0x3e2);
+    set_field(c, bus, 0x20, 0x2c09);
+    let v = field(c, bus, 0x02).wrapping_sub(1);
+    set_field(c, bus, 0x02, v);
+    8
+}
+
+/// `CALL 4df5` inside a routine: the step, and whether the new `s0` is negative (the `SF` the
+/// caller's `JS`/`JNS` tests).
+fn call_sys_step(c: &mut Cpu, bus: &mut dyn Bus) -> (u64, bool) {
+    let n = sys_step_inline(c, bus);
+    (1 + n, c.r[EAX] & 0x8000_0000 != 0)
+}
+
+/// `EL2M00:4c2c` without its `RET`, *observed*: one system-seed step; a negative `s0` continues in
+/// [`classify_4bff`].
+fn classify_4c2c(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let (n, neg) = call_sys_step(c, bus);
+    if neg {
+        return n + 1 + classify_4bff(c, bus);
+    }
+    n + 1
+}
+
+/// `EL2M00:4c27` without its `RET`, *observed*: one step; a non-negative `s0` ends; otherwise
+/// [`classify_4c2c`].
+fn classify_4c27(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let (n, neg) = call_sys_step(c, bus);
+    if !neg {
+        return n + 1;
+    }
+    n + 1 + classify_4c2c(c, bus)
+}
+
+/// `OR AX,AX` flags: ZF, SF, PF from `AX`, CF and OF clear.
+fn or_flags(c: &mut Cpu) {
+    let ax = c.x(EAX);
+    let mut f = c.flags & !0x08D5;
+    if ax == 0 {
+        f |= 0x40;
+    }
+    if ax & 0x8000 != 0 {
+        f |= 0x80;
+    }
+    if (ax as u8).count_ones() % 2 == 0 {
+        f |= 0x04;
+    }
+    c.flags = f;
+}
+
+/// `CALLF [DS:02c4]` (`from_u32`) etc. with the return offset `ret`.
+fn m3(c: &mut Cpu, bus: &mut dyn Bus, slot: u16, ret: u16) -> Option<u64> {
+    callf_math3(c, bus, slot, ret)
+}
+
+/// `EL2M00:47d8` without its `RET`, *observed*: finish the body at `ES:SI`.
+///
+/// Mass `+0Eh`/`+10h` = `DS:07c0` × `DS:07c8` (16 × 32 bits) as a float (`from_u32`, exponent
+/// `+ 19h`); the radius `+14h`/`+16h` from the mass and the parent body `[DS:07e0]` (Roche-style:
+/// `sqrt(mass² / parent) × 5EDBh`, one exponent higher for a close moon of a body with `+0Ah` = 0),
+/// or 0 for a primary (`DS:2037` = 0); `+12h` = `s0` low word; seed `+04h` = `s1`; parent index
+/// `+08h` = `DS:2037`; orbit `+00h`/`+02h` = `DS:07bc` as a float (exponent `+ 3Fh`); `+1Ch`, `+1Eh`,
+/// `+3Ah`, `+3Bh`, `+3Eh` from the seed. Unless the temperature `+20h` is above 3E8h, the heat of
+/// every body up the parent chain (records at `[DS:2041]:[DS:203f]`, their `+18h`) is summed in
+/// float and added to `+20h`. `+3Ch` = 0, `DS:204b` = `DS:202d`, then the classifier at
+/// `[DS:07e8]` is called (`CALL AX`) if set. Returns `AX` = FFFFh with ZF clear.
+fn finish_body(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let ds = c.ds;
+    let es = c.es;
+    let si = c.x(ESI);
+    let r16 = |bus: &mut dyn Bus, off: u16| bus.read16(lin(ds, off));
+    let mut n: u64 = 0;
+    // MOV AX,[7c0]; PUSH AX; MUL [7c8]; POP AX; PUSH CX; PUSH DX; MUL [7ca]; POP CX; ADD; ADC; POP CX
+    let a = r16(bus, 0x07c0) as u32;
+    let lo = a * r16(bus, 0x07c8) as u32;
+    let hi = a * r16(bus, 0x07ca) as u32;
+    let (sum, carry) = hi.overflowing_add(lo >> 16);
+    let _ = carry;
+    let mut ax = sum as u16;
+    let mut dx = ((hi >> 16) as u16).wrapping_add(((hi & 0xffff) + (lo >> 16) > 0xffff) as u16);
+    c.set_x(EAX, ax);
+    c.set_x(EDX, dx);
+    bus.write16(lin(es, si.wrapping_add(0x0e)), ax);
+    bus.write16(lin(es, si.wrapping_add(0x10)), dx);
+    let cx0 = c.x(ECX);
+    c.set_x(ECX, ax | dx);
+    n += 16;
+    let mut di = c.x(EDI);
+    let _ = cx0;
+    if ax | dx != 0 {
+        n += m3(c, bus, 0x02c4, 0x4800)?;
+        let bx = c.x(EBX).wrapping_add(0x19);
+        c.set_x(EBX, bx);
+        bus.write16(lin(es, si.wrapping_add(0x0e)), c.x(EDX));
+        bus.write16(lin(es, si.wrapping_add(0x10)), bx);
+        let parent = r16(bus, 0x2037);
+        c.set_x(EAX, parent);
+        c.set_x(ECX, parent);
+        n += 7;
+        if parent != 0 {
+            di = r16(bus, 0x07e0);
+            c.set_x(EDI, di);
+            n += 3;
+            if bus.read16(lin(es, di.wrapping_add(0x0a))) == 0 {
+                let d = si.wrapping_sub(di);
+                c.set_x(EAX, d);
+                n += 4;
+                if (d as i16) <= 0x81 {
+                    c.set_x(EBX, c.x(EBX).wrapping_add(1));
+                    n += 1;
                 }
-                None => DECLINE,
+            }
+            // 4829
+            let bx = c.x(EBX);
+            c.set_x(ECX, bx);
+            let dx = c.x(EDX);
+            c.set_x(EAX, dx);
+            push16(c, bus, dx);
+            n += 3;
+            n += m3(c, bus, 0x02b4, 0x4832)?;
+            let d = c.x(EDX);
+            c.set_x(EAX, d);
+            let sp = c.x(ESP);
+            c.set_x(EDX, bus.read16(lin(c.ss, sp)));
+            c.set_x(ESP, sp.wrapping_add(2));
+            n += 2;
+            n += m3(c, bus, 0x02b4, 0x4839)?;
+            let bx = c.x(EBX);
+            c.set_x(ECX, bx);
+            c.set_x(EBX, bus.read16(lin(es, di)));
+            c.set_x(EAX, bus.read16(lin(es, di.wrapping_add(2))));
+            n += 3;
+            n += m3(c, bus, 0x0288, 0x4846)?;
+            let cx = c.x(ECX);
+            c.set_x(EDX, cx);
+            n += 1;
+            n += m3(c, bus, 0x02c8, 0x484c)?;
+            let d = c.x(EDX);
+            c.set_x(EBX, d);
+            c.set_x(EDX, 0x5edb);
+            c.set_x(ECX, 0);
+            n += 3;
+            n += m3(c, bus, 0x02b4, 0x4857)?;
+            let d = c.x(EDX);
+            c.set_x(ECX, d);
+            let b = c.x(EBX);
+            c.set_x(EAX, b);
+            n += 2;
+        }
+        // 485b
+        bus.write16(lin(es, si.wrapping_add(0x14)), c.x(ECX));
+        bus.write16(lin(es, si.wrapping_add(0x16)), c.x(EAX));
+        let s0lo = r16(bus, SYS_S0);
+        c.set_x(EAX, s0lo);
+        bus.write16(lin(es, si.wrapping_add(0x12)), s0lo);
+        n += 4;
+    } else {
+        // JZ 486a: CX = AX | DX = 0
+    }
+    // 486a
+    let s1 = bus.read32(lin(ds, SYS_S1));
+    c.r[EAX] = s1;
+    bus.write32(lin(es, si.wrapping_add(4)), s1);
+    let k = r16(bus, 0x202d).wrapping_add(1);
+    bus.write16(lin(ds, 0x202d), k);
+    let parent = r16(bus, 0x2037);
+    c.set_x(EAX, parent);
+    bus.write16(lin(es, si.wrapping_add(8)), parent);
+    c.set_x(EAX, r16(bus, 0x07bc));
+    c.set_x(EDX, r16(bus, 0x07be));
+    n += 7;
+    n += m3(c, bus, 0x02c4, 0x4889)?;
+    let bx = c.x(EBX).wrapping_add(0x3f);
+    c.set_x(EBX, bx);
+    bus.write16(lin(es, si), c.x(EDX));
+    bus.write16(lin(es, si.wrapping_add(2)), bx);
+    let w = r16(bus, 0x2023);
+    let p = w as u32 * w as u32;
+    let d = ((p >> 24) & 0xff) as u16;
+    bus.write16(lin(es, si.wrapping_add(0x1c)), d);
+    let w3 = w.rotate_right(3);
+    let p = w3 as u32 * w3 as u32;
+    let d2 = ((p >> 16) as u16 >> 4).wrapping_add(bus.read16(lin(es, di.wrapping_add(0x3e))));
+    bus.write16(lin(es, si.wrapping_add(0x1e)), d2);
+    let w6 = bus.read16(lin(es, si.wrapping_add(6)));
+    let p = w6 as u32 * w6 as u32;
+    let d3 = (p >> 16) as u16 >> 1;
+    bus.write16(lin(es, si.wrapping_add(0x3e)), d3);
+    bus.write8(lin(es, si.wrapping_add(0x3a)), (d3 as u8) & 3);
+    let f = bus.read8(lin(ds, 0x2034));
+    bus.write8(lin(es, si.wrapping_add(0x3b)), f);
+    let temp = bus.read16(lin(es, si.wrapping_add(0x20)));
+    c.set_x(EAX, temp);
+    // DX after AND DL,3: DH from d3, DL & 3.
+    c.set_x(EDX, (d3 & 0xff00) | (d3 & 3));
+    n += 25;
+    if (temp as i16) <= 0x3e8 {
+        // Sum the heat up the parent chain.
+        let (pb, pc) = (r16(bus, 0x07bc), r16(bus, 0x07c0));
+        let mut sp = c.x(ESP);
+        for v in [pb, pc, si, es] {
+            sp = sp.wrapping_sub(2);
+            bus.write16(lin(c.ss, sp), v);
+        }
+        c.set_x(ESP, sp);
+        bus.write16(lin(ds, 0x07bc), 0);
+        bus.write16(lin(ds, 0x07c0), 0);
+        n += 6;
+        let (mut cur_es, mut cur_si) = (es, si);
+        let mut links = 0;
+        loop {
+            // A parent chain that loops never ends in the original either; the host must not
+            // hang, so a walk this long is left to the original.
+            links += 1;
+            if links > 256 {
+                return None;
+            }
+            let bx = bus.read16(lin(cur_es, cur_si.wrapping_add(8)));
+            c.set_x(EBX, bx);
+            n += 3;
+            if bx == 0 {
+                break;
+            }
+            let rec = (bx << 6).wrapping_add(r16(bus, 0x203f)).wrapping_sub(0x40);
+            let pseg = r16(bus, 0x2041);
+            let hx = bus.read16(lin(pseg, rec.wrapping_add(0x18)));
+            let hy = bus.read16(lin(pseg, rec.wrapping_add(0x1a)));
+            c.set_x(EBX, rec);
+            c.set_x(EAX, hx);
+            c.set_x(EDX, hy);
+            c.set_x(ECX, hx | hy);
+            n += 11;
+            if hx | hy != 0 {
+                push16(c, bus, rec);
+                n += 1;
+                n += m3(c, bus, 0x02c4, 0x4917)?;
+                let b = c.x(EBX).wrapping_add(0x32);
+                c.set_x(ECX, b);
+                n += 4;
+                // ES:SI is the walking pointer here.
+                c.set_x(EBX, bus.read16(lin(cur_es, cur_si.wrapping_add(0x0e))));
+                c.set_x(EAX, bus.read16(lin(cur_es, cur_si.wrapping_add(0x10))));
+                n += m3(c, bus, 0x0288, 0x4928)?;
+                let cx = c.x(ECX);
+                c.set_x(EBX, cx);
+                let ax = c.x(EAX);
+                c.set_x(EDX, ax);
+                n += 2;
+                n += m3(c, bus, 0x02b4, 0x4930)?;
+                let d = c.x(EDX);
+                c.set_x(EAX, d);
+                let b = c.x(EBX);
+                c.set_x(EDX, b);
+                c.set_x(EBX, r16(bus, 0x07bc));
+                c.set_x(ECX, r16(bus, 0x07c0));
+                n += 4;
+                n += m3(c, bus, 0x027c, 0x4940)?;
+                bus.write16(lin(ds, 0x07bc), c.x(EAX));
+                bus.write16(lin(ds, 0x07c0), c.x(EDX));
+                let sp = c.x(ESP);
+                c.set_x(EBX, bus.read16(lin(c.ss, sp)));
+                c.set_x(ESP, sp.wrapping_add(2));
+                n += 3;
+            }
+            // 4948: MOV SI,BX; MOV ES,[2041]; JMP 48ee
+            cur_si = c.x(EBX);
+            cur_es = pseg;
+            c.set_x(ESI, cur_si);
+            c.es = cur_es;
+            n += 3;
+        }
+        c.es = cur_es;
+        c.set_x(ESI, cur_si);
+        // 4950
+        c.set_x(EAX, r16(bus, 0x07bc));
+        c.set_x(EDX, r16(bus, 0x07c0));
+        n += 2;
+        n += m3(c, bus, 0x02c8, 0x495b)?;
+        n += m3(c, bus, 0x02c8, 0x495f)?;
+        let d = c.x(EDX);
+        c.set_x(ECX, d);
+        let a = c.x(EAX);
+        c.set_x(EDX, a);
+        n += 2;
+        n += m3(c, bus, 0x028c, 0x4967)?;
+        // POP ES; POP SI; POP [7c0]; POP [7bc]
+        let sp = c.x(ESP);
+        c.es = bus.read16(lin(c.ss, sp));
+        c.set_x(ESI, bus.read16(lin(c.ss, sp.wrapping_add(2))));
+        let v = bus.read16(lin(c.ss, sp.wrapping_add(4)));
+        bus.write16(lin(ds, 0x07c0), v);
+        let v = bus.read16(lin(c.ss, sp.wrapping_add(6)));
+        bus.write16(lin(ds, 0x07bc), v);
+        c.set_x(ESP, sp.wrapping_add(8));
+        let t = bus.read16(lin(es, si.wrapping_add(0x20))).wrapping_add(c.x(EAX));
+        bus.write16(lin(es, si.wrapping_add(0x20)), t);
+        n += 5;
+    }
+    let _ = (ax, dx, &mut ax, &mut dx);
+    // 4975
+    bus.write16(lin(es, si.wrapping_add(0x3c)), 0);
+    let k = r16(bus, 0x202d);
+    c.set_x(EAX, k);
+    bus.write16(lin(ds, 0x204b), k);
+    let f = r16(bus, 0x07e8);
+    c.set_x(EAX, f);
+    n += 6;
+    if f != 0 {
+        push16(c, bus, 0x498a);
+        n += 1;
+        let m = match f {
+            0x4990 => classify_4990(c, bus)?,
+            0x4abb => classify_4abb(c, bus)?,
+            0x4b69 => classify_4b69(c, bus)?,
+            0x4bad => classify_4bad(c, bus)?,
+            0x4bff => classify_4bff(c, bus),
+            0x4c27 => classify_4c27(c, bus),
+            0x4c2c => classify_4c2c(c, bus),
+            0x4bda => {
+                // 4bda's inner part: reuse the port, which ends with its own RET.
+                let r = body_4bda_port(c, bus);
+                if r == DECLINE {
+                    return None;
+                }
+                r - 1
+            }
+            _ => return None,
+        };
+        let sp = c.x(ESP);
+        c.set_x(ESP, sp.wrapping_add(2));
+        n += m + 1;
+        if f == 0x4bda {
+            // body_4bda_port already popped the return address.
+            c.set_x(ESP, sp);
+        }
+    }
+    c.set_x(EAX, 0xffff);
+    or_flags(c);
+    n += 2;
+    Some(n)
+}
+
+near_port!(finish_body_port, finish_body);
+
+/// `EL2M00:468a` without its `RET`, *observed*: set up a new body at `ES:SI` from its mass
+/// `DS:07bc` (a dword) and finish it.
+///
+/// `DS:07bc`, `07c0`, `07c8` and `07e0` are saved around the work. The class index is the first
+/// entry of the dword thresholds at `EL2M00:00ff` above the mass; it selects `+18h` (`EL2M00:01b7`),
+/// `+0Ah` (`00a3`), the temperature `+20h` (`0189`), `DS:07e4` (`015b`), the classifier
+/// `DS:07e8` (`0213`) and the type `+0Ch` (`00d1`). Type 0 ends there (`AX` = 0, ZF set).
+/// Otherwise `DS:202f` counts the body and it is named: from a mass of `0103_6640h` up it is a
+/// star, named after the system (`[DS:2029]`) with a space and, for a companion (`DS:2037` ≠ 0),
+/// the letter `'@' + ++DS:2030`. Below that, a body whose parent `[DS:07e0]` has the "named" bit
+/// (`+3Bh` bit 7) gets its own kind-10 name from the seed `s1`; otherwise it takes the parent's
+/// name and a suffix by
+/// `DS:2034`: a number from `++DS:2031` (0) as one or two digits, a letter `'``' + ++DS:2032`
+/// (1), or a digit from `++DS:2033` (other). Then [`finish_body`] with the saved values restored.
+fn setup_body(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let ds = c.ds;
+    let es = c.es;
+    let si = c.x(ESI);
+    let cs = c.cs;
+    let saved = [
+        bus.read32(lin(ds, 0x07bc)),
+        bus.read16(lin(ds, 0x07c0)) as u32,
+        bus.read32(lin(ds, 0x07c8)),
+        bus.read32(lin(ds, 0x07e0)),
+    ];
+    // PUSH dword [7bc]; PUSH [7c0]; PUSH dword [7c8]; PUSH dword [7e0]
+    let mut sp = c.x(ESP);
+    sp = sp.wrapping_sub(4);
+    bus.write32(lin(c.ss, sp), saved[0]);
+    sp = sp.wrapping_sub(2);
+    bus.write16(lin(c.ss, sp), saved[1] as u16);
+    sp = sp.wrapping_sub(4);
+    bus.write32(lin(c.ss, sp), saved[2]);
+    sp = sp.wrapping_sub(4);
+    bus.write32(lin(c.ss, sp), saved[3]);
+    c.set_x(ESP, sp);
+    let mass = saved[0];
+    c.r[EAX] = mass;
+    let mut di: u16 = 0;
+    let mut n: u64 = 6;
+    loop {
+        let t = bus.read32(lin(cs, 0x00ffu16.wrapping_add(di)));
+        n += 2;
+        if mass < t {
+            break;
+        }
+        di = di.wrapping_add(4);
+        n += 2;
+    }
+    let v = bus.read32(lin(cs, 0x01b7u16.wrapping_add(di)));
+    c.r[EAX] = v;
+    bus.write32(lin(es, si.wrapping_add(0x18)), v);
+    di >>= 1;
+    let t = |bus: &mut dyn Bus, base: u16| bus.read16(lin(cs, base.wrapping_add(di)));
+    let a = t(bus, 0x00a3);
+    bus.write16(lin(es, si.wrapping_add(0x0a)), a);
+    let a = t(bus, 0x0189);
+    bus.write16(lin(es, si.wrapping_add(0x20)), a);
+    let a = t(bus, 0x015b);
+    bus.write16(lin(ds, 0x07e4), a);
+    let a = t(bus, 0x0213);
+    bus.write16(lin(ds, 0x07e8), a);
+    let kind = t(bus, 0x00d1);
+    bus.write16(lin(es, si.wrapping_add(0x0c)), kind);
+    c.set_x(EAX, kind);
+    c.set_x(EDI, di);
+    n += 15;
+    let restore = |c: &mut Cpu, bus: &mut dyn Bus| {
+        // POP dword [7e0]; POP dword [7c8]; POP [7c0]; POP dword [7bc]
+        let sp = c.x(ESP);
+        let v = bus.read32(lin(c.ss, sp));
+        bus.write32(lin(ds, 0x07e0), v);
+        let v = bus.read32(lin(c.ss, sp.wrapping_add(4)));
+        bus.write32(lin(ds, 0x07c8), v);
+        let v = bus.read16(lin(c.ss, sp.wrapping_add(8)));
+        bus.write16(lin(ds, 0x07c0), v);
+        let v = bus.read32(lin(c.ss, sp.wrapping_add(10)));
+        bus.write32(lin(ds, 0x07bc), v);
+        c.set_x(ESP, sp.wrapping_add(14));
+    };
+    if kind == 0 {
+        or_flags(c);
+        restore(c, bus);
+        return Some(n + 4);
+    }
+    let k = bus.read8(lin(ds, 0x202f)).wrapping_add(1);
+    bus.write8(lin(ds, 0x202f), k);
+    let mut di = si.wrapping_add(0x22);
+    let (ax, dx) = (mass as u16, (mass >> 16) as u16);
+    c.set_x(EAX, ax);
+    c.set_x(EDX, dx);
+    n += 6;
+    let star = dx > 0x103 || (dx == 0x103 && ax >= 0x6640);
+    if dx >= 0x103 {
+        n += 1; // JNZ
+        if dx == 0x103 {
+            n += 2;
+        }
+    }
+    let stos = |bus: &mut dyn Bus, di: &mut u16, v: u8| {
+        bus.write8(lin(es, *di), v);
+        *di = di.wrapping_add(1);
+    };
+    let mut named_by_4db8 = false;
+    if star {
+        // PUSH DS; LDS BX,[2029]; copy; POP DS
+        let (noff, nseg) = (bus.read16(lin(ds, 0x2029)), bus.read16(lin(ds, 0x202b)));
+        let mut bx = noff;
+        n += 2;
+        loop {
+            let al = bus.read8(lin(nseg, bx));
+            stos(bus, &mut di, al);
+            bx = bx.wrapping_add(1);
+            n += 5;
+            c.set_x(EAX, (c.x(EAX) & 0xff00) | al as u16);
+            if al == 0 {
+                break;
             }
         }
-    };
+        c.set_x(EBX, bx);
+        bus.write8(lin(es, di.wrapping_sub(1)), 0x20);
+        let k = bus.read8(lin(ds, 0x2030)).wrapping_add(1);
+        bus.write8(lin(ds, 0x2030), k);
+        n += 1 + 1 + 1 + 2;
+        if bus.read16(lin(ds, 0x2037)) != 0 {
+            let al = k.wrapping_add(0x40);
+            c.set_x(EAX, (c.x(EAX) & 0xff00) | al as u16);
+            stos(bus, &mut di, al);
+            n += 4;
+        }
+        bus.write8(lin(es, di), 0);
+        n += 1;
+    } else {
+        let parent = bus.read16(lin(ds, 0x07e0));
+        c.set_x(EBX, parent);
+        n += 3;
+        if bus.read8(lin(es, parent.wrapping_add(0x3b))) & 0x80 != 0 {
+            let s1 = bus.read32(lin(ds, SYS_S1));
+            c.r[EAX] = s1;
+            bus.write32(lin(es, si.wrapping_add(4)), s1);
+            c.set_x(EAX, 0x0a);
+            c.set_x(EDI, di);
+            n += 3;
+            n += call_body_name(c, bus, 0x4749)?;
+            n += 1; // JMP 479b
+            named_by_4db8 = true;
+        } else {
+            let mut bx = parent.wrapping_add(0x22);
+            n += 2;
+            loop {
+                let al = bus.read8(lin(es, bx));
+                stos(bus, &mut di, al);
+                bx = bx.wrapping_add(1);
+                n += 5;
+                c.set_x(EAX, (c.x(EAX) & 0xff00) | al as u16);
+                if al == 0 {
+                    break;
+                }
+            }
+            c.set_x(EBX, bx);
+            let dl = bus.read8(lin(ds, 0x2034));
+            c.set_x(EDX, (c.x(EDX) & 0xff00) | dl as u16);
+            n += 3;
+            let al;
+            if dl == 0 {
+                let k = bus.read8(lin(ds, 0x2031)).wrapping_add(1);
+                bus.write8(lin(ds, 0x2031), k);
+                let mut v = k;
+                n += 4;
+                if (k as i8) >= 0x0a {
+                    bus.write8(lin(es, di.wrapping_sub(1)), 0x31);
+                    di = di.wrapping_add(1);
+                    v = k.wrapping_sub(0x0a);
+                    n += 3;
+                }
+                al = v.wrapping_add(0x30);
+                n += 2;
+            } else if dl == 1 {
+                let k = bus.read8(lin(ds, 0x2032)).wrapping_add(1);
+                bus.write8(lin(ds, 0x2032), k);
+                al = k.wrapping_add(0x60);
+                n += 2 + 4;
+            } else {
+                let k = bus.read8(lin(ds, 0x2033)).wrapping_add(1);
+                bus.write8(lin(ds, 0x2033), k);
+                al = k.wrapping_add(0x30);
+                n += 2 + 3;
+            }
+            c.set_x(EAX, (c.x(EAX) & 0xff00) | al as u16);
+            bus.write8(lin(es, di.wrapping_sub(1)), al);
+            bus.write8(lin(es, di), 0);
+            n += 2;
+        }
+    }
+    if !named_by_4db8 {
+        c.set_x(EDI, di);
+    }
+    // 479b: POP ×4; PUSH ×4 (the same values); CALL 47d8
+    restore(c, bus);
+    let mut sp = c.x(ESP);
+    sp = sp.wrapping_sub(4);
+    bus.write32(lin(c.ss, sp), saved[0]);
+    sp = sp.wrapping_sub(2);
+    bus.write16(lin(c.ss, sp), saved[1] as u16);
+    sp = sp.wrapping_sub(4);
+    bus.write32(lin(c.ss, sp), saved[2]);
+    sp = sp.wrapping_sub(4);
+    bus.write32(lin(c.ss, sp), saved[3]);
+    c.set_x(ESP, sp);
+    n += 8;
+    push16(c, bus, 0x47c4);
+    n += 1;
+    let m = finish_body(c, bus)?;
+    let sp = c.x(ESP);
+    c.set_x(ESP, sp.wrapping_add(2));
+    n += m + 1;
+    restore(c, bus);
+    n += 4;
+    Some(n)
 }
+
+near_port!(setup_body_port, setup_body);
+
 
 near_port!(classify_4990_port, classify_4990);
 near_port!(classify_4abb_port, classify_4abb);
 near_port!(classify_4b69_port, classify_4b69);
+near_port!(classify_4bad_port, classify_4bad);
+
+/// Ports of `EL2M00:4bff`, `4c27` and `4c2c` (entered by a near `CALL`).
+pub fn classify_4bff_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let n = classify_4bff(c, bus);
+    near_ret(c, bus);
+    n + 1
+}
+
+pub fn classify_4c27_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let n = classify_4c27(c, bus);
+    near_ret(c, bus);
+    n + 1
+}
+
+pub fn classify_4c2c_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let n = classify_4c2c(c, bus);
+    near_ret(c, bus);
+    n + 1
+}
 
 /// Every ported routine of `EL2M00` (near routines: slot 0).
 pub const PORTS_M00: &[(u16, u16, &str, Port)] = &[
     (0x4990, 0, "classify_4990", classify_4990_port),
     (0x4abb, 0, "classify_4abb", classify_4abb_port),
     (0x4b69, 0, "classify_4b69", classify_4b69_port),
+    (0x4bad, 0, "classify_4bad", classify_4bad_port),
+    (0x4bff, 0, "classify_4bff", classify_4bff_port),
+    (0x4c27, 0, "classify_4c27", classify_4c27_port),
+    (0x4c2c, 0, "classify_4c2c", classify_4c2c_port),
+    (0x468a, 0, "setup_body", setup_body_port),
+    (0x47d8, 0, "finish_body", finish_body_port),
     (0x4bda, 0, "body_4bda", body_4bda_port),
     (0x4c32, 0, "moons", moons_port),
     (0x4d10, 0, "big_body", big_body_port),

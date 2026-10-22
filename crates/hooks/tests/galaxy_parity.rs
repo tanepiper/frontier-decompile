@@ -72,8 +72,16 @@ fn galaxy_ports_match_original() {
     let tables: Vec<(u16, &[(u16, u16, &str, frontier_game::math3::Port)])> = vec![(m02, PORTS_M02), (m09, PORTS_M09), (m00, PORTS_M00)];
     for &(seg, ports) in &tables {
     for &(off, _slot, name, port) in ports {
+        // GALAXY_ONLY=name runs one routine (debugging).
+        if std::env::var("GALAXY_ONLY").is_ok_and(|o| o != name) {
+            continue;
+        }
         let (mut mismatches, mut declined, mut compared, mut nonzero) = (0, 0, 0, 0);
-        let cases = if name == "sector_stars" { 5_000 } else { 20_000 };
+        let cases = match name {
+            "sector_stars" => 5_000,
+            "setup_body" | "finish_body" => 2_000,
+            _ => 20_000,
+        };
         for i in 0..cases {
             for r in 0..8 {
                 m.cpu.r[r] = x.next();
@@ -137,6 +145,44 @@ fn galaxy_ports_match_original() {
                 let idx = (x.next() % 8) as u16;
                 m.cpu.mem.ww(lin(ds, 0x202d), idx);
                 m.cpu.mem.ww(lin(ds, 0x204b), idx + (x.next() % 3) as u16);
+                if name == "setup_body" || name == "finish_body" {
+                    // Records at B000:0100 upwards; the parent chain base [2041]:[203f] there
+                    // too, ending at a body whose +08h is 0; the parent [7e0] one record back;
+                    // a system name; masses across the class thresholds; a classifier.
+                    m.cpu.mem.ww(lin(ds, 0x2041), 0xB000);
+                    m.cpu.mem.ww(lin(ds, 0x203f), 0x0100);
+                    for r in 0..6u32 {
+                        let a = lin(0xB000, 0x0100 + 0x40 * r);
+                        m.cpu.mem.ww(a + 8, if r == 0 { 0 } else { (x.next() % (r + 1)) as u16 });
+                        m.cpu.mem.wd(a + 0x18, if x.next() % 3 == 0 { 0 } else { x.next() });
+                        m.cpu.mem.wb(a + 0x3b, x.next() as u8);
+                        m.cpu.mem.write_bytes(a + 0x22, b"Ross 154\0");
+                    }
+                    let r = 1 + x.next() % 4;
+                    let rec = 0x0100 + 0x40 * r as u16;
+                    m.cpu.r[6] = (m.cpu.r[6] & 0xFFFF_0000) | rec as u32;
+                    m.cpu.mem.ww(lin(ds, 0x07e0), rec - 0x40);
+                    // Parent index k names record k-1: strictly before this one.
+                    m.cpu.mem.ww(lin(ds, 0x2037), (x.next() % (r + 1)) as u16);
+                    m.cpu.mem.write_bytes(lin(0xB000, 0x0f00), b"Sol\0");
+                    m.cpu.mem.ww(lin(ds, 0x2029), 0x0f00);
+                    m.cpu.mem.ww(lin(ds, 0x202b), 0xB000);
+                    let mass = match x.next() % 4 {
+                        0 => x.next() % 0x100,
+                        1 => x.next() % 0x10000,
+                        2 => 0x0100_0000 + x.next() % 0x0010_0000,
+                        _ => x.next(),
+                    };
+                    m.cpu.mem.wd(lin(ds, 0x07bc), mass);
+                    m.cpu.mem.wd(lin(ds, 0x07c0), x.next() % 0x400);
+                    m.cpu.mem.wd(lin(ds, 0x07c8), x.next());
+                    m.cpu.mem.ww(lin(ds, 0x07e8), [0u16, 0x4990, 0x4abb, 0x4b69, 0x4bda][(x.next() % 5) as usize]);
+                    m.cpu.mem.wb(lin(ds, 0x2034), (x.next() % 3) as u8);
+                    for b in 0x2030..0x2034u32 {
+                        m.cpu.mem.wb(lin(ds, b), (x.next() % 12) as u8);
+                    }
+                    m.cpu.r[7] = (m.cpu.r[7] & 0xFFFF_0000) | (0x0100 + 0x40 * (x.next() % 5)) as u32;
+                }
                 if name == "big_body" {
                     m.cpu.r[0] = (m.cpu.r[0] & 0xFFFF_0000) | (x.next() % 4);
                 }
@@ -153,7 +199,11 @@ fn galaxy_ports_match_original() {
             if out.cpu.r[0] as u16 != 0 {
                 nonzero += 1;
             }
-            let diff = match record_original_until(&mut m.cpu, 1_000_000, out.cpu.cs, out.cpu.ip, out.cpu.r[4] as u16) {
+            let diff = match record_original_until(&mut m.cpu, 200_000, out.cpu.cs, out.cpu.ip, out.cpu.r[4] as u16) {
+                // EL2M00:468a's caller tests ZF (EL2M00:4fb1): compare ZF and SF there too.
+                Some(orig) if matches!(name, "setup_body" | "finish_body") && (orig.cpu.flags ^ out.cpu.flags) & 0xC0 != 0 => {
+                    Some(format!("flags: original {:04x}, port {:04x}", orig.cpu.flags, out.cpu.flags))
+                }
                 Some(orig) => compare(&out, &orig, &m.cpu.mem),
                 None => Some("the original did not return".into()),
             };

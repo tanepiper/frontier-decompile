@@ -1,5 +1,7 @@
 # Labels made from the port's citations by tools/triage/cite_labels.py: address, the item that cites
 # it, and where it is cited. Do not edit: label by hand in names.tsv, which wins over this file.
+1000:468a	Cpu	crates/game/src/math3.rs
+1000:47d8	finish_body	crates/game/src/system.rs
 1000:4990	classify_4990	crates/game/src/system.rs
 1000:4abb	classify_4abb	crates/game/src/system.rs
 1000:4b69	classify_4b69	crates/game/src/system.rs

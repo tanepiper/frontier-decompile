@@ -32,7 +32,7 @@ Deviation: 9, Not ported: 4.
 
 ## `crates/game/src/math3.rs`
 
-- [Not ported] [line 129](../crates/game/src/math3.rs#L129): Instruction count a port returns when it does not handle this input (a path not ported yet, or one where the original never returns). Nothing it did counts: the hook discards the staged state and runs the original instead.
+- [Not ported] [line 130](../crates/game/src/math3.rs#L130): Instruction count a port returns when it does not handle this input (a path not ported yet, or one where the original never returns). Nothing it did counts: the hook discards the staged state and runs the original instead.
 
 ## `crates/game/src/names.rs`
 
@@ -40,7 +40,7 @@ Deviation: 9, Not ported: 4.
 
 ## `crates/hooks/src/lib.rs`
 
-- [Not ported] [line 106](../crates/hooks/src/lib.rs#L106): [`record_original`] that stops where a port stopped: when the original reaches `CS:IP` = `cs:ip` with `SP` = `sp`. Covers ports that return (the caller's return address) and ports that end by entering original code (a tail call into a routine that is not ported).
+- [Not ported] [line 111](../crates/hooks/src/lib.rs#L111): [`record_original`] that stops where a port stopped: when the original reaches `CS:IP` = `cs:ip` with `SP` = `sp`. Covers ports that return (the caller's return address) and ports that end by entering original code (a tail call into a routine that is not ported).
 
 ## `crates/hooks/tests/math3_parity.rs`
 

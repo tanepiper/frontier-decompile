@@ -20,7 +20,8 @@ pub const DIVIDE_RESUME: u16 = 0x09dc;
 
 /// The 386 state a port sees and leaves: general registers in encoding order (`EAX`, `ECX`,
 /// `EDX`, `EBX`, `ESP`, `EBP`, `ESI`, `EDI`), the data segments, `CS:IP` (the routine's entry on the
-/// way in, the caller's return address on the way out) and flags (read only: `DF`).
+/// way in, the caller's return address on the way out) and flags (`DF` is read; a port sets the
+/// arithmetic flags only where its callers test them, e.g. `EL2M00:468a`).
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Cpu {
     pub r: [u32; 8],
