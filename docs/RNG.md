@@ -79,7 +79,7 @@ The ports are installed in the game by `frontier_hooks::install_all`.
   through their handler `+20`. `EL2M06:3eb9` (handler `+20`) looks a 32-bit system id up in a
   table of hand-made systems (30h-byte records from `EL2M06:01f3`). Otherwise it picks a template
   by squared distance from Sol's sector (thresholds `1FA4h`, `E1h`, `64h`). The procedural
-  generator for systems that are not in the table is not found yet. The coverage-discovery work
-  (galaxy map runs) should name it.
+  generator for the sectors that are not in the table was then found and ported
+  ([GALAXY.md](GALAXY.md)).
 - Whether any caller depends on the flags these routines leave (`OR EAX,EAX` at the end of
   `random32` sets ZF and SF for the caller). Flags are not modelled.
