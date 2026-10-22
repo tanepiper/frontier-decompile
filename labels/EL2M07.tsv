@@ -4,6 +4,7 @@
 1000:0855	market_formulas_match_original	crates/hooks/tests/galaxy_parity.rs
 1000:08c0	stock_port	crates/game/src/market.rs
 1000:0923	event_port	crates/game/src/market.rs
+1000:0949	builder_port	crates/game/src/market.rs
 1000:0b03	advert_port	crates/game/src/market.rs
 1000:0b28	military_target	crates/game/src/market.rs
 1000:0bb0	military	crates/game/src/market.rs

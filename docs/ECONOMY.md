@@ -4,7 +4,7 @@ This covers what makes each star system different in trade terms: the per-system
 and, as it is traced, the market built in `EL2M07` when the player arrives. Evidence: the Ghidra
 12.1.4 disassembly listings, the coverage of a hyperspace jump ([COVERAGE.md](COVERAGE.md)), and
 execution on the reference runtime (fuzzed calls against the original). The market builder itself
-(`EL2M07:0949`) is traced below but not ported yet. Its bulletin-board adverts are ported.
+(`EL2M07:0949`) is ported with everything it calls.
 
 ## Per-system data: `EL2M06:3eb9` (module 6, handler `+20`)
 
@@ -42,7 +42,7 @@ calls with random ids (a quarter of them from the hand-made table), random regis
 selector. Every register, every byte written and the instruction count were compared: **0
 mismatches.**
 
-## The market on arrival: `EL2M07` (traced, not ported)
+## The market on arrival: `EL2M07:0949` (ported)
 
 On a hyperspace arrival, module 7's handler `+0c` with `AX` = 2 does the following:
 
@@ -56,6 +56,15 @@ On a hyperspace arrival, module 7's handler `+0c` with `AX` = 2 does the followi
    and draws from `random32` (slot `DS:012c`, [RNG.md](RNG.md)), so a market depends on the shared
    generator's state. The builder then makes random events (`EL2M07:0923`, a jump table at
    `EL2M07:03a1`) and the per-station lists (`EL2M07:101a`).
+
+`market::builder_port` runs the whole of step 4 natively, as the sections below describe. For each
+station it also sets `DS:2249` to the station object's dword `+76h` with its halves swapped. It
+sets flag bit 4 unless the object's byte `+118h` has bit 5 set. The object comes through the
+main program's lookup `CALLF [00b4]` (`1000:085a`): `[07ec]` + the word at `DS:06d6` + 2·index.
+Parity (`market_builder_matches_original`). The test makes 300 whole builds for the current
+system and random ones, with 0 to 4 stations and random generator states. **0 mismatches.**
+Steps 1 and 2 (`EL2M07:0818` with its callback `0831`, and the rotation of `DS:4603`–`460f`)
+are not ported yet.
 
 ## Price and stock: `EL2M07:0855`, `EL2M07:08c0` (ported)
 
@@ -170,7 +179,7 @@ All matched the original: **0 mismatches.**
 
 - The meaning of each byte of the system record (economy, government, population, tech level are
   likely, *inferred*), and of the commodity tables in `EL2M07`.
-- The builder `EL2M07:0949` itself and the daily update `EL2M07:0e1a`. The daily update ages the
+- The daily update `EL2M07:0e1a`, the station count `EL2M07:0818`, and handler `+0c` itself. The daily update ages the
   adverts, moves each price and stock a quarter of the way to a new draw, and adds events and
   list entries (*observed*, not ported).
 - What `DS:43a3` and `DS:43a5` (the "room" that gates each advert kind) measure.

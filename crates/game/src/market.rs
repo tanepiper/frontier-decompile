@@ -1211,8 +1211,227 @@ fn write_event(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
     16
 }
 
+/// Port of `EL2M07:0949`, *observed*: build the markets, events and lists of every station in
+/// system `DS:07c0` (kept), then the bulletin board. A near routine, called by module 7's handler
+/// `+0c` on arrival.
+/// 1. System data `AL` = 0 (module 6): `DS:2241`, `223d`, `4613`, `223f` = `DS:07bc`, `07c8`,
+///    `07cc`, `07d0`; `DS:2243` = `DS:07d8` >> 6 (the allegiance).
+/// 2. `AL` = 1: `DS:2239` = `AX`, `DS:223b` = `BX`, and their doubles in `DS:07bc`/`07c0` (the
+///    factor indices of [`price_port`] and [`stock_port`]); the 31 commodity bytes of the record
+///    go to `DS:2219`.
+/// 3. For each of the `DS:2247` stations (1DAh-byte records from `DS:224d`): the 31 prices and
+///    stocks (`DS:07c8` = 2·(byte & 7), coefficients from `EL2M07:02a9`); 4·`DS:2239` + 1 calls of
+///    [`event_port`]; `DS:2249` = the station object's `ES:[obj+76h]` with its halves swapped,
+///    and flag bit 4 unless `ES:[obj+118h]` bit 5; then the lists of kinds 9, 0 and 1
+///    ([`station_list_port`]).
+/// 4. `DS:43a7` = 0; `AL` = 2: `DS:43a5` = `DS:07d4`, `DS:43a1` = 8·`DS:07c4` + 8, `DS:43a3` =
+///    `DS:07d8`; `DS:43a1` + 1 calls of [`advert_port`].
+pub fn builder_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    builder(c, bus).unwrap_or(DECLINE)
+}
+
+fn builder(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    if r16(c, bus, 0x00b4) != 0x085a {
+        return None;
+    }
+    let id = r32(c, bus, 0x07c0);
+    push32(c, bus, id);
+    c.set_x(EAX, 0);
+    let mut n = 2 + system_data(c, bus, 0x095f)?;
+    for (from, to) in [(0x07bc, 0x2241), (0x07c8, 0x223d), (0x07cc, 0x4613), (0x07d0, 0x223f)] {
+        let v = r16(c, bus, from);
+        c.set_x(EAX, v);
+        w16(c, bus, to, v);
+    }
+    let a = r16(c, bus, 0x07d8) >> 6;
+    c.set_x(EAX, a);
+    w16(c, bus, 0x2243, a);
+    let v = pop32(c, bus);
+    w32(c, bus, 0x07c0, v);
+    push32(c, bus, v);
+    c.set_l(EAX, 1);
+    n += 11 + 3 + system_data(c, bus, 0x099f)?;
+    let ax = c.x(EAX);
+    w16(c, bus, 0x2239, ax);
+    c.set_x(EAX, ax << 1);
+    w16(c, bus, 0x07bc, ax << 1);
+    let bx = c.x(EBX);
+    w16(c, bus, 0x223b, bx);
+    c.set_x(EBX, bx << 1);
+    w16(c, bus, 0x07c0, bx << 1);
+    let es = c.es;
+    let mut di = c.x(EDI);
+    for k in 0..0x1f {
+        let b = bus.read8(lin(es, di));
+        c.set_l(EAX, b);
+        bus.write8(lin(c.ds, 0x2219 + k), b);
+        di = di.wrapping_add(1);
+    }
+    c.set_x(EDI, di);
+    c.set_x(ESI, 0x2219 + 0x1f);
+    c.set_x(ECX, 0);
+    n += 8 + 5 * 0x1f;
+    let stations = r16(c, bus, 0x2247);
+    c.set_x(ECX, stations);
+    n += 3;
+    if stations != 0 {
+        w16(c, bus, 0x07d8, stations);
+        let mut si: u16 = 0x224d;
+        c.set_x(ESI, si);
+        n += 2;
+        loop {
+            n += station(c, bus, si)?;
+            si = c.x(ESI).wrapping_add(0x1da);
+            c.set_x(ESI, si);
+            let left = r16(c, bus, 0x07d8).wrapping_sub(1);
+            w16(c, bus, 0x07d8, left);
+            n += 5;
+            if left == 0 {
+                break;
+            }
+        }
+    }
+    w32(c, bus, 0x43a7, 0);
+    let v = pop32(c, bus);
+    w32(c, bus, 0x07c0, v);
+    c.set_l(EAX, 2);
+    n += 3 + system_data(c, bus, 0x0ada)?;
+    let v = r16(c, bus, 0x07d4);
+    w16(c, bus, 0x43a5, v);
+    let ads = (r16(c, bus, 0x07c4) << 3).wrapping_add(8);
+    w16(c, bus, 0x43a1, ads);
+    w16(c, bus, 0x07d4, ads);
+    let v = r16(c, bus, 0x07d8);
+    c.set_x(EAX, v);
+    w16(c, bus, 0x43a3, v);
+    n += 9;
+    loop {
+        push16(c, bus, 0x0afc);
+        n += 1 + advert(c, bus)?;
+        let left = r16(c, bus, 0x07d4).wrapping_sub(1);
+        w16(c, bus, 0x07d4, left);
+        n += 2;
+        if left & 0x8000 != 0 {
+            break;
+        }
+    }
+    near_ret(c, bus);
+    Some(n + 1)
+}
+
+/// One station of [`builder`] (`EL2M07:09d5` to `0aa7`), with `SI` at its record.
+fn station(c: &mut Cpu, bus: &mut dyn Bus, si: u16) -> Option<u64> {
+    c.set_x(EDI, si);
+    c.set_x(EBP, 0x02a9);
+    c.set_x(EBX, 0x2219);
+    w16(c, bus, 0x07d4, 0x1e);
+    let mut n = 4;
+    loop {
+        let bx = c.x(EBX);
+        let cl = bus.read8(lin(c.ds, bx));
+        c.set_l(ECX, cl);
+        c.set_x(EBX, bx.wrapping_add(1));
+        let dx = ((cl & 7) as u16) << 1;
+        c.set_x(EDX, dx);
+        w16(c, bus, 0x07c8, dx);
+        push16(c, bus, bx.wrapping_add(1));
+        push16(c, bus, 0x09f5);
+        n += 8 + price_port(c, bus);
+        let di = c.x(EDI);
+        w16(c, bus, di.wrapping_add(2), c.x(EDX));
+        push16(c, bus, 0x09fb);
+        n += 2 + stock_port(c, bus);
+        w16(c, bus, di, c.x(EDX));
+        let bx = pop16(c, bus);
+        c.set_x(EBX, bx);
+        c.set_x(EDI, di.wrapping_add(4));
+        let bp = c.x(EBP);
+        c.set_x(EBP, bp.wrapping_add(8));
+        let left = r16(c, bus, 0x07d4).wrapping_sub(1);
+        w16(c, bus, 0x07d4, left);
+        n += 6;
+        if left & 0x8000 != 0 {
+            break;
+        }
+    }
+    for off in [0x07bc, 0x07c0] {
+        let v = r16(c, bus, off);
+        push16(c, bus, v);
+    }
+    c.set_x(EDI, si.wrapping_add(0x7e));
+    w16(c, bus, si.wrapping_add(0x19e), 0);
+    bus.write8(lin(c.ds, si.wrapping_add(0x7d)), 0);
+    let cx = r16(c, bus, 0x2239).wrapping_shl(2);
+    c.set_x(ECX, cx);
+    w16(c, bus, 0x07d4, cx);
+    n += 8;
+    loop {
+        push16(c, bus, 0x0a2d);
+        n += 1 + event(c, bus)?;
+        let left = r16(c, bus, 0x07d4).wrapping_sub(1);
+        w16(c, bus, 0x07d4, left);
+        n += 2;
+        if left & 0x8000 != 0 {
+            break;
+        }
+    }
+    // PUSH SI; MOVZX BX,[SI+7Ch]; [07ec] = [56fb]; CALLF [00b4] (SHL BX,1; LES SI,[07ec];
+    // ADD SI,[BX+06d6]; RETF); DS:2249 = ES:[SI+76h] with its halves swapped.
+    let si = c.x(ESI);
+    let bx = (bus.read8(lin(c.ds, si.wrapping_add(0x7c))) as u16) << 1;
+    c.set_x(EBX, bx);
+    let p = r32(c, bus, 0x56fb);
+    w32(c, bus, 0x07ec, p);
+    c.es = r16(c, bus, 0x07ee);
+    let obj = r16(c, bus, 0x07ec).wrapping_add(r16(c, bus, 0x06d6u16.wrapping_add(bx)));
+    let v = bus.read32(lin(c.es, obj.wrapping_add(0x76))).rotate_right(16);
+    c.r[EAX] = v;
+    w32(c, bus, 0x2249, v);
+    let docked = bus.read8(lin(c.es, obj.wrapping_add(0x118))) & 0x20 != 0;
+    n += 15;
+    if !docked {
+        let f = bus.read8(lin(c.ds, si.wrapping_add(0x7d)));
+        bus.write8(lin(c.ds, si.wrapping_add(0x7d)), f | 0x10);
+        n += 1;
+    }
+    c.set_x(EDI, si.wrapping_add(0x1a0));
+    w16(c, bus, si.wrapping_add(0x1d8), 0);
+    let mut cx = r16(c, bus, 0x2247).wrapping_sub(1);
+    c.set_x(ECX, cx);
+    n += 5;
+    let mut lists: Vec<(u16, u16)> = Vec::new();
+    if cx & 0x8000 == 0 {
+        cx >>= 1;
+        n += 1;
+        lists.push((9, cx));
+    }
+    let a = r16(c, bus, 0x223d).wrapping_shl(1);
+    let b = r16(c, bus, 0x223f).wrapping_shl(1);
+    for (kind, start, pre) in lists.into_iter().map(|(k, s)| (k, s, 0u64)).chain([(0u16, a, 2u64), (1, b, 2)]) {
+        n += pre;
+        let mut cx = start;
+        loop {
+            push16(c, bus, cx);
+            w16(c, bus, 0x07d0, kind);
+            push16(c, bus, 0x0a7b);
+            n += 3 + station_list_port(c, bus);
+            cx = pop16(c, bus).wrapping_sub(1);
+            c.set_x(ECX, cx);
+            n += 3;
+            if cx & 0x8000 != 0 {
+                break;
+            }
+        }
+    }
+    let v = pop16(c, bus);
+    w16(c, bus, 0x07c0, v);
+    let v = pop16(c, bus);
+    w16(c, bus, 0x07bc, v);
+    Some(n)
+}
+
 /// Every ported routine of `EL2M07` (near routines: slot 0).
 pub const PORTS_M07: &[(u16, u16, &str, Port)] = &[(0x0855, 0, "price", price_port), (0x08c0, 0, "stock", stock_port)];
 
 /// The bulletin board's routines in `EL2M07`, which need modules 2 and 6 resident (near routines).
-pub const BOARD_M07: &[(u16, u16, &str, Port)] = &[(0x0b03, 0, "advert", advert_port), (0x101a, 0, "station_list", station_list_port), (0x0923, 0, "event", event_port)];
+pub const BOARD_M07: &[(u16, u16, &str, Port)] = &[(0x0b03, 0, "advert", advert_port), (0x101a, 0, "station_list", station_list_port), (0x0923, 0, "event", event_port), (0x0949, 0, "builder", builder_port)];

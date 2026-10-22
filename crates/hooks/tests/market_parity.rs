@@ -258,3 +258,59 @@ fn station_events_match_original() {
     assert!(kinds.len() >= 14, "too few kinds of event written");
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
+
+/// `EL2M07:0949`, the whole market builder, for the current system and random ones, with random
+/// generator states and 0 to 4 stations (the game's own record and copies of its object index).
+#[test]
+fn market_builder_matches_original() {
+    let Some((mut m, ds)) = in_cockpit() else { return };
+    let m07 = m.image_segment("EL2M07.OVL").unwrap();
+    let port = frontier_game::market::BOARD_M07.iter().find(|p| p.2 == "builder").unwrap().3;
+    let here = m.cpu.mem.rd(lin(ds, 0x208b));
+    let stations = m.cpu.mem.rw(lin(ds, 0x2247));
+    let mut x = X(0x0949_0949_5EED_0004);
+    let (mut compared, mut declined, mut failures) = (0, 0, Vec::new());
+    for i in 0..300 {
+        m.cpu.mem.wd(lin(ds, 0x1fd9), x.next());
+        m.cpu.mem.wd(lin(ds, 0x1fdd), x.next());
+        m.cpu.mem.wd(lin(ds, 0x07c0), if i % 3 == 0 { here } else { x.next() });
+        // 0 to 4 stations; the extra records point at the real station's object.
+        let count = if i % 10 == 9 { 0 } else { 1 + (x.next() % 4) as u16 };
+        m.cpu.mem.ww(lin(ds, 0x2247), count);
+        let obj = m.cpu.mem.rb(lin(ds, 0x224d + 0x7c));
+        for k in 1..4 {
+            m.cpu.mem.wb(lin(ds, 0x224d + 0x1da * k + 0x7c), obj);
+        }
+        for k in 0..4 {
+            m.cpu.mem.wd(lin(ds, 0x4603 + 4 * k), if x.next() % 3 == 0 { x.next() } else { 0 });
+        }
+        for r in 0..8 {
+            m.cpu.r[r] = x.next();
+        }
+        m.cpu.r[ESP] = 0xFFF0;
+        m.cpu.s[SS] = 0xA000;
+        m.cpu.s[DS] = ds;
+        m.cpu.push16(0x1580);
+        m.cpu.s[CS] = m07;
+        m.cpu.ip = 0x0949;
+        let out = run_port(&m.cpu, port);
+        if out.steps == DECLINE {
+            declined += 1;
+            continue;
+        }
+        compared += 1;
+        let diff = match record_original_until(&mut m.cpu, 50_000_000, out.cpu.cs, out.cpu.ip, out.cpu.r[4] as u16) {
+            Some(orig) => compare(&out, &orig, &m.cpu.mem),
+            None => Some("the original did not return".into()),
+        };
+        if let Some(d) = diff {
+            if failures.len() < 4 {
+                failures.push(format!("case {i}: {d}"));
+            }
+        }
+    }
+    eprintln!("builder: {compared} compared ({stations} stations), {declined} declined, {} mismatches", failures.len());
+    assert!(stations > 0, "no stations in the cockpit state");
+    assert!(compared > 250, "too few cases compared");
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}
