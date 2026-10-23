@@ -1831,8 +1831,351 @@ fn handler_0c(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
     Some(n + 5)
 }
 
+/// Port of `EL2M07:15a4` (module 7, handler `+20`), *observed*: the station's docking bays
+/// (*inferred*), by `BX`. The station object is the far pointer `[DS:07e0]`; its bay count − 1 is
+/// the word `+A4h` and the bays the bytes from `+A6h`; `AL` is a ship (object index).
+/// - 0: `DI` = the station record (from `DS:224d`) whose byte `+7Ch` is `AL`.
+/// - 1: [`assign_bay`]: find or take a bay for `AL` and compute its position.
+/// - 2: free `AL`'s bay; `+9Fh` = 1, `+A0h` and `+AEh` = 0.
+/// - 3: when `AL` is the ship in `+A0h`: state 3 and 0E10h ticks, `AX` = 1; else `AX` = 0.
+/// - 4: clear `+9Fh`, `+A0h`, `+AEh`.
+/// - 5: when the state `+9Fh` is 0 or 1, or `AL` already holds it: state FFh, `+A0h` = `AL`,
+///   0E10h ticks, `AL` = 1; else `AX` = 0.
+/// - 6: not ported (it sends a message through module 12): declines.
+/// - 7: `AX` = FFFFh when `AL` is the ship in `+A0h`, else 0.
+/// - 8: [`list_pick`] for kind `AX`, with `DS:07c4`–`07d3` and `07e4` kept.
+/// - other: the position of bay `DS:07d8` ([`bay_position`]); stations with `+118h` bit 6
+///   use the tables at `EL2M07:05d9`, `05bb`, `05f7`, `0615` by bay count, others `0651`, or
+///   the fixed offsets at `EL2M07:0633` when bit 5 is clear too.
+///
+/// Ends in `RETF`.
+pub fn handler_20_port(c: &mut Cpu, bus: &mut dyn Bus) -> u64 {
+    let bx = c.x(EBX);
+    let al = c.l(EAX);
+    let ds = c.ds;
+    let station = |c: &mut Cpu, bus: &mut dyn Bus| {
+        let si = r16(c, bus, 0x07e0);
+        let es = r16(c, bus, 0x07e2);
+        c.set_x(ESI, si);
+        c.es = es;
+        (es, si)
+    };
+    let mut n = 2;
+    if bx == 0 {
+        let mut di: u16 = 0x224d;
+        let mut cx = r16(c, bus, 0x2247);
+        n += 2;
+        loop {
+            n += 2;
+            if bus.read8(lin(ds, di.wrapping_add(0x7c))) == al {
+                break;
+            }
+            di = di.wrapping_add(0x1da);
+            cx = cx.wrapping_sub(1);
+            n += 3;
+            if cx & 0x8000 != 0 {
+                break;
+            }
+        }
+        c.set_x(EDI, di);
+        c.set_x(ECX, cx);
+        c.retf(bus);
+        return n + 1;
+    }
+    n += 2;
+    if bx == 1 {
+        return assign_bay(c, bus).map(|m| n + m).unwrap_or(DECLINE);
+    }
+    let clear = |bus: &mut dyn Bus, es: u16, si: u16| {
+        bus.write8(lin(es, si.wrapping_add(0x9f)), 0);
+        bus.write8(lin(es, si.wrapping_add(0xa0)), 0);
+        bus.write16(lin(es, si.wrapping_add(0xae)), 0);
+    };
+    n += 2;
+    if bx == 2 {
+        let (es, si) = station(c, bus);
+        let di = si.wrapping_add(0xa6);
+        c.set_x(EDI, di);
+        let mut b = bus.read16(lin(es, si.wrapping_add(0xa4)));
+        n += 3;
+        loop {
+            n += 2;
+            if bus.read8(lin(es, b.wrapping_add(di))) == al {
+                bus.write8(lin(es, b.wrapping_add(di)), 0);
+                n += 1;
+                break;
+            }
+            b = b.wrapping_sub(1);
+            n += 2;
+            if b & 0x8000 != 0 {
+                n += 1;
+                break;
+            }
+        }
+        c.set_x(EBX, b);
+        clear(bus, es, si);
+        bus.write8(lin(es, si.wrapping_add(0x9f)), 1);
+        c.retf(bus);
+        return n + 4;
+    }
+    n += 2;
+    let ship_is = |c: &mut Cpu, bus: &mut dyn Bus| {
+        let (es, si) = station(c, bus);
+        (es, si, bus.read8(lin(es, si.wrapping_add(0xa0))) == al)
+    };
+    if bx == 3 {
+        let (es, si, mine) = ship_is(c, bus);
+        n += 3;
+        if mine {
+            bus.write8(lin(es, si.wrapping_add(0x9f)), 3);
+            bus.write16(lin(es, si.wrapping_add(0xae)), 0x0e10);
+            c.set_x(EAX, 1);
+            c.retf(bus);
+            return n + 4;
+        }
+        c.set_x(EAX, 0);
+        c.retf(bus);
+        return n + 2;
+    }
+    n += 2;
+    if bx == 4 {
+        let (es, si) = station(c, bus);
+        clear(bus, es, si);
+        c.retf(bus);
+        return n + 5;
+    }
+    n += 2;
+    if bx == 5 {
+        let (es, si) = station(c, bus);
+        let st = bus.read8(lin(es, si.wrapping_add(0x9f)));
+        c.set_l(EBX, st);
+        n += 4;
+        let take = if st == 0 {
+            true
+        } else {
+            n += 2;
+            if st == 1 {
+                true
+            } else {
+                n += 2;
+                bus.read8(lin(es, si.wrapping_add(0xa0))) == al
+            }
+        };
+        if take {
+            bus.write8(lin(es, si.wrapping_add(0x9f)), 0xff);
+            bus.write8(lin(es, si.wrapping_add(0xa0)), al);
+            bus.write16(lin(es, si.wrapping_add(0xae)), 0x0e10);
+            c.set_l(EAX, 1);
+            c.retf(bus);
+            return n + 5;
+        }
+        c.set_x(EAX, 0);
+        c.retf(bus);
+        return n + 2;
+    }
+    n += 2;
+    if bx == 6 {
+        return DECLINE;
+    }
+    n += 2;
+    if bx == 7 {
+        let (_, _, mine) = ship_is(c, bus);
+        n += 3;
+        c.set_x(EAX, if mine { 0xffff } else { 0 });
+        c.retf(bus);
+        return n + 2;
+    }
+    n += 2;
+    if bx == 8 {
+        let kept: Vec<u32> = [0x07c4u16, 0x07c8, 0x07cc, 0x07d0, 0x07e4].iter().map(|&o| r32(c, bus, o)).collect();
+        for &v in &kept {
+            push32(c, bus, v);
+        }
+        w16(c, bus, 0x07d0, c.x(EAX));
+        push16(c, bus, 0x197c);
+        n += 5 + 1 + 1 + list_pick(c, bus);
+        for o in [0x07e4u16, 0x07d0, 0x07cc, 0x07c8, 0x07c4] {
+            let v = pop32(c, bus);
+            w32(c, bus, o, v);
+        }
+        c.retf(bus);
+        return n + 5 + 1;
+    }
+    // Other values: the position of bay DS:07d8.
+    let v = r16(c, bus, 0x07d4);
+    push16(c, bus, v);
+    let (es, si) = station(c, bus);
+    let flags = bus.read8(lin(es, si.wrapping_add(0x118)));
+    n += 4;
+    if flags & 0x40 != 0 {
+        let count = bus.read16(lin(es, si.wrapping_add(0xa4)));
+        let table = match count {
+            3 => {
+                n += 3;
+                0x05d9
+            }
+            1 => {
+                n += 6;
+                0x05bb
+            }
+            0 => {
+                n += 11;
+                0x0615
+            }
+            _ => {
+                n += 9;
+                0x05f7
+            }
+        };
+        return n + bay_position(c, bus, table);
+    }
+    n += 2;
+    if flags & 0x20 != 0 {
+        return n + 2 + bay_position(c, bus, 0x0651);
+    }
+    let bp = r16(c, bus, 0x07d8).wrapping_shl(3);
+    c.set_x(EBP, bp);
+    let cs = c.cs;
+    let x = bus.read16(lin(cs, 0x0633u16.wrapping_add(bp))) as i16 as i32;
+    let y = bus.read16(lin(cs, 0x0635u16.wrapping_add(bp))) as i16 as i32;
+    let z = (bus.read16(lin(cs, 0x0637u16.wrapping_add(bp))) as i16 as i32).wrapping_shl(2);
+    n + 17 + store_position(c, bus, x as u32, y as u32, z as u32)
+}
+
+/// `EL2M07:15c3`, *observed*: the bay of ship `AL` at the station `[DS:07e0]`. A bay that already
+/// holds `AL` is kept; otherwise the highest empty one is taken (and `DS:07d4` = FFFFh, else 0).
+/// When `AL` is the player (`DS:2053`), `DS:207d` = the bay. `DS:07d8` = the bay. Stations with
+/// `+118h` bit 6 then get its position ([`bay_position`], tables `EL2M07:0451`, `0443`, `046f`
+/// by bay count); others get `DS:07bc`–`07d3` = 0 and FFFFh in the third. No bay: `AX` unchanged.
+fn assign_bay(c: &mut Cpu, bus: &mut dyn Bus) -> Option<u64> {
+    let al = c.l(EAX);
+    c.set_x(EBX, 0);
+    push16(c, bus, 0);
+    let si = r16(c, bus, 0x07e0);
+    let es = r16(c, bus, 0x07e2);
+    c.set_x(ESI, si);
+    c.es = es;
+    let mut bx = bus.read16(lin(es, si.wrapping_add(0xa4)));
+    let mut n = 4;
+    loop {
+        let a = lin(es, bx.wrapping_add(si).wrapping_add(0xa6));
+        let b = bus.read8(a);
+        n += 2;
+        if b == al {
+            break;
+        }
+        n += 2;
+        if b == 0 {
+            bus.write8(a, al);
+            let sp = c.x(ESP);
+            let v = bus.read16(lin(c.ss, sp));
+            bus.write16(lin(c.ss, sp), v.wrapping_sub(1));
+            c.set_x(EBP, sp);
+            n += 3;
+            break;
+        }
+        bx = bx.wrapping_sub(1);
+        n += 2;
+        if bx & 0x8000 != 0 {
+            c.set_x(EBX, bx);
+            let v = pop16(c, bus);
+            w16(c, bus, 0x07d4, v);
+            c.retf(bus);
+            return Some(n + 1 + 2);
+        }
+    }
+    c.set_x(EBX, bx);
+    n += 2;
+    if al == bus.read8(lin(c.ds, 0x2053)) {
+        bus.write8(lin(c.ds, 0x207d), bx as u8);
+        n += 1;
+    }
+    w16(c, bus, 0x07d8, bx);
+    n += 3;
+    if bus.read8(lin(es, si.wrapping_add(0x118))) & 0x40 == 0 {
+        c.r[EDI] &= 0xffff_0000;
+        c.r[ESI] &= 0xffff_0000;
+        c.r[ECX] &= 0xffff_0000;
+        c.r[EBX] &= 0xffff_0000;
+        return Some(n + 7 + store_position(c, bus, 0, 0, 0xffff_ffff));
+    }
+    let count = bus.read16(lin(es, si.wrapping_add(0xa4)));
+    let table = match count {
+        3 => {
+            n += 3;
+            0x0451
+        }
+        1 => {
+            n += 6;
+            0x0443
+        }
+        _ => {
+            n += 7;
+            0x046f
+        }
+    };
+    Some(n + bay_position(c, bus, table))
+}
+
+/// `EL2M07:161f`, *observed*: the position of bay `DS:07d8` from the offset (`x`, `y`, `z`
+/// words) at `table` + 8·bay, turned by the station's 3×3 matrix (Q15 words at `ES:SI` + 0 to
+/// 10h): each row `2·(m0·x + m1·y + m2·z)` in 32 bits, then shifted right by 6
+/// ([`store_position`]). `DS:07d4` = 8·bay until the caller's word is popped back.
+fn bay_position(c: &mut Cpu, bus: &mut dyn Bus, table: u16) -> u64 {
+    let bx = r16(c, bus, 0x07d8).wrapping_shl(3);
+    w16(c, bus, 0x07d4, bx);
+    let bp = table.wrapping_add(bx);
+    let cs = c.cs;
+    let v = [0u16, 2, 4].map(|o| bus.read16(lin(cs, bp.wrapping_add(o))) as i16 as i32);
+    w16(c, bus, 0x07bc, v[0] as u16);
+    let (es, si) = (c.es, c.x(ESI));
+    let row = |bus: &mut dyn Bus, k: u16| {
+        let mut m = |o: u16| bus.read16(lin(es, si.wrapping_add(6 * k + o))) as i16 as i32;
+        let (a, b, cc) = (m(0), m(2), m(4));
+        (a * v[0]).wrapping_add(b * v[1]).wrapping_add(cc * v[2]).wrapping_shl(1) as u32
+    };
+    let (r0, r1, r2) = (row(bus, 0), row(bus, 1), row(bus, 2));
+    c.set_x(EBP, si);
+    let mut n = 9 + 15 + 16 + 14 + 5 + 48;
+    let s = |v: u32| ((v as i32) >> 6) as u32;
+    c.set_x(EBP, 0);
+    n += store_shifted(c, bus, s(r0), s(r1), s(r2));
+    n
+}
+
+/// `EL2M07:16bf` reached from `16fe` or `19d3` (before the shift): see [`store_shifted`].
+fn store_position(c: &mut Cpu, bus: &mut dyn Bus, a: u32, b: u32, d: u32) -> u64 {
+    store_shifted(c, bus, a, b, d)
+}
+
+/// `EL2M07:16bf`–`16fd`, *observed*: `DS:07bc`, `07c0`, `07c4` = the three 32-bit values,
+/// `DS:07c8`, `07cc`, `07d0` = their sign words doubled into dwords (first, second, third);
+/// `AX` = 0, then `POP [07d4]` and `RETF`.
+fn store_shifted(c: &mut Cpu, bus: &mut dyn Bus, a: u32, b: u32, d: u32) -> u64 {
+    w32(c, bus, 0x07bc, a);
+    w32(c, bus, 0x07c0, b);
+    w32(c, bus, 0x07c4, d);
+    let sign = |v: u32| if v & 0x8000_0000 != 0 { 0xffffu16 } else { 0 };
+    w16(c, bus, 0x07d0, sign(d));
+    w16(c, bus, 0x07d2, sign(d));
+    w16(c, bus, 0x07c8, sign(a));
+    w16(c, bus, 0x07ca, sign(a));
+    w16(c, bus, 0x07cc, sign(b));
+    w16(c, bus, 0x07ce, sign(b));
+    c.set_x(EDI, a as u16);
+    c.set_x(ESI, (a >> 16) as u16);
+    c.set_x(EBX, b as u16);
+    c.set_x(ECX, (b >> 16) as u16);
+    c.set_x(EDX, sign(b));
+    c.set_x(EAX, 0);
+    let v = pop16(c, bus);
+    w16(c, bus, 0x07d4, v);
+    c.retf(bus);
+    19 + 2
+}
+
 /// Every ported routine of `EL2M07` (near routines: slot 0).
 pub const PORTS_M07: &[(u16, u16, &str, Port)] = &[(0x0855, 0, "price", price_port), (0x08c0, 0, "stock", stock_port)];
 
 /// The bulletin board's routines in `EL2M07`, which need modules 2 and 6 resident (near routines).
-pub const BOARD_M07: &[(u16, u16, &str, Port)] = &[(0x0b03, 0, "advert", advert_port), (0x101a, 0, "station_list", station_list_port), (0x0923, 0, "event", event_port), (0x0949, 0, "builder", builder_port), (0x0818, 0, "station_count", station_count_port), (0x0e1a, 0, "daily", daily_port), (0x1551, 0, "handler_0c", handler_0c_port)];
+pub const BOARD_M07: &[(u16, u16, &str, Port)] = &[(0x0b03, 0, "advert", advert_port), (0x101a, 0, "station_list", station_list_port), (0x0923, 0, "event", event_port), (0x0949, 0, "builder", builder_port), (0x0818, 0, "station_count", station_count_port), (0x0e1a, 0, "daily", daily_port), (0x1551, 0, "handler_0c", handler_0c_port), (0x15a4, 0, "handler_20", handler_20_port)];

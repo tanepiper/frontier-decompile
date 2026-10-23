@@ -87,6 +87,9 @@ fn main() {
         ("EL2M02.OVL", frontier_game::galaxy::PORTS_M02),
         ("EL2M09.OVL", frontier_game::names::PORTS_M09),
         ("EL2M00.OVL", frontier_game::system::PORTS_M00),
+        ("EL2M06.OVL", frontier_game::sysdata::PORTS_M06),
+        ("EL2M07.OVL", frontier_game::market::PORTS_M07),
+        ("EL2M07.OVL", frontier_game::market::BOARD_M07),
     ];
     let mut stats: Vec<_> = tables.iter().map(|(module, ports)| (*module, frontier_hooks::verify_ports(&mut m, module, ports))).collect();
     stats.push(("FRONTIER.EXE text", frontier_hooks::verify_ports(&mut m, "FRONTIER.EXE", frontier_game::text::MAIN_TEXT)));

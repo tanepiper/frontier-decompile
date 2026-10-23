@@ -376,3 +376,73 @@ fn arrival_and_daily_update_match_original() {
     assert!(compared > 350, "too few cases compared");
     assert!(failures.is_empty(), "\n{}", failures.join("\n"));
 }
+
+/// Module 7's handler `+20` (`EL2M07:15a4`, the docking bays) for every `BX` but 6, on the real
+/// station object (`[DS:07e0]`) with random bays, bay counts, states, flags and ships.
+#[test]
+fn docking_bays_match_original() {
+    let Some((mut m, ds)) = in_cockpit() else { return };
+    let m07 = m.image_segment("EL2M07.OVL").unwrap();
+    let port = frontier_game::market::BOARD_M07.iter().find(|p| p.2 == "handler_20").unwrap().3;
+    // The station object: [56f7] + the word at DS:06d6 + 2·index, index = its record's byte +7Ch.
+    let idx = m.cpu.mem.rb(lin(ds, 0x224d + 0x7c)) as u32;
+    let (blk_off, blk_seg) = (m.cpu.mem.rw(lin(ds, 0x56f7)), m.cpu.mem.rw(lin(ds, 0x56f9)));
+    let obj = blk_off.wrapping_add(m.cpu.mem.rw(lin(ds, 0x06d6 + 2 * idx)));
+    let mut x = X(0x15A4_D0C0_5EED_0006);
+    let (mut compared, mut declined, mut failures) = (0, 0, Vec::new());
+    let mut per = [0u32; 10];
+    for i in 0..5000 {
+        let bx = [0u32, 1, 1, 1, 2, 3, 4, 5, 5, 7, 8, 9, 9, 0x10][i % 14];
+        m.cpu.mem.wd(lin(ds, 0x1fd9), x.next());
+        m.cpu.mem.wd(lin(ds, 0x1fdd), x.next());
+        m.cpu.mem.ww(lin(ds, 0x07e0), obj);
+        m.cpu.mem.ww(lin(ds, 0x07e2), blk_seg);
+        let o = |k: u32| lin(blk_seg, obj as u32 + k);
+        let bays = x.next() % 4;
+        m.cpu.mem.ww(o(0xa4), bays as u16);
+        for k in 0..4 {
+            m.cpu.mem.wb(o(0xa6 + k), if x.next() % 2 == 0 { 0 } else { (x.next() % 8) as u8 });
+        }
+        m.cpu.mem.wb(o(0x9f), [0u8, 1, 3, 0xff][(x.next() % 4) as usize]);
+        m.cpu.mem.wb(o(0xa0), (x.next() % 8) as u8);
+        let f = m.cpu.mem.rb(o(0x118));
+        m.cpu.mem.wb(o(0x118), (f & !0x60) | (x.next() as u8 & 0x60));
+        for k in 0..9 {
+            m.cpu.mem.ww(o(2 * k), x.next() as u16);
+        }
+        m.cpu.mem.ww(lin(ds, 0x07d8), (x.next() % 4) as u16);
+        m.cpu.mem.wb(lin(ds, 0x2053), (x.next() % 8) as u8);
+        m.cpu.mem.ww(lin(ds, 0x07d0), [0u16, 1, 9][(x.next() % 3) as usize]);
+        for r in 0..8 {
+            m.cpu.r[r] = x.next();
+        }
+        m.cpu.r[0] = (m.cpu.r[0] & 0xffff_0000) | if bx == 8 { [0, 1, 9][(x.next() % 3) as usize] } else { x.next() % 8 };
+        m.cpu.r[3] = (m.cpu.r[3] & 0xffff_0000) | bx;
+        m.cpu.r[ESP] = 0xFFF0;
+        m.cpu.s[SS] = 0xA000;
+        m.cpu.s[DS] = ds;
+        m.cpu.push16(0x1234);
+        m.cpu.push16(0x0abc);
+        m.cpu.s[CS] = m07;
+        m.cpu.ip = 0x15a4;
+        let out = run_port(&m.cpu, port);
+        if out.steps == DECLINE {
+            declined += 1;
+            continue;
+        }
+        compared += 1;
+        per[(bx as usize).min(9)] += 1;
+        let diff = match record_original_until(&mut m.cpu, 1_000_000, out.cpu.cs, out.cpu.ip, out.cpu.r[4] as u16) {
+            Some(orig) => compare(&out, &orig, &m.cpu.mem),
+            None => Some("the original did not return".into()),
+        };
+        if let Some(d) = diff {
+            if failures.len() < 6 {
+                failures.push(format!("case {i} BX {bx}: {d}"));
+            }
+        }
+    }
+    eprintln!("handler_20: {compared} compared {per:?}, {declined} declined, {} mismatches", failures.len());
+    assert!(compared > 4500, "too few cases compared");
+    assert!(failures.is_empty(), "\n{}", failures.join("\n"));
+}

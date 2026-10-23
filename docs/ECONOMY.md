@@ -205,6 +205,55 @@ generator states, station flags, event counts, commodity flags, stocks, the dwor
 `DS:4603`, allegiances, and the current system or a random one. 18 event strings were written.
 All matched the original: **0 mismatches.**
 
+## Docking bays: handler `+20` (`EL2M07:15a4`, ported but for `BX` = 6)
+
+The station object is the far pointer `[DS:07e0]`. Its word `+A4h` is the bay count − 1, and the
+bytes from `+A6h` hold the ship in each bay (an object index, 0 for empty). The byte `+9Fh` is a
+state, `+A0h` the ship it concerns, and `+AEh` a word of ticks (0E10h when set). The meaning of
+these fields is *inferred*: they behave like a docking queue.
+
+| `BX` | Effect (*observed*) |
+|---|---|
+| 0 | `DI` = the station record (from `DS:224d`) whose byte `+7Ch` is `AL` |
+| 1 | `15c3`: keep `AL`'s bay or take the highest empty one (`DS:07d4` = FFFFh when taken). `DS:207d` = the bay when `AL` is the player (`DS:2053`). `DS:07d8` = the bay, then its position |
+| 2 | free `AL`'s bay: `+9Fh` = 1, `+A0h` = 0, `+AEh` = 0 |
+| 3 | `AL` in `+A0h`: state 3, 0E10h ticks, `AX` = 1; else `AX` = 0 |
+| 4 | `+9Fh`, `+A0h`, `+AEh` = 0 |
+| 5 | state 0 or 1, or `AL` already in `+A0h`: state FFh, `+A0h` = `AL`, 0E10h ticks, `AL` = 1; else `AX` = 0 |
+| 6 | sends a message through module 12 (`1852`); not ported, the port declines |
+| 7 | `AX` = FFFFh when `AL` is in `+A0h`, else 0 |
+| 8 | the list entry of kind `AX` (`103c`), with `DS:07c4`–`07d3` and `07e4` kept |
+| other | the position of bay `DS:07d8` |
+
+**The position of a bay** (`EL2M07:161f`). It starts from an offset (`x`, `y`, `z` words) at a
+table + 8·bay. Bit 6 of the object's byte `+118h` selects the tables by bay count: `EL2M07:0451`,
+`0443`, `046f` for `BX` = 1, and `05d9`, `05bb`, `05f7`, `0615` otherwise. With bit 5 the table is
+`0651`. Each of the station's three matrix rows (Q15 words at `+0` to `+10h`) gives
+2·(m0·x + m1·y + m2·z) in 32 bits, shifted right by 6. The results go to `DS:07bc`, `07c0` and `07c4`,
+and their sign words to `DS:07c8`, `07cc` and `07d0`. Without bit 6 or 5 the offsets at `EL2M07:0633`
+are used as they are, with `z`·4. For `BX` = 1 without bit 6 the result is (0, 0, −1).
+
+Parity (`docking_bays_match_original`). The test makes 5,000 calls on the real station object,
+with every `BX` except 6, random bays, bay counts, states, flags, matrices and ships. **0
+mismatches.**
+
+## Shadow verification in play
+
+`play_verify` replays the hyperspace jump from the coverage scenarios (take-off from Merlin,
+the galactic map, F8 to Barnard's Star) over 90 virtual seconds. On each call of a ported
+routine it runs the port and the original and compares them (*measured*, 23 October 2026):
+
+| Table | Calls verified | Mismatches | Declined |
+|---|---|---|---|
+| `EL2M06` system data | 48 | 0 | 2 |
+| `EL2M07` price and stock | 310 | 0 | 0 |
+| `EL2M07` handler `+0c` 5, events 97, station lists 83, adverts 26, station count 2 | 213 | 0 | handler `+0c` 1, builder 2, events 2 |
+
+The declines all come from `galaxy::sector_density_port`, through the nearby-system routine.
+It declines while `EL2M19` is not resident, so the original runs and loads the module. In each
+of those calls, the original's code ran the builder, and its 155 calls of the price and stock
+formulas reached the ported formulas.
+
 ## Open questions
 
 - The meaning of each byte of the system record (economy, government, population, tech level are

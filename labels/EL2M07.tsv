@@ -17,3 +17,5 @@
 1000:13cd	contract	crates/game/src/market.rs
 1000:1506	write_event	crates/game/src/market.rs
 1000:1551	arrival_and_daily_update_match_original	crates/hooks/tests/market_parity.rs
+1000:15a4	docking_bays_match_original	crates/hooks/tests/market_parity.rs
+1000:15c3	assign_bay	crates/game/src/market.rs
