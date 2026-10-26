@@ -26,3 +26,10 @@ __pycache__/
 # Rust
 /target/
 /dist/
+# Links into the GameFrame home (games/ID/): never commit them
+/game
+/media
+/saves
+/analysis
+/derived
+/game-data
